@@ -5,7 +5,7 @@ import '../models/tv_series.dart';
 import '../services/playlist_service.dart';
 import '../widgets/movie_card.dart';
 import '../widgets/tv_series_card.dart';
-import 'movie_player_screen.dart';
+import 'movie_detail_screen.dart';
 import 'tv_series_detail_screen.dart';
 
 class CategoryContentScreen extends StatelessWidget {
@@ -60,7 +60,7 @@ class CategoryContentScreen extends StatelessWidget {
   void _navigateToMovie(BuildContext context, Movie movie) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MoviePlayerScreen(movie: movie)),
+      MaterialPageRoute(builder: (context) => MovieDetailScreen(movie: movie)),
     );
   }
 

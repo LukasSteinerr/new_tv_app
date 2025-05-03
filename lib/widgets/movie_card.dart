@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import '../models/movie.dart';
+import 'tmdb_image.dart';
 
 class MovieCard extends StatelessWidget {
   final Movie movie;
   final VoidCallback onTap;
 
-  const MovieCard({
-    Key? key,
-    required this.movie,
-    required this.onTap,
-  }) : super(key: key);
+  const MovieCard({Key? key, required this.movie, required this.onTap})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,17 +19,14 @@ class MovieCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: movie.coverUrl != null && movie.coverUrl!.isNotEmpty
-                  ? Image.network(
-                      movie.coverUrl!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Center(
-                        child: Icon(Icons.movie, size: 50),
-                      ),
-                    )
-                  : const Center(
-                      child: Icon(Icons.movie, size: 50),
-                    ),
+              child: TMDBImage(
+                tmdbId: movie.tmdbId,
+                fallbackUrl: movie.coverUrl,
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+                isMovie: true,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),

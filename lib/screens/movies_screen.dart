@@ -5,7 +5,7 @@ import '../models/category.dart';
 import '../services/playlist_service.dart';
 import '../widgets/content_carousel.dart';
 import '../widgets/movie_card.dart';
-import 'movie_player_screen.dart';
+import 'movie_detail_screen.dart';
 import 'category_content_screen.dart';
 
 class MoviesScreen extends StatefulWidget {
@@ -77,7 +77,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
   void _navigateToMovie(Movie movie) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MoviePlayerScreen(movie: movie)),
+      MaterialPageRoute(builder: (context) => MovieDetailScreen(movie: movie)),
     );
   }
 

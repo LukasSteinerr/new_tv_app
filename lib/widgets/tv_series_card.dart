@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import '../models/tv_series.dart';
+import 'tmdb_image.dart';
 
 class TvSeriesCard extends StatelessWidget {
   final TvSeries series;
   final VoidCallback onTap;
 
-  const TvSeriesCard({
-    Key? key,
-    required this.series,
-    required this.onTap,
-  }) : super(key: key);
+  const TvSeriesCard({Key? key, required this.series, required this.onTap})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,17 +19,14 @@ class TvSeriesCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: series.coverUrl != null && series.coverUrl!.isNotEmpty
-                  ? Image.network(
-                      series.coverUrl!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Center(
-                        child: Icon(Icons.tv, size: 50),
-                      ),
-                    )
-                  : const Center(
-                      child: Icon(Icons.tv, size: 50),
-                    ),
+              child: TMDBImage(
+                tmdbId: series.tmdbId,
+                fallbackUrl: series.coverUrl,
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+                isMovie: false,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
