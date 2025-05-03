@@ -38,15 +38,15 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
 
     try {
       _screens = [
-        LiveTvScreen(
-          playlistService: widget.playlistService,
-          playlist: widget.playlist,
-        ),
         MoviesScreen(
           playlistService: widget.playlistService,
           playlist: widget.playlist,
         ),
         TvSeriesScreen(
+          playlistService: widget.playlistService,
+          playlist: widget.playlist,
+        ),
+        LiveTvScreen(
           playlistService: widget.playlistService,
           playlist: widget.playlist,
         ),
@@ -61,9 +61,9 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
       });
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading content: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading content: $e')));
         setState(() {
           _isLoading = false;
         });
@@ -74,28 +74,18 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.playlist.name),
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _screens[_currentIndex],
+      appBar: AppBar(title: Text(widget.playlist.name)),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.live_tv),
-            label: 'Live TV',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.movie),
-            label: 'Movies',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.tv),
-            label: 'TV Shows',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.movie), label: 'Movies'),
+          BottomNavigationBarItem(icon: Icon(Icons.tv), label: 'TV Shows'),
+          BottomNavigationBarItem(icon: Icon(Icons.live_tv), label: 'Live TV'),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: 'Settings',

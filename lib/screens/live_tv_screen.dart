@@ -4,6 +4,7 @@ import '../models/channel.dart';
 import '../models/category.dart';
 import '../services/playlist_service.dart';
 import 'player_screen.dart';
+import 'category_channels_screen.dart';
 
 class LiveTvScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -99,6 +100,24 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
     }
   }
 
+  void _navigateToSeeAllChannels() {
+    if (_channels.isEmpty) return;
+
+    final title = _selectedCategory?.name ?? 'All Channels';
+    final category =
+        _selectedCategory ??
+        Category(name: title, contentType: ContentType.liveTV);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) =>
+                CategoryChannelsScreen(category: category, channels: _channels),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -145,6 +164,28 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                     },
                   ),
         ),
+
+        // Category title and See All button
+        if (!_isLoading && _channels.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  _selectedCategory?.name ?? 'All Channels',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextButton(
+                  onPressed: _navigateToSeeAllChannels,
+                  child: const Text('See All'),
+                ),
+              ],
+            ),
+          ),
 
         // Channels list
         Expanded(

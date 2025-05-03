@@ -5,6 +5,14 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Tell Gradle to exclude the Android library (without Admin)
+// that is added by the objectbox_flutter_libs package for debug builds.
+configurations {
+    "debugImplementation" {
+        exclude(group = "io.objectbox", module = "objectbox-android")
+    }
+}
+
 android {
     namespace = "com.example.tv"
     compileSdk = flutter.compileSdkVersion
@@ -37,6 +45,12 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+}
+
+dependencies {
+    // Add the Android library with ObjectBox Admin only for debug builds.
+    // Using the same version as the objectbox Dart package (4.2.0)
+    "debugImplementation"("io.objectbox:objectbox-android-objectbrowser:4.2.0")
 }
 
 flutter {

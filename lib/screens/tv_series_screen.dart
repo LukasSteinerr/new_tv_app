@@ -6,6 +6,7 @@ import '../services/playlist_service.dart';
 import '../widgets/content_carousel.dart';
 import '../widgets/tv_series_card.dart';
 import 'tv_series_detail_screen.dart';
+import 'category_content_screen.dart';
 
 class TvSeriesScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -86,6 +87,20 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
     );
   }
 
+  void _navigateToSeeAll(Category category, List<TvSeries> seriesList) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => CategoryContentScreen(
+              category: category,
+              items: seriesList,
+              playlistService: widget.playlistService,
+            ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -113,6 +128,7 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
                   series: series,
                   onTap: () => _navigateToSeries(series),
                 ),
+            onSeeAllPressed: () => _navigateToSeeAll(category, seriesList),
           );
         }),
 

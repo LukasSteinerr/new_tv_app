@@ -6,6 +6,7 @@ import '../services/playlist_service.dart';
 import '../widgets/content_carousel.dart';
 import '../widgets/movie_card.dart';
 import 'movie_player_screen.dart';
+import 'category_content_screen.dart';
 
 class MoviesScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -80,6 +81,20 @@ class _MoviesScreenState extends State<MoviesScreen> {
     );
   }
 
+  void _navigateToSeeAll(Category category, List<Movie> movies) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => CategoryContentScreen(
+              category: category,
+              items: movies,
+              playlistService: widget.playlistService,
+            ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -107,6 +122,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
                   movie: movie,
                   onTap: () => _navigateToMovie(movie),
                 ),
+            onSeeAllPressed: () => _navigateToSeeAll(category, movies),
           );
         }),
 

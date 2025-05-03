@@ -7,6 +7,7 @@ import '../models/movie.dart';
 import '../models/tv_series.dart';
 import '../models/tv_episode.dart';
 import '../objectbox.g.dart';
+import 'package:objectbox/objectbox.dart';
 
 class ObjectBoxService {
   static ObjectBoxService? _instance;
@@ -18,6 +19,9 @@ class ObjectBoxService {
   late final Box<TvSeries> _tvSeriesBox;
   late final Box<TvEpisode> _tvEpisodeBox;
 
+  // Admin instance for ObjectBox browser
+  Admin? _admin;
+
   ObjectBoxService._create(this._store) {
     _playlistBox = Box<Playlist>(_store);
     _channelBox = Box<Channel>(_store);
@@ -25,6 +29,11 @@ class ObjectBoxService {
     _movieBox = Box<Movie>(_store);
     _tvSeriesBox = Box<TvSeries>(_store);
     _tvEpisodeBox = Box<TvEpisode>(_store);
+
+    // Initialize Admin for debug builds
+    if (Admin.isAvailable()) {
+      _admin = Admin(_store);
+    }
   }
 
   static Future<ObjectBoxService> create() async {
@@ -198,6 +207,8 @@ class ObjectBoxService {
 
   // Close the store when done
   void close() {
+    // Close Admin if it was initialized
+    _admin?.close();
     _store.close();
   }
 }
