@@ -182,6 +182,23 @@ class _NetflixStyleTvSeriesDetailScreenState
     );
   }
 
+  // Play the first episode of the selected season
+  void _playFirstEpisode() {
+    if (_selectedSeason != null &&
+        _seasonEpisodes.containsKey(_selectedSeason)) {
+      final episodes = _seasonEpisodes[_selectedSeason]!;
+      if (episodes.isNotEmpty) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => TvEpisodePlayerScreen(episode: episodes.first),
+          ),
+        );
+      }
+    }
+  }
+
   Widget _buildHeader(Size size) {
     return Stack(
       children: [
@@ -213,7 +230,7 @@ class _NetflixStyleTvSeriesDetailScreenState
                 end: Alignment.bottomCenter,
                 colors: [
                   Colors.transparent,
-                  Colors.black.withOpacity(0.7),
+                  Colors.black.withAlpha(179), // 0.7 opacity
                   Colors.black,
                 ],
               ),
@@ -221,19 +238,49 @@ class _NetflixStyleTvSeriesDetailScreenState
           ),
         ),
 
-        // Back button
+        // Play button in the center of the backdrop - exactly like Netflix clone
         Positioned(
-          top: 40,
-          left: 16,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
-              shape: BoxShape.circle,
+          top: 100,
+          bottom: 100,
+          right: 100,
+          left: 100,
+          child: GestureDetector(
+            onTap: _playFirstEpisode,
+            child: const Icon(
+              Icons.play_circle_outline,
+              size: 50,
+              color: Colors.white,
             ),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
+          ),
+        ),
+
+        // Cross and Cast buttons - exactly like Netflix clone
+        Positioned(
+          right: 15,
+          top: 50,
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: Navigator.of(context).pop,
+                child: CircleAvatar(
+                  backgroundColor: Colors.black54,
+                  child: const Icon(Icons.close, color: Colors.white),
+                ),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () {
+                  // Cast functionality would go here
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Cast button pressed')),
+                  );
+                },
+                child: CircleAvatar(
+                  backgroundColor: Colors.black54,
+                  child: const Icon(Icons.cast, color: Colors.white),
+                ),
+              ),
+            ],
           ),
         ),
       ],

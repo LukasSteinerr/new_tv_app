@@ -166,7 +166,7 @@ class _NetflixStyleMovieDetailScreenState
                 end: Alignment.bottomCenter,
                 colors: [
                   Colors.transparent,
-                  Colors.black.withOpacity(0.7),
+                  Colors.black.withAlpha(179), // 0.7 opacity
                   Colors.black,
                 ],
               ),
@@ -174,19 +174,49 @@ class _NetflixStyleMovieDetailScreenState
           ),
         ),
 
-        // Back button
+        // Play button in the center of the backdrop - exactly like Netflix clone
         Positioned(
-          top: 40,
-          left: 16,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
-              shape: BoxShape.circle,
+          top: 100,
+          bottom: 100,
+          right: 100,
+          left: 100,
+          child: GestureDetector(
+            onTap: _playMovie,
+            child: const Icon(
+              Icons.play_circle_outline,
+              size: 50,
+              color: Colors.white,
             ),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
+          ),
+        ),
+
+        // Cross and Cast buttons - exactly like Netflix clone
+        Positioned(
+          right: 15,
+          top: 50,
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: Navigator.of(context).pop,
+                child: CircleAvatar(
+                  backgroundColor: Colors.black54,
+                  child: const Icon(Icons.close, color: Colors.white),
+                ),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () {
+                  // Cast functionality would go here
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Cast button pressed')),
+                  );
+                },
+                child: CircleAvatar(
+                  backgroundColor: Colors.black54,
+                  child: const Icon(Icons.cast, color: Colors.white),
+                ),
+              ),
+            ],
           ),
         ),
       ],
