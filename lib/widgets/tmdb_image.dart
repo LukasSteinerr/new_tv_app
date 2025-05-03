@@ -110,36 +110,42 @@ class _TMDBImageState extends State<TMDBImage> {
       );
     }
 
-    // Use FadeInImage for smooth transitions
-    return FadeInImage.memoryNetwork(
-      placeholder: kTransparentImage, // Using memory placeholder
-      image: _imageUrl!,
-      width: widget.width,
-      height: widget.height,
-      fit: widget.fit,
-      fadeInDuration: const Duration(milliseconds: 300),
-      fadeInCurve: Curves.easeIn,
-      imageErrorBuilder:
-          widget.errorBuilder ??
-          (context, error, stackTrace) {
-            return SizedBox(
-              width: widget.width,
-              height: widget.height,
-              child: Center(
-                child: Icon(
-                  widget.isMovie ? Icons.movie : Icons.tv,
-                  color: Colors.white54,
-                  size: widget.width / 2,
-                ),
-              ),
-            );
-          },
-      placeholderErrorBuilder: (context, error, stackTrace) {
-        return const NetflixStyleLoading(
+    // Use Stack with NetflixStyleLoading as base and FadeInImage on top
+    // This ensures we always see the grey loading background until the image is fully loaded
+    return Stack(
+      children: [
+        // Base loading layer - always visible until image loads
+        const NetflixStyleLoading(
           width: double.infinity,
           height: double.infinity,
-        );
-      },
+        ),
+
+        // Image layer on top that fades in
+        FadeInImage.memoryNetwork(
+          placeholder: kTransparentImage, // Using transparent placeholder
+          image: _imageUrl!,
+          width: widget.width,
+          height: widget.height,
+          fit: widget.fit,
+          fadeInDuration: const Duration(milliseconds: 300),
+          fadeInCurve: Curves.easeIn,
+          imageErrorBuilder:
+              widget.errorBuilder ??
+              (context, error, stackTrace) {
+                return SizedBox(
+                  width: widget.width,
+                  height: widget.height,
+                  child: Center(
+                    child: Icon(
+                      widget.isMovie ? Icons.movie : Icons.tv,
+                      color: Colors.white54,
+                      size: widget.width / 2,
+                    ),
+                  ),
+                );
+              },
+        ),
+      ],
     );
   }
 }
