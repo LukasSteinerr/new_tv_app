@@ -12,22 +12,35 @@ class TvSeriesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(4.0),
-        child: AspectRatio(
-          aspectRatio: 2 / 3, // Netflix-style poster ratio
-          child: TMDBImage(
-            tmdbId: series.tmdbId,
-            fallbackUrl: series.coverUrl,
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-            isMovie: false,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Calculate fixed dimensions based on the aspect ratio
+        final width = constraints.maxWidth;
+        final height = width * 3 / 2; // 2:3 aspect ratio
+
+        return Card(
+          margin: EdgeInsets.zero,
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4.0),
           ),
-        ),
-      ),
+          child: InkWell(
+            onTap: onTap,
+            child: SizedBox(
+              width: width,
+              height: height,
+              child: TMDBImage(
+                tmdbId: series.tmdbId,
+                fallbackUrl: series.coverUrl,
+                width: width,
+                height: height,
+                fit: BoxFit.cover,
+                isMovie: false,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
