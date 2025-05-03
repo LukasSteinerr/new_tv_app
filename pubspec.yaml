@@ -43,6 +43,7 @@ dependencies:
   flutter_vlc_player: ^7.4.3
   path_provider: ^2.1.5
   shared_preferences: ^2.5.3
+  transparent_image: ^2.0.1
 
 dev_dependencies:
   flutter_test:

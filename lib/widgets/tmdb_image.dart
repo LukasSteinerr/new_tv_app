@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 import '../services/tmdb_image_provider.dart';
+import '../widgets/netflix_style_loading.dart';
 
 /// A widget that displays an image from TMDB if available, otherwise falls back to a provided URL
 class TMDBImage extends StatefulWidget {
@@ -42,7 +44,8 @@ class _TMDBImageState extends State<TMDBImage> {
   @override
   void didUpdateWidget(TMDBImage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.tmdbId != widget.tmdbId || oldWidget.fallbackUrl != widget.fallbackUrl) {
+    if (oldWidget.tmdbId != widget.tmdbId ||
+        oldWidget.fallbackUrl != widget.fallbackUrl) {
       _loadImage();
     }
   }
@@ -53,9 +56,16 @@ class _TMDBImageState extends State<TMDBImage> {
     });
 
     try {
-      final url = widget.isMovie
-          ? await _imageProvider.getPosterUrl(widget.tmdbId, widget.fallbackUrl)
-          : await _imageProvider.getTvPosterUrl(widget.tmdbId, widget.fallbackUrl);
+      final url =
+          widget.isMovie
+              ? await _imageProvider.getPosterUrl(
+                widget.tmdbId,
+                widget.fallbackUrl,
+              )
+              : await _imageProvider.getTvPosterUrl(
+                widget.tmdbId,
+                widget.fallbackUrl,
+              );
 
       if (mounted) {
         setState(() {
@@ -79,8 +89,9 @@ class _TMDBImageState extends State<TMDBImage> {
       return SizedBox(
         width: widget.width,
         height: widget.height,
-        child: const Center(
-          child: CircularProgressIndicator(),
+        child: const NetflixStyleLoading(
+          width: double.infinity,
+          height: double.infinity,
         ),
       );
     }
@@ -92,30 +103,24 @@ class _TMDBImageState extends State<TMDBImage> {
         child: Center(
           child: Icon(
             widget.isMovie ? Icons.movie : Icons.tv,
+            color: Colors.white54,
             size: widget.width / 2,
           ),
         ),
       );
     }
 
-    return Image.network(
-      _imageUrl!,
+    // Use FadeInImage for smooth transitions
+    return FadeInImage.memoryNetwork(
+      placeholder: kTransparentImage, // Using memory placeholder
+      image: _imageUrl!,
       width: widget.width,
       height: widget.height,
       fit: widget.fit,
-      loadingBuilder: widget.loadingBuilder ??
-          (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Center(
-              child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
-                    : null,
-              ),
-            );
-          },
-      errorBuilder: widget.errorBuilder ??
+      fadeInDuration: const Duration(milliseconds: 300),
+      fadeInCurve: Curves.easeIn,
+      imageErrorBuilder:
+          widget.errorBuilder ??
           (context, error, stackTrace) {
             return SizedBox(
               width: widget.width,
@@ -123,11 +128,18 @@ class _TMDBImageState extends State<TMDBImage> {
               child: Center(
                 child: Icon(
                   widget.isMovie ? Icons.movie : Icons.tv,
+                  color: Colors.white54,
                   size: widget.width / 2,
                 ),
               ),
             );
           },
+      placeholderErrorBuilder: (context, error, stackTrace) {
+        return const NetflixStyleLoading(
+          width: double.infinity,
+          height: double.infinity,
+        );
+      },
     );
   }
 }

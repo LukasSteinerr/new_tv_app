@@ -5,7 +5,8 @@ import '../models/category.dart';
 import '../services/playlist_service.dart';
 import '../widgets/content_carousel.dart';
 import '../widgets/movie_card.dart';
-import 'movie_detail_screen.dart';
+import '../widgets/featured_content.dart';
+import 'netflix_style_movie_detail_screen.dart';
 import 'category_content_screen.dart';
 
 class MoviesScreen extends StatefulWidget {
@@ -26,6 +27,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
   List<Category> _categories = [];
   Map<int, List<Movie>> _categoryMovies = {};
   bool _isLoading = true;
+  Movie? _featuredMovie;
 
   @override
   void initState() {
@@ -48,17 +50,31 @@ class _MoviesScreenState extends State<MoviesScreen> {
 
       // Get movies for each category
       final categoryMoviesMap = <int, List<Movie>>{};
+      List<Movie> allMovies = [];
+
       for (final category in movieCategories) {
         final movies = await widget.playlistService.getCategoryMovies(
           category.id,
         );
         categoryMoviesMap[category.id] = movies;
+        allMovies.addAll(movies);
+      }
+
+      // Select a featured movie (one with a TMDB ID if possible)
+      Movie? featuredMovie;
+      if (allMovies.isNotEmpty) {
+        // First try to find a movie with a TMDB ID
+        featuredMovie = allMovies.firstWhere(
+          (movie) => movie.tmdbId != null && movie.tmdbId!.isNotEmpty,
+          orElse: () => allMovies.first,
+        );
       }
 
       if (mounted) {
         setState(() {
           _categories = movieCategories;
           _categoryMovies = categoryMoviesMap;
+          _featuredMovie = featuredMovie;
           _isLoading = false;
         });
       }
@@ -77,7 +93,9 @@ class _MoviesScreenState extends State<MoviesScreen> {
   void _navigateToMovie(Movie movie) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MovieDetailScreen(movie: movie)),
+      MaterialPageRoute(
+        builder: (context) => NetflixStyleMovieDetailScreen(movie: movie),
+      ),
     );
   }
 
@@ -107,6 +125,25 @@ class _MoviesScreenState extends State<MoviesScreen> {
 
     return ListView(
       children: [
+        // Featured Movie - Netflix style
+        if (_featuredMovie != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+              vertical: 10.0,
+            ),
+            child: FeaturedContent(
+              title: _featuredMovie!.name,
+              description: _featuredMovie!.description,
+              tmdbId: _featuredMovie!.tmdbId,
+              fallbackImageUrl: _featuredMovie!.coverUrl,
+              year: _featuredMovie!.year,
+              rating: _featuredMovie!.rating,
+              isMovie: true,
+              onTap: () => _navigateToMovie(_featuredMovie!),
+            ),
+          ),
+
         // Category Carousels
         ..._categories.map((category) {
           final movies = _categoryMovies[category.id] ?? [];

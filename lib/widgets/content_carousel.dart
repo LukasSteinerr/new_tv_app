@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../constants/app_theme.dart';
 
 class ContentCarousel<T> extends StatelessWidget {
   final String title;
@@ -23,38 +24,80 @@ class ContentCarousel<T> extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Title row with Netflix styling - fixed to prevent overflow
         Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+          padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 12.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              // Category name with ellipsis to prevent overflow
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              // Fixed-width See All button
               if (onSeeAllPressed != null)
-                TextButton(
-                  onPressed: onSeeAllPressed,
-                  child: const Text('See All'),
+                SizedBox(
+                  width: 100, // Fixed width for the button
+                  child: TextButton(
+                    onPressed: onSeeAllPressed,
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Text(
+                          'See All',
+                          style: TextStyle(
+                            color: AppColors.netflixTextSecondary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(width: 4),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 12,
+                          color: AppColors.netflixTextSecondary,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
             ],
           ),
         ),
+        // Content carousel with Netflix styling
         SizedBox(
-          height: 200,
+          height: 220, // Taller for Netflix style
           child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 8.0),
             scrollDirection: Axis.horizontal,
             itemCount: items.length,
             itemBuilder: (context, index) {
               return SizedBox(
-                width: 120,
+                width: 140, // Wider for Netflix style
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: itemBuilder(items[index]),
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Content item (poster)
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(4.0),
+                          child: itemBuilder(items[index]),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

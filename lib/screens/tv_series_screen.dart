@@ -5,7 +5,8 @@ import '../models/category.dart';
 import '../services/playlist_service.dart';
 import '../widgets/content_carousel.dart';
 import '../widgets/tv_series_card.dart';
-import 'tv_series_detail_screen.dart';
+import '../widgets/featured_content.dart';
+import 'netflix_style_tv_series_detail_screen.dart';
 import 'category_content_screen.dart';
 
 class TvSeriesScreen extends StatefulWidget {
@@ -26,6 +27,7 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
   List<Category> _categories = [];
   Map<int, List<TvSeries>> _categorySeries = {};
   bool _isLoading = true;
+  TvSeries? _featuredSeries;
 
   @override
   void initState() {
@@ -48,17 +50,31 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
 
       // Get series for each category
       final categorySeriesMap = <int, List<TvSeries>>{};
+      List<TvSeries> allSeries = [];
+
       for (final category in seriesCategories) {
         final series = await widget.playlistService.getCategoryTvSeries(
           category.id,
         );
         categorySeriesMap[category.id] = series;
+        allSeries.addAll(series);
+      }
+
+      // Select a featured series (one with a TMDB ID if possible)
+      TvSeries? featuredSeries;
+      if (allSeries.isNotEmpty) {
+        // First try to find a series with a TMDB ID
+        featuredSeries = allSeries.firstWhere(
+          (series) => series.tmdbId != null && series.tmdbId!.isNotEmpty,
+          orElse: () => allSeries.first,
+        );
       }
 
       if (mounted) {
         setState(() {
           _categories = seriesCategories;
           _categorySeries = categorySeriesMap;
+          _featuredSeries = featuredSeries;
           _isLoading = false;
         });
       }
@@ -79,7 +95,7 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
       context,
       MaterialPageRoute(
         builder:
-            (context) => TvSeriesDetailScreen(
+            (context) => NetflixStyleTvSeriesDetailScreen(
               playlistService: widget.playlistService,
               series: series,
             ),
@@ -113,6 +129,25 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
 
     return ListView(
       children: [
+        // Featured Series - Netflix style
+        if (_featuredSeries != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+              vertical: 10.0,
+            ),
+            child: FeaturedContent(
+              title: _featuredSeries!.name,
+              description: _featuredSeries!.description,
+              tmdbId: _featuredSeries!.tmdbId,
+              fallbackImageUrl: _featuredSeries!.coverUrl,
+              year: _featuredSeries!.year,
+              rating: _featuredSeries!.rating,
+              isMovie: false,
+              onTap: () => _navigateToSeries(_featuredSeries!),
+            ),
+          ),
+
         // Category Carousels
         ..._categories.map((category) {
           final seriesList = _categorySeries[category.id] ?? [];

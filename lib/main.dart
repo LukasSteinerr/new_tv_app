@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'services/objectbox_service.dart';
 import 'services/playlist_service.dart';
 import 'screens/home_screen.dart';
+import 'constants/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,19 +31,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'IPTV Player',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
-      themeMode: ThemeMode.system,
+      theme: AppTheme.darkTheme, // Use Netflix-style dark theme
+      darkTheme: AppTheme.darkTheme, // Use Netflix-style dark theme
+      themeMode: ThemeMode.dark, // Always use dark theme like Netflix
       home: HomeScreen(playlistService: playlistService),
     );
   }
