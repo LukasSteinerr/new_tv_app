@@ -131,21 +131,109 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
       children: [
         // Featured Series - Netflix style
         if (_featuredSeries != null)
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20.0,
-              vertical: 10.0,
-            ),
-            child: FeaturedContent(
-              title: _featuredSeries!.name,
-              description: _featuredSeries!.description,
-              tmdbId: _featuredSeries!.tmdbId,
-              fallbackImageUrl: _featuredSeries!.coverUrl,
-              year: _featuredSeries!.year,
-              rating: _featuredSeries!.rating,
-              isMovie: false,
-              onTap: () => _navigateToSeries(_featuredSeries!),
-            ),
+          FeaturedContent(
+            title: _featuredSeries!.name,
+            description: _featuredSeries!.description,
+            tmdbId: _featuredSeries!.tmdbId,
+            fallbackImageUrl: _featuredSeries!.coverUrl,
+            year: _featuredSeries!.year,
+            rating: _featuredSeries!.rating,
+            isMovie: false,
+            onTap: () => _navigateToSeries(_featuredSeries!),
+            onInfoTap: () => _navigateToSeries(_featuredSeries!),
+            onMyListTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Added to My List: ${_featuredSeries!.name}'),
+                ),
+              );
+            },
+            // Optional: Add more series for PageView
+            additionalContent:
+                _categorySeries.values
+                    .expand((series) => series)
+                    .where(
+                      (series) =>
+                          series.id != _featuredSeries!.id &&
+                          series.tmdbId != null &&
+                          series.tmdbId!.isNotEmpty,
+                    )
+                    .take(5)
+                    .map(
+                      (series) => {
+                        'title': series.name,
+                        'description': series.description,
+                        'backdropUrl': null, // Will be loaded by TMDB service
+                        'fallbackImageUrl': series.coverUrl,
+                        'year': series.year,
+                        'rating': series.rating,
+                        'isMovie': false,
+                        'id':
+                            series
+                                .id, // Store the ID to identify the series later
+                        'tmdbId':
+                            series.tmdbId, // Include TMDB ID for image loading
+                      },
+                    )
+                    .toList(),
+            // Add callbacks for additional content
+            onAdditionalContentTap: (index) {
+              final additionalSeries =
+                  _categorySeries.values
+                      .expand((series) => series)
+                      .where(
+                        (series) =>
+                            series.id != _featuredSeries!.id &&
+                            series.tmdbId != null &&
+                            series.tmdbId!.isNotEmpty,
+                      )
+                      .take(5)
+                      .toList();
+
+              if (index < additionalSeries.length) {
+                _navigateToSeries(additionalSeries[index]);
+              }
+            },
+            onAdditionalContentInfoTap: (index) {
+              final additionalSeries =
+                  _categorySeries.values
+                      .expand((series) => series)
+                      .where(
+                        (series) =>
+                            series.id != _featuredSeries!.id &&
+                            series.tmdbId != null &&
+                            series.tmdbId!.isNotEmpty,
+                      )
+                      .take(5)
+                      .toList();
+
+              if (index < additionalSeries.length) {
+                _navigateToSeries(additionalSeries[index]);
+              }
+            },
+            onAdditionalContentMyListTap: (index) {
+              final additionalSeries =
+                  _categorySeries.values
+                      .expand((series) => series)
+                      .where(
+                        (series) =>
+                            series.id != _featuredSeries!.id &&
+                            series.tmdbId != null &&
+                            series.tmdbId!.isNotEmpty,
+                      )
+                      .take(5)
+                      .toList();
+
+              if (index < additionalSeries.length) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Added to My List: ${additionalSeries[index].name}',
+                    ),
+                  ),
+                );
+              }
+            },
           ),
 
         // Category Carousels

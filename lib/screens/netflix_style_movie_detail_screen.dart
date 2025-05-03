@@ -7,13 +7,16 @@ import 'movie_player_screen.dart';
 class NetflixStyleMovieDetailScreen extends StatefulWidget {
   final Movie movie;
 
-  const NetflixStyleMovieDetailScreen({Key? key, required this.movie}) : super(key: key);
+  const NetflixStyleMovieDetailScreen({Key? key, required this.movie})
+    : super(key: key);
 
   @override
-  State<NetflixStyleMovieDetailScreen> createState() => _NetflixStyleMovieDetailScreenState();
+  State<NetflixStyleMovieDetailScreen> createState() =>
+      _NetflixStyleMovieDetailScreenState();
 }
 
-class _NetflixStyleMovieDetailScreenState extends State<NetflixStyleMovieDetailScreen> {
+class _NetflixStyleMovieDetailScreenState
+    extends State<NetflixStyleMovieDetailScreen> {
   final TMDBImageProvider _imageProvider = TMDBImageProvider();
   bool _isLoading = true;
   String? _posterUrl;
@@ -74,15 +77,11 @@ class _NetflixStyleMovieDetailScreenState extends State<NetflixStyleMovieDetailS
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    
+
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: Colors.black,
-        body: Center(
-          child: CircularProgressIndicator(
-            color: Colors.red,
-          ),
-        ),
+        body: Center(child: CircularProgressIndicator(color: Colors.red)),
       );
     }
 
@@ -143,13 +142,15 @@ class _NetflixStyleMovieDetailScreenState extends State<NetflixStyleMovieDetailS
         SizedBox(
           height: size.height * 0.4,
           width: double.infinity,
-          child: _backdropUrl != null
-              ? Image.network(
-                  _backdropUrl!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(color: Colors.black),
-                )
-              : Container(color: Colors.black),
+          child:
+              _backdropUrl != null
+                  ? Image.network(
+                    _backdropUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder:
+                        (_, __, ___) => Container(color: Colors.black),
+                  )
+                  : Container(color: Colors.black),
         ),
 
         // Gradient overlay for better text visibility
@@ -213,11 +214,7 @@ class _NetflixStyleMovieDetailScreenState extends State<NetflixStyleMovieDetailS
           flex: 1,
           child: Container(
             alignment: Alignment.centerRight,
-            child: const Icon(
-              Icons.movie,
-              color: Colors.red,
-              size: 30,
-            ),
+            child: const Icon(Icons.movie, color: Colors.red, size: 30),
           ),
         ),
       ],
@@ -232,10 +229,7 @@ class _NetflixStyleMovieDetailScreenState extends State<NetflixStyleMovieDetailS
           if (widget.movie.year != null && widget.movie.year!.isNotEmpty)
             Text(
               widget.movie.year!,
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 14,
-              ),
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
             ),
           if (widget.movie.year != null && widget.movie.year!.isNotEmpty)
             const SizedBox(width: 12),
@@ -248,21 +242,16 @@ class _NetflixStyleMovieDetailScreenState extends State<NetflixStyleMovieDetailS
               ),
               child: Text(
                 widget.movie.rating!,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 12,
-                ),
+                style: const TextStyle(color: Colors.white70, fontSize: 12),
               ),
             ),
-          if (widget.movie.duration != null && widget.movie.duration!.isNotEmpty)
+          if (widget.movie.duration != null &&
+              widget.movie.duration!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(left: 12),
               child: Text(
                 widget.movie.duration!,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 14,
-                ),
+                style: const TextStyle(color: Colors.white70, fontSize: 14),
               ),
             ),
           const Spacer(),
@@ -275,10 +264,7 @@ class _NetflixStyleMovieDetailScreenState extends State<NetflixStyleMovieDetailS
             ),
             child: const Text(
               'HD',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: Colors.white70, fontSize: 12),
             ),
           ),
         ],
@@ -328,10 +314,7 @@ class _NetflixStyleMovieDetailScreenState extends State<NetflixStyleMovieDetailS
         const SizedBox(height: 8),
         Text(
           widget.movie.description!,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.white70,
-          ),
+          style: const TextStyle(fontSize: 14, color: Colors.white70),
         ),
       ],
     );
@@ -355,18 +338,11 @@ class _NetflixStyleMovieDetailScreenState extends State<NetflixStyleMovieDetailS
   Widget _buildActionButton(IconData icon, String label) {
     return Column(
       children: [
-        Icon(
-          icon,
-          color: Colors.white,
-          size: 24,
-        ),
+        Icon(icon, color: Colors.white, size: 24),
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 12,
-          ),
+          style: const TextStyle(color: Colors.white70, fontSize: 12),
         ),
       ],
     );

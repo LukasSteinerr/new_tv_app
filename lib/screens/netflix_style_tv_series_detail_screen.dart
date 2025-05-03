@@ -17,10 +17,12 @@ class NetflixStyleTvSeriesDetailScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<NetflixStyleTvSeriesDetailScreen> createState() => _NetflixStyleTvSeriesDetailScreenState();
+  State<NetflixStyleTvSeriesDetailScreen> createState() =>
+      _NetflixStyleTvSeriesDetailScreenState();
 }
 
-class _NetflixStyleTvSeriesDetailScreenState extends State<NetflixStyleTvSeriesDetailScreen> {
+class _NetflixStyleTvSeriesDetailScreenState
+    extends State<NetflixStyleTvSeriesDetailScreen> {
   final TMDBImageProvider _imageProvider = TMDBImageProvider();
   List<TvEpisode> _episodes = [];
   Map<int, List<TvEpisode>> _seasonEpisodes = {};
@@ -122,15 +124,11 @@ class _NetflixStyleTvSeriesDetailScreenState extends State<NetflixStyleTvSeriesD
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    
+
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: Colors.black,
-        body: Center(
-          child: CircularProgressIndicator(
-            color: Colors.red,
-          ),
-        ),
+        body: Center(child: CircularProgressIndicator(color: Colors.red)),
       );
     }
 
@@ -191,13 +189,15 @@ class _NetflixStyleTvSeriesDetailScreenState extends State<NetflixStyleTvSeriesD
         SizedBox(
           height: size.height * 0.4,
           width: double.infinity,
-          child: _backdropUrl != null
-              ? Image.network(
-                  _backdropUrl!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(color: Colors.black),
-                )
-              : Container(color: Colors.black),
+          child:
+              _backdropUrl != null
+                  ? Image.network(
+                    _backdropUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder:
+                        (_, __, ___) => Container(color: Colors.black),
+                  )
+                  : Container(color: Colors.black),
         ),
 
         // Gradient overlay for better text visibility
@@ -261,11 +261,7 @@ class _NetflixStyleTvSeriesDetailScreenState extends State<NetflixStyleTvSeriesD
           flex: 1,
           child: Container(
             alignment: Alignment.centerRight,
-            child: const Icon(
-              Icons.tv,
-              color: Colors.red,
-              size: 30,
-            ),
+            child: const Icon(Icons.tv, color: Colors.red, size: 30),
           ),
         ),
       ],
@@ -280,10 +276,7 @@ class _NetflixStyleTvSeriesDetailScreenState extends State<NetflixStyleTvSeriesD
           if (widget.series.year != null && widget.series.year!.isNotEmpty)
             Text(
               widget.series.year!,
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 14,
-              ),
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
             ),
           if (widget.series.year != null && widget.series.year!.isNotEmpty)
             const SizedBox(width: 12),
@@ -296,10 +289,7 @@ class _NetflixStyleTvSeriesDetailScreenState extends State<NetflixStyleTvSeriesD
               ),
               child: Text(
                 widget.series.rating!,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 12,
-                ),
+                style: const TextStyle(color: Colors.white70, fontSize: 12),
               ),
             ),
           const Spacer(),
@@ -312,10 +302,7 @@ class _NetflixStyleTvSeriesDetailScreenState extends State<NetflixStyleTvSeriesD
             ),
             child: const Text(
               'HD',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: Colors.white70, fontSize: 12),
             ),
           ),
         ],
@@ -324,7 +311,8 @@ class _NetflixStyleTvSeriesDetailScreenState extends State<NetflixStyleTvSeriesD
   }
 
   Widget _buildOverview() {
-    if (widget.series.description == null || widget.series.description!.isEmpty) {
+    if (widget.series.description == null ||
+        widget.series.description!.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -342,10 +330,7 @@ class _NetflixStyleTvSeriesDetailScreenState extends State<NetflixStyleTvSeriesD
         const SizedBox(height: 8),
         Text(
           widget.series.description!,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.white70,
-          ),
+          style: const TextStyle(fontSize: 14, color: Colors.white70),
         ),
       ],
     );
@@ -392,12 +377,13 @@ class _NetflixStyleTvSeriesDetailScreenState extends State<NetflixStyleTvSeriesD
                     _selectedSeason = value;
                   });
                 },
-                items: _seasons.map((season) {
-                  return DropdownMenuItem<int>(
-                    value: season,
-                    child: Text('Season $season'),
-                  );
-                }).toList(),
+                items:
+                    _seasons.map((season) {
+                      return DropdownMenuItem<int>(
+                        value: season,
+                        child: Text('Season $season'),
+                      );
+                    }).toList(),
               ),
             ),
           ),
@@ -410,19 +396,26 @@ class _NetflixStyleTvSeriesDetailScreenState extends State<NetflixStyleTvSeriesD
     if (_episodes.isEmpty) {
       return const Padding(
         padding: EdgeInsets.all(16.0),
-        child: Center(child: Text('No episodes found', style: TextStyle(color: Colors.white))),
+        child: Center(
+          child: Text(
+            'No episodes found',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
       );
     }
 
     if (_selectedSeason == null) {
       return const Padding(
         padding: EdgeInsets.all(16.0),
-        child: Center(child: Text('Select a season', style: TextStyle(color: Colors.white))),
+        child: Center(
+          child: Text('Select a season', style: TextStyle(color: Colors.white)),
+        ),
       );
     }
 
     final seasonEpisodes = _seasonEpisodes[_selectedSeason] ?? [];
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ListView.builder(
@@ -438,9 +431,8 @@ class _NetflixStyleTvSeriesDetailScreenState extends State<NetflixStyleTvSeriesD
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TvEpisodePlayerScreen(
-                      episode: episode,
-                    ),
+                    builder:
+                        (context) => TvEpisodePlayerScreen(episode: episode),
                   ),
                 );
               },
@@ -471,19 +463,28 @@ class _NetflixStyleTvSeriesDetailScreenState extends State<NetflixStyleTvSeriesD
                           aspectRatio: 16 / 9,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(4),
-                            child: episode.coverUrl != null && episode.coverUrl!.isNotEmpty
-                                ? Image.network(
-                                    episode.coverUrl!,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Container(
+                            child:
+                                episode.coverUrl != null &&
+                                        episode.coverUrl!.isNotEmpty
+                                    ? Image.network(
+                                      episode.coverUrl!,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (_, __, ___) => Container(
+                                            color: Colors.grey[800],
+                                            child: const Icon(
+                                              Icons.movie,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                    )
+                                    : Container(
                                       color: Colors.grey[800],
-                                      child: const Icon(Icons.movie, color: Colors.white),
+                                      child: const Icon(
+                                        Icons.movie,
+                                        color: Colors.white,
+                                      ),
                                     ),
-                                  )
-                                : Container(
-                                    color: Colors.grey[800],
-                                    child: const Icon(Icons.movie, color: Colors.white),
-                                  ),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -497,7 +498,8 @@ class _NetflixStyleTvSeriesDetailScreenState extends State<NetflixStyleTvSeriesD
                         ),
                         const SizedBox(height: 4),
                         // Duration if available
-                        if (episode.duration != null && episode.duration!.isNotEmpty)
+                        if (episode.duration != null &&
+                            episode.duration!.isNotEmpty)
                           Text(
                             episode.duration!,
                             style: const TextStyle(
@@ -510,14 +512,17 @@ class _NetflixStyleTvSeriesDetailScreenState extends State<NetflixStyleTvSeriesD
                   ),
                   // Play button
                   IconButton(
-                    icon: const Icon(Icons.play_circle_outline, color: Colors.white),
+                    icon: const Icon(
+                      Icons.play_circle_outline,
+                      color: Colors.white,
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => TvEpisodePlayerScreen(
-                            episode: episode,
-                          ),
+                          builder:
+                              (context) =>
+                                  TvEpisodePlayerScreen(episode: episode),
                         ),
                       );
                     },

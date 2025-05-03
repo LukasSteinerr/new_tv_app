@@ -127,21 +127,109 @@ class _MoviesScreenState extends State<MoviesScreen> {
       children: [
         // Featured Movie - Netflix style
         if (_featuredMovie != null)
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20.0,
-              vertical: 10.0,
-            ),
-            child: FeaturedContent(
-              title: _featuredMovie!.name,
-              description: _featuredMovie!.description,
-              tmdbId: _featuredMovie!.tmdbId,
-              fallbackImageUrl: _featuredMovie!.coverUrl,
-              year: _featuredMovie!.year,
-              rating: _featuredMovie!.rating,
-              isMovie: true,
-              onTap: () => _navigateToMovie(_featuredMovie!),
-            ),
+          FeaturedContent(
+            title: _featuredMovie!.name,
+            description: _featuredMovie!.description,
+            tmdbId: _featuredMovie!.tmdbId,
+            fallbackImageUrl: _featuredMovie!.coverUrl,
+            year: _featuredMovie!.year,
+            rating: _featuredMovie!.rating,
+            isMovie: true,
+            onTap: () => _navigateToMovie(_featuredMovie!),
+            onInfoTap: () => _navigateToMovie(_featuredMovie!),
+            onMyListTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Added to My List: ${_featuredMovie!.name}'),
+                ),
+              );
+            },
+            // Optional: Add more movies for PageView
+            additionalContent:
+                _categoryMovies.values
+                    .expand((movies) => movies)
+                    .where(
+                      (movie) =>
+                          movie.id != _featuredMovie!.id &&
+                          movie.tmdbId != null &&
+                          movie.tmdbId!.isNotEmpty,
+                    )
+                    .take(5)
+                    .map(
+                      (movie) => {
+                        'title': movie.name,
+                        'description': movie.description,
+                        'backdropUrl': null, // Will be loaded by TMDB service
+                        'fallbackImageUrl': movie.coverUrl,
+                        'year': movie.year,
+                        'rating': movie.rating,
+                        'isMovie': true,
+                        'id':
+                            movie
+                                .id, // Store the ID to identify the movie later
+                        'tmdbId':
+                            movie.tmdbId, // Include TMDB ID for image loading
+                      },
+                    )
+                    .toList(),
+            // Add callbacks for additional content
+            onAdditionalContentTap: (index) {
+              final additionalMovies =
+                  _categoryMovies.values
+                      .expand((movies) => movies)
+                      .where(
+                        (movie) =>
+                            movie.id != _featuredMovie!.id &&
+                            movie.tmdbId != null &&
+                            movie.tmdbId!.isNotEmpty,
+                      )
+                      .take(5)
+                      .toList();
+
+              if (index < additionalMovies.length) {
+                _navigateToMovie(additionalMovies[index]);
+              }
+            },
+            onAdditionalContentInfoTap: (index) {
+              final additionalMovies =
+                  _categoryMovies.values
+                      .expand((movies) => movies)
+                      .where(
+                        (movie) =>
+                            movie.id != _featuredMovie!.id &&
+                            movie.tmdbId != null &&
+                            movie.tmdbId!.isNotEmpty,
+                      )
+                      .take(5)
+                      .toList();
+
+              if (index < additionalMovies.length) {
+                _navigateToMovie(additionalMovies[index]);
+              }
+            },
+            onAdditionalContentMyListTap: (index) {
+              final additionalMovies =
+                  _categoryMovies.values
+                      .expand((movies) => movies)
+                      .where(
+                        (movie) =>
+                            movie.id != _featuredMovie!.id &&
+                            movie.tmdbId != null &&
+                            movie.tmdbId!.isNotEmpty,
+                      )
+                      .take(5)
+                      .toList();
+
+              if (index < additionalMovies.length) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Added to My List: ${additionalMovies[index].name}',
+                    ),
+                  ),
+                );
+              }
+            },
           ),
 
         // Category Carousels
