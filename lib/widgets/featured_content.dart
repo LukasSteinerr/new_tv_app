@@ -380,7 +380,7 @@ class _FeaturedContentState extends State<FeaturedContent> {
             ),
           ),
 
-          // Content info - positioned at top for title
+          // Content info - positioned at top (title removed)
           Positioned(
             top: 20,
             left: 20,
@@ -388,24 +388,6 @@ class _FeaturedContentState extends State<FeaturedContent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Title
-                Text(
-                  widget.title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    shadows: [
-                      Shadow(
-                        blurRadius: 10.0,
-                        color: Colors.black,
-                        offset: Offset(2.0, 2.0),
-                      ),
-                    ],
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
                 if (widget.year != null || widget.rating != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
@@ -628,7 +610,7 @@ class _FeaturedContentState extends State<FeaturedContent> {
                   ),
                 ),
 
-                // Content info
+                // Content info (title removed)
                 Positioned(
                   top: 20,
                   left: 20,
@@ -636,24 +618,6 @@ class _FeaturedContentState extends State<FeaturedContent> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Title
-                      Text(
-                        item['title'] ?? '',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          shadows: [
-                            Shadow(
-                              blurRadius: 10.0,
-                              color: Colors.black,
-                              offset: Offset(2.0, 2.0),
-                            ),
-                          ],
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
                       if (item['year'] != null || item['rating'] != null)
                         Padding(
                           padding: const EdgeInsets.only(top: 8.0),
