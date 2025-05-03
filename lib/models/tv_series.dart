@@ -14,10 +14,11 @@ class TvSeries {
   String? year;
   String? rating;
   String? seriesId;
-  
+  String? tmdbId;
+
   final category = ToOne<Category>();
   final playlist = ToOne<Playlist>();
-  
+
   @Backlink('series')
   final episodes = ToMany<TvEpisode>();
 
@@ -28,5 +29,6 @@ class TvSeries {
     this.year,
     this.rating,
     this.seriesId,
+    this.tmdbId,
   });
 }

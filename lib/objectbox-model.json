@@ -131,7 +131,7 @@
     },
     {
       "id": "4:7285596459614028247",
-      "lastPropertyId": "11:8402733163535034087",
+      "lastPropertyId": "12:6282617763145604509",
       "name": "Movie",
       "properties": [
         {
@@ -195,6 +195,11 @@
           "flags": 520,
           "indexId": "5:1141124170263337572",
           "relationTarget": "Playlist"
+        },
+        {
+          "id": "12:6282617763145604509",
+          "name": "tmdbId",
+          "type": 9
         }
       ],
       "relations": []
@@ -263,7 +268,7 @@
     },
     {
       "id": "6:4381905975208352576",
-      "lastPropertyId": "9:7785102120040485257",
+      "lastPropertyId": "10:2739829902393060728",
       "name": "TvSeries",
       "properties": [
         {
@@ -317,6 +322,11 @@
           "flags": 520,
           "indexId": "8:4248628634840899570",
           "relationTarget": "Playlist"
+        },
+        {
+          "id": "10:2739829902393060728",
+          "name": "tmdbId",
+          "type": 9
         }
       ],
       "relations": []

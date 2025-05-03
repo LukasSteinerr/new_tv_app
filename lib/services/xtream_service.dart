@@ -171,6 +171,7 @@ class XtreamService {
         duration: movieData['duration'] ?? '',
         rating: movieData['rating'] ?? '',
         streamId: movieData['stream_id'].toString(),
+        tmdbId: movieData['tmdb']?.toString(),
       );
 
       movie.playlist.target = playlist;
@@ -241,6 +242,7 @@ class XtreamService {
         year: seriesData['year'] ?? '',
         rating: seriesData['rating'] ?? '',
         seriesId: seriesData['series_id'].toString(),
+        tmdbId: seriesData['tmdb']?.toString(),
       );
 
       series.playlist.target = playlist;
