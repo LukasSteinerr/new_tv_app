@@ -40,7 +40,6 @@ class _M3uPlaylistScreen extends StatefulWidget {
   final Playlist playlist;
 
   const _M3uPlaylistScreen({
-    super.key,
     required this.playlistService,
     required this.playlist,
   });

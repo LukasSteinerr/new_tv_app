@@ -7,8 +7,7 @@ class TvSeriesCard extends StatelessWidget {
   final TvSeries series;
   final VoidCallback onTap;
 
-  const TvSeriesCard({Key? key, required this.series, required this.onTap})
-    : super(key: key);
+  const TvSeriesCard({super.key, required this.series, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

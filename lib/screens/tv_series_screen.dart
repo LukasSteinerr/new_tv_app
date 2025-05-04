@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import '../models/playlist.dart';
 import '../models/tv_series.dart';
 import '../models/category.dart';
@@ -14,10 +15,10 @@ class TvSeriesScreen extends StatefulWidget {
   final Playlist playlist;
 
   const TvSeriesScreen({
-    Key? key,
+    super.key,
     required this.playlistService,
     required this.playlist,
-  }) : super(key: key);
+  });
 
   @override
   State<TvSeriesScreen> createState() => _TvSeriesScreenState();
@@ -127,137 +128,214 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
       return const Center(child: Text('No TV series found'));
     }
 
-    return ListView(
-      children: [
-        // Featured Series - Netflix style
-        if (_featuredSeries != null)
-          FeaturedContent(
-            title: _featuredSeries!.name,
-            description: _featuredSeries!.description,
-            tmdbId: _featuredSeries!.tmdbId,
-            fallbackImageUrl: _featuredSeries!.coverUrl,
-            year: _featuredSeries!.year,
-            rating: _featuredSeries!.rating,
-            isMovie: false,
-            onTap: () => _navigateToSeries(_featuredSeries!),
-            onInfoTap: () => _navigateToSeries(_featuredSeries!),
-            onMyListTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Added to My List: ${_featuredSeries!.name}'),
+    return Scaffold(
+      // Remove the standard app bar
+      extendBodyBehindAppBar: true, // Allow content to go behind app bar
+      body: Stack(
+        children: [
+          // Main content
+          ListView(
+            padding: const EdgeInsets.only(
+              top: 70,
+            ), // Add padding for the app bar
+            children: [
+              // Featured Series - Netflix style
+              if (_featuredSeries != null)
+                FeaturedContent(
+                  title: _featuredSeries!.name,
+                  description: _featuredSeries!.description,
+                  tmdbId: _featuredSeries!.tmdbId,
+                  fallbackImageUrl: _featuredSeries!.coverUrl,
+                  year: _featuredSeries!.year,
+                  rating: _featuredSeries!.rating,
+                  isMovie: false,
+                  onTap: () => _navigateToSeries(_featuredSeries!),
+                  onInfoTap: () => _navigateToSeries(_featuredSeries!),
+                  onMyListTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Added to My List: ${_featuredSeries!.name}',
+                        ),
+                      ),
+                    );
+                  },
+                  // Optional: Add more series for PageView
+                  additionalContent:
+                      _categorySeries.values
+                          .expand((series) => series)
+                          .where(
+                            (series) =>
+                                series.id != _featuredSeries!.id &&
+                                series.tmdbId != null &&
+                                series.tmdbId!.isNotEmpty,
+                          )
+                          .take(5)
+                          .map(
+                            (series) => {
+                              'title': series.name,
+                              'description': series.description,
+                              'backdropUrl':
+                                  null, // Will be loaded by TMDB service
+                              'fallbackImageUrl': series.coverUrl,
+                              'year': series.year,
+                              'rating': series.rating,
+                              'isMovie': false,
+                              'id':
+                                  series
+                                      .id, // Store the ID to identify the series later
+                              'tmdbId':
+                                  series
+                                      .tmdbId, // Include TMDB ID for image loading
+                            },
+                          )
+                          .toList(),
+                  // Add callbacks for additional content
+                  onAdditionalContentTap: (index) {
+                    final additionalSeries =
+                        _categorySeries.values
+                            .expand((series) => series)
+                            .where(
+                              (series) =>
+                                  series.id != _featuredSeries!.id &&
+                                  series.tmdbId != null &&
+                                  series.tmdbId!.isNotEmpty,
+                            )
+                            .take(5)
+                            .toList();
+
+                    if (index < additionalSeries.length) {
+                      _navigateToSeries(additionalSeries[index]);
+                    }
+                  },
+                  onAdditionalContentInfoTap: (index) {
+                    final additionalSeries =
+                        _categorySeries.values
+                            .expand((series) => series)
+                            .where(
+                              (series) =>
+                                  series.id != _featuredSeries!.id &&
+                                  series.tmdbId != null &&
+                                  series.tmdbId!.isNotEmpty,
+                            )
+                            .take(5)
+                            .toList();
+
+                    if (index < additionalSeries.length) {
+                      _navigateToSeries(additionalSeries[index]);
+                    }
+                  },
+                  onAdditionalContentMyListTap: (index) {
+                    final additionalSeries =
+                        _categorySeries.values
+                            .expand((series) => series)
+                            .where(
+                              (series) =>
+                                  series.id != _featuredSeries!.id &&
+                                  series.tmdbId != null &&
+                                  series.tmdbId!.isNotEmpty,
+                            )
+                            .take(5)
+                            .toList();
+
+                    if (index < additionalSeries.length) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Added to My List: ${additionalSeries[index].name}',
+                          ),
+                        ),
+                      );
+                    }
+                  },
                 ),
-              );
-            },
-            // Optional: Add more series for PageView
-            additionalContent:
-                _categorySeries.values
-                    .expand((series) => series)
-                    .where(
-                      (series) =>
-                          series.id != _featuredSeries!.id &&
-                          series.tmdbId != null &&
-                          series.tmdbId!.isNotEmpty,
-                    )
-                    .take(5)
-                    .map(
-                      (series) => {
-                        'title': series.name,
-                        'description': series.description,
-                        'backdropUrl': null, // Will be loaded by TMDB service
-                        'fallbackImageUrl': series.coverUrl,
-                        'year': series.year,
-                        'rating': series.rating,
-                        'isMovie': false,
-                        'id':
-                            series
-                                .id, // Store the ID to identify the series later
-                        'tmdbId':
-                            series.tmdbId, // Include TMDB ID for image loading
-                      },
-                    )
-                    .toList(),
-            // Add callbacks for additional content
-            onAdditionalContentTap: (index) {
-              final additionalSeries =
-                  _categorySeries.values
-                      .expand((series) => series)
-                      .where(
-                        (series) =>
-                            series.id != _featuredSeries!.id &&
-                            series.tmdbId != null &&
-                            series.tmdbId!.isNotEmpty,
-                      )
-                      .take(5)
-                      .toList();
 
-              if (index < additionalSeries.length) {
-                _navigateToSeries(additionalSeries[index]);
-              }
-            },
-            onAdditionalContentInfoTap: (index) {
-              final additionalSeries =
-                  _categorySeries.values
-                      .expand((series) => series)
-                      .where(
-                        (series) =>
-                            series.id != _featuredSeries!.id &&
-                            series.tmdbId != null &&
-                            series.tmdbId!.isNotEmpty,
-                      )
-                      .take(5)
-                      .toList();
+              // Category Carousels
+              ..._categories.map((category) {
+                final seriesList = _categorySeries[category.id] ?? [];
+                if (seriesList.isEmpty) {
+                  return const SizedBox.shrink();
+                }
 
-              if (index < additionalSeries.length) {
-                _navigateToSeries(additionalSeries[index]);
-              }
-            },
-            onAdditionalContentMyListTap: (index) {
-              final additionalSeries =
-                  _categorySeries.values
-                      .expand((series) => series)
-                      .where(
-                        (series) =>
-                            series.id != _featuredSeries!.id &&
-                            series.tmdbId != null &&
-                            series.tmdbId!.isNotEmpty,
-                      )
-                      .take(5)
-                      .toList();
-
-              if (index < additionalSeries.length) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Added to My List: ${additionalSeries[index].name}',
-                    ),
-                  ),
+                return ContentCarousel<TvSeries>(
+                  title: category.name,
+                  items: seriesList,
+                  itemBuilder:
+                      (series) => TvSeriesCard(
+                        series: series,
+                        onTap: () => _navigateToSeries(series),
+                      ),
+                  onSeeAllPressed:
+                      () => _navigateToSeeAll(category, seriesList),
                 );
-              }
-            },
+              }),
+
+              // Add some padding at the bottom
+              const SizedBox(height: 20),
+            ],
           ),
 
-        // Category Carousels
-        ..._categories.map((category) {
-          final seriesList = _categorySeries[category.id] ?? [];
-          if (seriesList.isEmpty) {
-            return const SizedBox.shrink();
-          }
-
-          return ContentCarousel<TvSeries>(
-            title: category.name,
-            items: seriesList,
-            itemBuilder:
-                (series) => TvSeriesCard(
-                  series: series,
-                  onTap: () => _navigateToSeries(series),
+          // Custom app bar with blur effect
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Container(
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(150),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withAlpha(50),
+                        blurRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          // Back button
+                          IconButton(
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
+                            ),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                          const SizedBox(width: 8),
+                          // Title - Show playlist name
+                          Text(
+                            widget.playlist.name,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const Spacer(),
+                          // Search button
+                          IconButton(
+                            icon: const Icon(Icons.search, color: Colors.white),
+                            onPressed: () {
+                              // Add search functionality here
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-            onSeeAllPressed: () => _navigateToSeeAll(category, seriesList),
-          );
-        }),
-
-        // Add some padding at the bottom
-        const SizedBox(height: 20),
-      ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -6,10 +6,7 @@ import '../models/movie.dart';
 class MoviePlayerScreen extends StatefulWidget {
   final Movie movie;
 
-  const MoviePlayerScreen({
-    Key? key,
-    required this.movie,
-  }) : super(key: key);
+  const MoviePlayerScreen({super.key, required this.movie});
 
   @override
   State<MoviePlayerScreen> createState() => _MoviePlayerScreenState();
@@ -23,13 +20,13 @@ class _MoviePlayerScreenState extends State<MoviePlayerScreen> {
   void initState() {
     super.initState();
     _initializePlayer();
-    
+
     // Set landscape orientation
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    
+
     // Hide status bar and navigation
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
@@ -40,15 +37,9 @@ class _MoviePlayerScreenState extends State<MoviePlayerScreen> {
       hwAcc: HwAcc.full,
       autoPlay: true,
       options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
+        advanced: VlcAdvancedOptions([VlcAdvancedOptions.networkCaching(2000)]),
+        http: VlcHttpOptions([VlcHttpOptions.httpReconnect(true)]),
+        rtp: VlcRtpOptions([VlcRtpOptions.rtpOverRtsp(true)]),
       ),
     );
   }
@@ -56,16 +47,14 @@ class _MoviePlayerScreenState extends State<MoviePlayerScreen> {
   @override
   void dispose() {
     _controller.dispose();
-    
+
     // Reset orientation and UI mode when leaving the player
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
     );
-    
+
     super.dispose();
   }
 
@@ -79,12 +68,13 @@ class _MoviePlayerScreenState extends State<MoviePlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: _isFullScreen
-          ? null
-          : AppBar(
-              title: Text(widget.movie.name),
-              backgroundColor: Colors.black,
-            ),
+      appBar:
+          _isFullScreen
+              ? null
+              : AppBar(
+                title: Text(widget.movie.name),
+                backgroundColor: Colors.black,
+              ),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -96,7 +86,9 @@ class _MoviePlayerScreenState extends State<MoviePlayerScreen> {
                   VlcPlayer(
                     controller: _controller,
                     aspectRatio: 16 / 9,
-                    placeholder: const Center(child: CircularProgressIndicator()),
+                    placeholder: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
                   ),
                   Positioned(
                     bottom: 0,
@@ -107,7 +99,9 @@ class _MoviePlayerScreenState extends State<MoviePlayerScreen> {
                 ],
               ),
             ),
-            if (!_isFullScreen && widget.movie.description != null && widget.movie.description!.isNotEmpty)
+            if (!_isFullScreen &&
+                widget.movie.description != null &&
+                widget.movie.description!.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -123,17 +117,20 @@ class _MoviePlayerScreenState extends State<MoviePlayerScreen> {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        if (widget.movie.year != null && widget.movie.year!.isNotEmpty)
+                        if (widget.movie.year != null &&
+                            widget.movie.year!.isNotEmpty)
                           Padding(
                             padding: const EdgeInsets.only(right: 16.0),
                             child: Text('Year: ${widget.movie.year}'),
                           ),
-                        if (widget.movie.duration != null && widget.movie.duration!.isNotEmpty)
+                        if (widget.movie.duration != null &&
+                            widget.movie.duration!.isNotEmpty)
                           Padding(
                             padding: const EdgeInsets.only(right: 16.0),
                             child: Text('Duration: ${widget.movie.duration}'),
                           ),
-                        if (widget.movie.rating != null && widget.movie.rating!.isNotEmpty)
+                        if (widget.movie.rating != null &&
+                            widget.movie.rating!.isNotEmpty)
                           Text('Rating: ${widget.movie.rating}'),
                       ],
                     ),
@@ -164,15 +161,16 @@ class _MoviePlayerScreenState extends State<MoviePlayerScreen> {
             IconButton(
               icon: const Icon(Icons.replay_10),
               color: Colors.white,
-              onPressed: () => _controller.seekTo(Duration(
-                seconds: _controller.value.position.inSeconds - 10,
-              )),
+              onPressed:
+                  () => _controller.seekTo(
+                    Duration(
+                      seconds: _controller.value.position.inSeconds - 10,
+                    ),
+                  ),
             ),
             IconButton(
               icon: Icon(
-                _controller.value.isPlaying
-                    ? Icons.pause
-                    : Icons.play_arrow,
+                _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
               ),
               color: Colors.white,
               onPressed: () {
@@ -187,12 +185,17 @@ class _MoviePlayerScreenState extends State<MoviePlayerScreen> {
             IconButton(
               icon: const Icon(Icons.forward_10),
               color: Colors.white,
-              onPressed: () => _controller.seekTo(Duration(
-                seconds: _controller.value.position.inSeconds + 10,
-              )),
+              onPressed:
+                  () => _controller.seekTo(
+                    Duration(
+                      seconds: _controller.value.position.inSeconds + 10,
+                    ),
+                  ),
             ),
             IconButton(
-              icon: Icon(_isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen),
+              icon: Icon(
+                _isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
+              ),
               color: Colors.white,
               onPressed: _toggleFullScreen,
             ),

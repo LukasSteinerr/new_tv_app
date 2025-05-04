@@ -7,8 +7,7 @@ class MovieCard extends StatelessWidget {
   final Movie movie;
   final VoidCallback onTap;
 
-  const MovieCard({Key? key, required this.movie, required this.onTap})
-    : super(key: key);
+  const MovieCard({super.key, required this.movie, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

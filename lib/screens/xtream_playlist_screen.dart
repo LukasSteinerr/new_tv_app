@@ -12,10 +12,10 @@ class XtreamPlaylistScreen extends StatefulWidget {
   final Playlist playlist;
 
   const XtreamPlaylistScreen({
-    Key? key,
+    super.key,
     required this.playlistService,
     required this.playlist,
-  }) : super(key: key);
+  });
 
   @override
   State<XtreamPlaylistScreen> createState() => _XtreamPlaylistScreenState();
@@ -75,7 +75,6 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.playlist.name)),
       body:
           _isLoading
               ? Center(

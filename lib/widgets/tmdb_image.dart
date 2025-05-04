@@ -16,7 +16,7 @@ class TMDBImage extends StatefulWidget {
   final bool isMovie; // true for movies, false for TV shows
 
   const TMDBImage({
-    Key? key,
+    super.key,
     required this.tmdbId,
     this.fallbackUrl,
     required this.width,
@@ -25,7 +25,7 @@ class TMDBImage extends StatefulWidget {
     this.loadingBuilder,
     this.errorBuilder,
     this.isMovie = true,
-  }) : super(key: key);
+  });
 
   @override
   State<TMDBImage> createState() => _TMDBImageState();

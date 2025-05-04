@@ -6,10 +6,7 @@ import '../models/tv_episode.dart';
 class TvEpisodePlayerScreen extends StatefulWidget {
   final TvEpisode episode;
 
-  const TvEpisodePlayerScreen({
-    Key? key,
-    required this.episode,
-  }) : super(key: key);
+  const TvEpisodePlayerScreen({super.key, required this.episode});
 
   @override
   State<TvEpisodePlayerScreen> createState() => _TvEpisodePlayerScreenState();
@@ -23,13 +20,13 @@ class _TvEpisodePlayerScreenState extends State<TvEpisodePlayerScreen> {
   void initState() {
     super.initState();
     _initializePlayer();
-    
+
     // Set landscape orientation
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    
+
     // Hide status bar and navigation
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
@@ -40,15 +37,9 @@ class _TvEpisodePlayerScreenState extends State<TvEpisodePlayerScreen> {
       hwAcc: HwAcc.full,
       autoPlay: true,
       options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
+        advanced: VlcAdvancedOptions([VlcAdvancedOptions.networkCaching(2000)]),
+        http: VlcHttpOptions([VlcHttpOptions.httpReconnect(true)]),
+        rtp: VlcRtpOptions([VlcRtpOptions.rtpOverRtsp(true)]),
       ),
     );
   }
@@ -56,16 +47,14 @@ class _TvEpisodePlayerScreenState extends State<TvEpisodePlayerScreen> {
   @override
   void dispose() {
     _controller.dispose();
-    
+
     // Reset orientation and UI mode when leaving the player
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
     );
-    
+
     super.dispose();
   }
 
@@ -78,15 +67,16 @@ class _TvEpisodePlayerScreenState extends State<TvEpisodePlayerScreen> {
   @override
   Widget build(BuildContext context) {
     final seriesName = widget.episode.series.target?.name ?? '';
-    
+
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: _isFullScreen
-          ? null
-          : AppBar(
-              title: Text('${seriesName} - ${widget.episode.title}'),
-              backgroundColor: Colors.black,
-            ),
+      appBar:
+          _isFullScreen
+              ? null
+              : AppBar(
+                title: Text('$seriesName - ${widget.episode.title}'),
+                backgroundColor: Colors.black,
+              ),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -98,7 +88,9 @@ class _TvEpisodePlayerScreenState extends State<TvEpisodePlayerScreen> {
                   VlcPlayer(
                     controller: _controller,
                     aspectRatio: 16 / 9,
-                    placeholder: const Center(child: CircularProgressIndicator()),
+                    placeholder: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
                   ),
                   Positioned(
                     bottom: 0,
@@ -109,7 +101,9 @@ class _TvEpisodePlayerScreenState extends State<TvEpisodePlayerScreen> {
                 ],
               ),
             ),
-            if (!_isFullScreen && widget.episode.description != null && widget.episode.description!.isNotEmpty)
+            if (!_isFullScreen &&
+                widget.episode.description != null &&
+                widget.episode.description!.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -125,12 +119,10 @@ class _TvEpisodePlayerScreenState extends State<TvEpisodePlayerScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'Season ${widget.episode.seasonNumber} Episode ${widget.episode.episodeNumber}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
                     ),
-                    if (widget.episode.duration != null && widget.episode.duration!.isNotEmpty)
+                    if (widget.episode.duration != null &&
+                        widget.episode.duration!.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text('Duration: ${widget.episode.duration}'),
@@ -162,15 +154,16 @@ class _TvEpisodePlayerScreenState extends State<TvEpisodePlayerScreen> {
             IconButton(
               icon: const Icon(Icons.replay_10),
               color: Colors.white,
-              onPressed: () => _controller.seekTo(Duration(
-                seconds: _controller.value.position.inSeconds - 10,
-              )),
+              onPressed:
+                  () => _controller.seekTo(
+                    Duration(
+                      seconds: _controller.value.position.inSeconds - 10,
+                    ),
+                  ),
             ),
             IconButton(
               icon: Icon(
-                _controller.value.isPlaying
-                    ? Icons.pause
-                    : Icons.play_arrow,
+                _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
               ),
               color: Colors.white,
               onPressed: () {
@@ -185,12 +178,17 @@ class _TvEpisodePlayerScreenState extends State<TvEpisodePlayerScreen> {
             IconButton(
               icon: const Icon(Icons.forward_10),
               color: Colors.white,
-              onPressed: () => _controller.seekTo(Duration(
-                seconds: _controller.value.position.inSeconds + 10,
-              )),
+              onPressed:
+                  () => _controller.seekTo(
+                    Duration(
+                      seconds: _controller.value.position.inSeconds + 10,
+                    ),
+                  ),
             ),
             IconButton(
-              icon: Icon(_isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen),
+              icon: Icon(
+                _isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
+              ),
               color: Colors.white,
               onPressed: _toggleFullScreen,
             ),

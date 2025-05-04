@@ -7,8 +7,7 @@ import 'movie_player_screen.dart';
 class NetflixStyleMovieDetailScreen extends StatefulWidget {
   final Movie movie;
 
-  const NetflixStyleMovieDetailScreen({Key? key, required this.movie})
-    : super(key: key);
+  const NetflixStyleMovieDetailScreen({super.key, required this.movie});
 
   @override
   State<NetflixStyleMovieDetailScreen> createState() =>

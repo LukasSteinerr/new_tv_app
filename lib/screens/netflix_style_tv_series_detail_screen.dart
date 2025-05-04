@@ -11,10 +11,10 @@ class NetflixStyleTvSeriesDetailScreen extends StatefulWidget {
   final TvSeries series;
 
   const NetflixStyleTvSeriesDetailScreen({
-    Key? key,
+    super.key,
     required this.playlistService,
     required this.series,
-  }) : super(key: key);
+  });
 
   @override
   State<NetflixStyleTvSeriesDetailScreen> createState() =>

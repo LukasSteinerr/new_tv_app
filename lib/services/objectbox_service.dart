@@ -7,7 +7,6 @@ import '../models/movie.dart';
 import '../models/tv_series.dart';
 import '../models/tv_episode.dart';
 import '../objectbox.g.dart';
-import 'package:objectbox/objectbox.dart';
 
 class ObjectBoxService {
   static ObjectBoxService? _instance;

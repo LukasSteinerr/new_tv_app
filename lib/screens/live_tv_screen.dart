@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import '../models/playlist.dart';
 import '../models/channel.dart';
 import '../models/category.dart';
@@ -11,10 +12,10 @@ class LiveTvScreen extends StatefulWidget {
   final Playlist playlist;
 
   const LiveTvScreen({
-    Key? key,
+    super.key,
     required this.playlistService,
     required this.playlist,
-  }) : super(key: key);
+  });
 
   @override
   State<LiveTvScreen> createState() => _LiveTvScreenState();
@@ -120,119 +121,199 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Categories horizontal list
-        SizedBox(
-          height: 50,
-          child:
-              _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _categories.length + 1, // +1 for "All" option
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
-                        // "All" option
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: ChoiceChip(
-                            label: const Text('All'),
-                            selected: _selectedCategory == null,
-                            onSelected: (selected) {
-                              if (selected) {
-                                _selectCategory(null);
-                              }
-                            },
-                          ),
-                        );
-                      } else {
-                        final category = _categories[index - 1];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: ChoiceChip(
-                            label: Text(category.name),
-                            selected: _selectedCategory?.id == category.id,
-                            onSelected: (selected) {
-                              if (selected) {
-                                _selectCategory(category);
-                              }
-                            },
-                          ),
-                        );
-                      }
-                    },
-                  ),
-        ),
+    return Scaffold(
+      // Remove the standard app bar
+      extendBodyBehindAppBar: true, // Allow content to go behind app bar
+      body: Stack(
+        children: [
+          // Main content
+          Column(
+            children: [
+              // Add padding at the top to account for the app bar
+              const SizedBox(height: 70),
+              // Categories horizontal list
+              SizedBox(
+                height: 50,
+                child:
+                    _isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount:
+                              _categories.length + 1, // +1 for "All" option
+                          itemBuilder: (context, index) {
+                            if (index == 0) {
+                              // "All" option
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4.0,
+                                ),
+                                child: ChoiceChip(
+                                  label: const Text('All'),
+                                  selected: _selectedCategory == null,
+                                  onSelected: (selected) {
+                                    if (selected) {
+                                      _selectCategory(null);
+                                    }
+                                  },
+                                ),
+                              );
+                            } else {
+                              final category = _categories[index - 1];
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4.0,
+                                ),
+                                child: ChoiceChip(
+                                  label: Text(category.name),
+                                  selected:
+                                      _selectedCategory?.id == category.id,
+                                  onSelected: (selected) {
+                                    if (selected) {
+                                      _selectCategory(category);
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                          },
+                        ),
+              ),
 
-        // Category title and See All button
-        if (!_isLoading && _channels.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  _selectedCategory?.name ?? 'All Channels',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+              // Category title and See All button
+              if (!_isLoading && _channels.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _selectedCategory?.name ?? 'All Channels',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: _navigateToSeeAllChannels,
+                        child: const Text('See All'),
+                      ),
+                    ],
                   ),
                 ),
-                TextButton(
-                  onPressed: _navigateToSeeAllChannels,
-                  child: const Text('See All'),
-                ),
-              ],
-            ),
+
+              // Channels list
+              Expanded(
+                child:
+                    _isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : _channels.isEmpty
+                        ? const Center(child: Text('No channels found'))
+                        : ListView.builder(
+                          itemCount: _channels.length,
+                          itemBuilder: (context, index) {
+                            final channel = _channels[index];
+                            return ListTile(
+                              leading:
+                                  channel.logoUrl != null &&
+                                          channel.logoUrl!.isNotEmpty
+                                      ? CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                          channel.logoUrl!,
+                                        ),
+                                        onBackgroundImageError: (_, __) {},
+                                        child:
+                                            channel.logoUrl == null ||
+                                                    channel.logoUrl!.isEmpty
+                                                ? const Icon(Icons.tv)
+                                                : null,
+                                      )
+                                      : const CircleAvatar(
+                                        child: Icon(Icons.tv),
+                                      ),
+                              title: Text(channel.name),
+                              subtitle:
+                                  channel.category.target != null
+                                      ? Text(channel.category.target!.name)
+                                      : null,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) =>
+                                            PlayerScreen(channel: channel),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+              ),
+            ],
           ),
 
-        // Channels list
-        Expanded(
-          child:
-              _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _channels.isEmpty
-                  ? const Center(child: Text('No channels found'))
-                  : ListView.builder(
-                    itemCount: _channels.length,
-                    itemBuilder: (context, index) {
-                      final channel = _channels[index];
-                      return ListTile(
-                        leading:
-                            channel.logoUrl != null &&
-                                    channel.logoUrl!.isNotEmpty
-                                ? CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                    channel.logoUrl!,
-                                  ),
-                                  onBackgroundImageError: (_, __) {},
-                                  child:
-                                      channel.logoUrl == null ||
-                                              channel.logoUrl!.isEmpty
-                                          ? const Icon(Icons.tv)
-                                          : null,
-                                )
-                                : const CircleAvatar(child: Icon(Icons.tv)),
-                        title: Text(channel.name),
-                        subtitle:
-                            channel.category.target != null
-                                ? Text(channel.category.target!.name)
-                                : null,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (context) => PlayerScreen(channel: channel),
-                            ),
-                          );
-                        },
-                      );
-                    },
+          // Custom app bar with blur effect
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Container(
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(150),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withAlpha(50),
+                        blurRadius: 5,
+                      ),
+                    ],
                   ),
-        ),
-      ],
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          // Back button
+                          IconButton(
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
+                            ),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                          const SizedBox(width: 8),
+                          // Title - Show playlist name
+                          Text(
+                            widget.playlist.name,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const Spacer(),
+                          // Search button
+                          IconButton(
+                            icon: const Icon(Icons.search, color: Colors.white),
+                            onPressed: () {
+                              // Add search functionality here
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

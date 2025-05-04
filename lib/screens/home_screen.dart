@@ -8,7 +8,7 @@ import 'playlist_detail_screen.dart';
 class HomeScreen extends StatefulWidget {
   final PlaylistService playlistService;
 
-  const HomeScreen({Key? key, required this.playlistService}) : super(key: key);
+  const HomeScreen({super.key, required this.playlistService});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();

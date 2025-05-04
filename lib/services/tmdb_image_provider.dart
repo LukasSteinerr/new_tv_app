@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'dart:collection';
 import 'tmdb_service.dart';
 

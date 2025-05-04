@@ -10,10 +10,10 @@ class TvSeriesDetailScreen extends StatefulWidget {
   final TvSeries series;
 
   const TvSeriesDetailScreen({
-    Key? key,
+    super.key,
     required this.playlistService,
     required this.series,
-  }) : super(key: key);
+  });
 
   @override
   State<TvSeriesDetailScreen> createState() => _TvSeriesDetailScreenState();

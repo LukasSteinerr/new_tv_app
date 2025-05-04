@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import '../models/playlist.dart';
 import '../models/movie.dart';
 import '../models/category.dart';
@@ -14,10 +15,10 @@ class MoviesScreen extends StatefulWidget {
   final Playlist playlist;
 
   const MoviesScreen({
-    Key? key,
+    super.key,
     required this.playlistService,
     required this.playlist,
-  }) : super(key: key);
+  });
 
   @override
   State<MoviesScreen> createState() => _MoviesScreenState();
@@ -123,137 +124,213 @@ class _MoviesScreenState extends State<MoviesScreen> {
       return const Center(child: Text('No movies found'));
     }
 
-    return ListView(
-      children: [
-        // Featured Movie - Netflix style
-        if (_featuredMovie != null)
-          FeaturedContent(
-            title: _featuredMovie!.name,
-            description: _featuredMovie!.description,
-            tmdbId: _featuredMovie!.tmdbId,
-            fallbackImageUrl: _featuredMovie!.coverUrl,
-            year: _featuredMovie!.year,
-            rating: _featuredMovie!.rating,
-            isMovie: true,
-            onTap: () => _navigateToMovie(_featuredMovie!),
-            onInfoTap: () => _navigateToMovie(_featuredMovie!),
-            onMyListTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Added to My List: ${_featuredMovie!.name}'),
+    return Scaffold(
+      // Remove the standard app bar
+      extendBodyBehindAppBar: true, // Allow content to go behind app bar
+      body: Stack(
+        children: [
+          // Main content
+          ListView(
+            padding: const EdgeInsets.only(
+              top: 70,
+            ), // Add padding for the app bar
+            children: [
+              // Featured Movie - Netflix style
+              if (_featuredMovie != null)
+                FeaturedContent(
+                  title: _featuredMovie!.name,
+                  description: _featuredMovie!.description,
+                  tmdbId: _featuredMovie!.tmdbId,
+                  fallbackImageUrl: _featuredMovie!.coverUrl,
+                  year: _featuredMovie!.year,
+                  rating: _featuredMovie!.rating,
+                  isMovie: true,
+                  onTap: () => _navigateToMovie(_featuredMovie!),
+                  onInfoTap: () => _navigateToMovie(_featuredMovie!),
+                  onMyListTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Added to My List: ${_featuredMovie!.name}',
+                        ),
+                      ),
+                    );
+                  },
+                  // Optional: Add more movies for PageView
+                  additionalContent:
+                      _categoryMovies.values
+                          .expand((movies) => movies)
+                          .where(
+                            (movie) =>
+                                movie.id != _featuredMovie!.id &&
+                                movie.tmdbId != null &&
+                                movie.tmdbId!.isNotEmpty,
+                          )
+                          .take(5)
+                          .map(
+                            (movie) => {
+                              'title': movie.name,
+                              'description': movie.description,
+                              'backdropUrl':
+                                  null, // Will be loaded by TMDB service
+                              'fallbackImageUrl': movie.coverUrl,
+                              'year': movie.year,
+                              'rating': movie.rating,
+                              'isMovie': true,
+                              'id':
+                                  movie
+                                      .id, // Store the ID to identify the movie later
+                              'tmdbId':
+                                  movie
+                                      .tmdbId, // Include TMDB ID for image loading
+                            },
+                          )
+                          .toList(),
+                  // Add callbacks for additional content
+                  onAdditionalContentTap: (index) {
+                    final additionalMovies =
+                        _categoryMovies.values
+                            .expand((movies) => movies)
+                            .where(
+                              (movie) =>
+                                  movie.id != _featuredMovie!.id &&
+                                  movie.tmdbId != null &&
+                                  movie.tmdbId!.isNotEmpty,
+                            )
+                            .take(5)
+                            .toList();
+
+                    if (index < additionalMovies.length) {
+                      _navigateToMovie(additionalMovies[index]);
+                    }
+                  },
+                  onAdditionalContentInfoTap: (index) {
+                    final additionalMovies =
+                        _categoryMovies.values
+                            .expand((movies) => movies)
+                            .where(
+                              (movie) =>
+                                  movie.id != _featuredMovie!.id &&
+                                  movie.tmdbId != null &&
+                                  movie.tmdbId!.isNotEmpty,
+                            )
+                            .take(5)
+                            .toList();
+
+                    if (index < additionalMovies.length) {
+                      _navigateToMovie(additionalMovies[index]);
+                    }
+                  },
+                  onAdditionalContentMyListTap: (index) {
+                    final additionalMovies =
+                        _categoryMovies.values
+                            .expand((movies) => movies)
+                            .where(
+                              (movie) =>
+                                  movie.id != _featuredMovie!.id &&
+                                  movie.tmdbId != null &&
+                                  movie.tmdbId!.isNotEmpty,
+                            )
+                            .take(5)
+                            .toList();
+
+                    if (index < additionalMovies.length) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Added to My List: ${additionalMovies[index].name}',
+                          ),
+                        ),
+                      );
+                    }
+                  },
                 ),
-              );
-            },
-            // Optional: Add more movies for PageView
-            additionalContent:
-                _categoryMovies.values
-                    .expand((movies) => movies)
-                    .where(
-                      (movie) =>
-                          movie.id != _featuredMovie!.id &&
-                          movie.tmdbId != null &&
-                          movie.tmdbId!.isNotEmpty,
-                    )
-                    .take(5)
-                    .map(
-                      (movie) => {
-                        'title': movie.name,
-                        'description': movie.description,
-                        'backdropUrl': null, // Will be loaded by TMDB service
-                        'fallbackImageUrl': movie.coverUrl,
-                        'year': movie.year,
-                        'rating': movie.rating,
-                        'isMovie': true,
-                        'id':
-                            movie
-                                .id, // Store the ID to identify the movie later
-                        'tmdbId':
-                            movie.tmdbId, // Include TMDB ID for image loading
-                      },
-                    )
-                    .toList(),
-            // Add callbacks for additional content
-            onAdditionalContentTap: (index) {
-              final additionalMovies =
-                  _categoryMovies.values
-                      .expand((movies) => movies)
-                      .where(
-                        (movie) =>
-                            movie.id != _featuredMovie!.id &&
-                            movie.tmdbId != null &&
-                            movie.tmdbId!.isNotEmpty,
-                      )
-                      .take(5)
-                      .toList();
 
-              if (index < additionalMovies.length) {
-                _navigateToMovie(additionalMovies[index]);
-              }
-            },
-            onAdditionalContentInfoTap: (index) {
-              final additionalMovies =
-                  _categoryMovies.values
-                      .expand((movies) => movies)
-                      .where(
-                        (movie) =>
-                            movie.id != _featuredMovie!.id &&
-                            movie.tmdbId != null &&
-                            movie.tmdbId!.isNotEmpty,
-                      )
-                      .take(5)
-                      .toList();
+              // Category Carousels
+              ..._categories.map((category) {
+                final movies = _categoryMovies[category.id] ?? [];
+                if (movies.isEmpty) {
+                  return const SizedBox.shrink();
+                }
 
-              if (index < additionalMovies.length) {
-                _navigateToMovie(additionalMovies[index]);
-              }
-            },
-            onAdditionalContentMyListTap: (index) {
-              final additionalMovies =
-                  _categoryMovies.values
-                      .expand((movies) => movies)
-                      .where(
-                        (movie) =>
-                            movie.id != _featuredMovie!.id &&
-                            movie.tmdbId != null &&
-                            movie.tmdbId!.isNotEmpty,
-                      )
-                      .take(5)
-                      .toList();
-
-              if (index < additionalMovies.length) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Added to My List: ${additionalMovies[index].name}',
-                    ),
-                  ),
+                return ContentCarousel<Movie>(
+                  title: category.name,
+                  items: movies,
+                  itemBuilder:
+                      (movie) => MovieCard(
+                        movie: movie,
+                        onTap: () => _navigateToMovie(movie),
+                      ),
+                  onSeeAllPressed: () => _navigateToSeeAll(category, movies),
                 );
-              }
-            },
+              }),
+
+              // Add some padding at the bottom
+              const SizedBox(height: 20),
+            ],
           ),
 
-        // Category Carousels
-        ..._categories.map((category) {
-          final movies = _categoryMovies[category.id] ?? [];
-          if (movies.isEmpty) {
-            return const SizedBox.shrink();
-          }
-
-          return ContentCarousel<Movie>(
-            title: category.name,
-            items: movies,
-            itemBuilder:
-                (movie) => MovieCard(
-                  movie: movie,
-                  onTap: () => _navigateToMovie(movie),
+          // Custom app bar with blur effect
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Container(
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(150),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withAlpha(50),
+                        blurRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          // Back button
+                          IconButton(
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
+                            ),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                          const SizedBox(width: 8),
+                          // Title - Show playlist name
+                          Text(
+                            widget.playlist.name,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const Spacer(),
+                          // Search button
+                          IconButton(
+                            icon: const Icon(Icons.search, color: Colors.white),
+                            onPressed: () {
+                              // Add search functionality here
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-            onSeeAllPressed: () => _navigateToSeeAll(category, movies),
-          );
-        }),
-
-        // Add some padding at the bottom
-        const SizedBox(height: 20),
-      ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

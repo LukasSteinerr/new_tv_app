@@ -6,10 +6,7 @@ import '../models/channel.dart';
 class PlayerScreen extends StatefulWidget {
   final Channel channel;
 
-  const PlayerScreen({
-    Key? key,
-    required this.channel,
-  }) : super(key: key);
+  const PlayerScreen({super.key, required this.channel});
 
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
@@ -23,13 +20,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
   void initState() {
     super.initState();
     _initializePlayer();
-    
+
     // Set landscape orientation
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    
+
     // Hide status bar and navigation
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
@@ -40,15 +37,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
       hwAcc: HwAcc.full,
       autoPlay: true,
       options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
+        advanced: VlcAdvancedOptions([VlcAdvancedOptions.networkCaching(2000)]),
+        http: VlcHttpOptions([VlcHttpOptions.httpReconnect(true)]),
+        rtp: VlcRtpOptions([VlcRtpOptions.rtpOverRtsp(true)]),
       ),
     );
   }
@@ -56,16 +47,14 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void dispose() {
     _controller.dispose();
-    
+
     // Reset orientation and UI mode when leaving the player
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
     );
-    
+
     super.dispose();
   }
 
@@ -79,12 +68,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: _isFullScreen
-          ? null
-          : AppBar(
-              title: Text(widget.channel.name),
-              backgroundColor: Colors.black,
-            ),
+      appBar:
+          _isFullScreen
+              ? null
+              : AppBar(
+                title: Text(widget.channel.name),
+                backgroundColor: Colors.black,
+              ),
       body: SafeArea(
         child: Center(
           child: Stack(
@@ -121,15 +111,16 @@ class _PlayerScreenState extends State<PlayerScreen> {
             IconButton(
               icon: const Icon(Icons.replay_10),
               color: Colors.white,
-              onPressed: () => _controller.seekTo(Duration(
-                seconds: _controller.value.position.inSeconds - 10,
-              )),
+              onPressed:
+                  () => _controller.seekTo(
+                    Duration(
+                      seconds: _controller.value.position.inSeconds - 10,
+                    ),
+                  ),
             ),
             IconButton(
               icon: Icon(
-                _controller.value.isPlaying
-                    ? Icons.pause
-                    : Icons.play_arrow,
+                _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
               ),
               color: Colors.white,
               onPressed: () {
@@ -144,12 +135,17 @@ class _PlayerScreenState extends State<PlayerScreen> {
             IconButton(
               icon: const Icon(Icons.forward_10),
               color: Colors.white,
-              onPressed: () => _controller.seekTo(Duration(
-                seconds: _controller.value.position.inSeconds + 10,
-              )),
+              onPressed:
+                  () => _controller.seekTo(
+                    Duration(
+                      seconds: _controller.value.position.inSeconds + 10,
+                    ),
+                  ),
             ),
             IconButton(
-              icon: Icon(_isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen),
+              icon: Icon(
+                _isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
+              ),
               color: Colors.white,
               onPressed: _toggleFullScreen,
             ),

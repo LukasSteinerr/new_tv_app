@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'dart:ui'; // For ImageFilter
 import '../models/playlist.dart';
 import '../services/playlist_service.dart';
 
@@ -8,10 +9,10 @@ class AddPlaylistScreen extends StatefulWidget {
   final Playlist? playlist; // For editing existing playlist
 
   const AddPlaylistScreen({
-    Key? key,
+    super.key,
     required this.playlistService,
     this.playlist,
-  }) : super(key: key);
+  });
 
   @override
   State<AddPlaylistScreen> createState() => _AddPlaylistScreenState();
@@ -137,10 +138,11 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.playlist == null ? 'Add Playlist' : 'Edit Playlist'),
-      ),
-      body:
+      // Remove the standard app bar
+      extendBodyBehindAppBar: true, // Allow content to go behind app bar
+      body: Stack(
+        children: [
+          // Main content
           _isLoading
               ? Center(
                 child: LoadingAnimationWidget.dotsTriangle(
@@ -149,7 +151,8 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
                 ),
               )
               : SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
+                // Add padding at the top to account for the app bar
+                padding: const EdgeInsets.fromLTRB(16.0, 86.0, 16.0, 16.0),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -273,6 +276,61 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
                   ),
                 ),
               ),
+
+          // Custom app bar with blur effect
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Container(
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(150),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withAlpha(50),
+                        blurRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          // Back button
+                          IconButton(
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
+                            ),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                          const SizedBox(width: 8),
+                          // Title
+                          Text(
+                            widget.playlist == null
+                                ? 'Add Playlist'
+                                : 'Edit Playlist',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

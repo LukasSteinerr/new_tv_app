@@ -93,10 +93,7 @@ class AppTheme {
         fontWeight: FontWeight.bold,
         color: Colors.white,
       ),
-      bodyLarge: TextStyle(
-        fontSize: 16,
-        color: Colors.white,
-      ),
+      bodyLarge: TextStyle(fontSize: 16, color: Colors.white),
       bodyMedium: TextStyle(
         fontSize: 14,
         color: AppColors.netflixTextSecondary,

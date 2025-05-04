@@ -8,12 +8,12 @@ class ContentCarousel<T> extends StatelessWidget {
   final VoidCallback? onSeeAllPressed;
 
   const ContentCarousel({
-    Key? key,
+    super.key,
     required this.title,
     required this.items,
     required this.itemBuilder,
     this.onSeeAllPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import '../models/playlist.dart';
 import '../services/playlist_service.dart';
 import 'add_playlist_screen.dart';
@@ -8,10 +9,10 @@ class SettingsScreen extends StatefulWidget {
   final Playlist playlist;
 
   const SettingsScreen({
-    Key? key,
+    super.key,
     required this.playlistService,
     required this.playlist,
-  }) : super(key: key);
+  });
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -27,7 +28,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     try {
       await widget.playlistService.refreshPlaylist(widget.playlist);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Playlist refreshed successfully')),
@@ -52,10 +53,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddPlaylistScreen(
-          playlistService: widget.playlistService,
-          playlist: widget.playlist,
-        ),
+        builder:
+            (context) => AddPlaylistScreen(
+              playlistService: widget.playlistService,
+              playlist: widget.playlist,
+            ),
       ),
     );
 
@@ -67,9 +69,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : ListView(
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return Scaffold(
+      // Remove the standard app bar
+      extendBodyBehindAppBar: true, // Allow content to go behind app bar
+      body: Stack(
+        children: [
+          // Main content
+          ListView(
+            padding: const EdgeInsets.only(
+              top: 70,
+            ), // Add padding for the app bar
             children: [
               ListTile(
                 title: const Text('Playlist Information'),
@@ -109,7 +122,61 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 subtitle: Text('IPTV Player App\nVersion 1.0.0'),
               ),
             ],
-          );
+          ),
+
+          // Custom app bar with blur effect
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Container(
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(150),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withAlpha(50),
+                        blurRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          // Back button
+                          IconButton(
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
+                            ),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                          const SizedBox(width: 8),
+                          // Title - Show playlist name
+                          Text(
+                            'Settings',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   String _formatDate(DateTime dateTime) {

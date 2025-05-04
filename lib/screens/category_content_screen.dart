@@ -14,11 +14,11 @@ class CategoryContentScreen extends StatelessWidget {
   final PlaylistService playlistService;
 
   const CategoryContentScreen({
-    Key? key,
+    super.key,
     required this.category,
     required this.items,
     required this.playlistService,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
