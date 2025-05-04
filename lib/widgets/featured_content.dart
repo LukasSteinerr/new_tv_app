@@ -123,7 +123,8 @@ class _FeaturedContentState extends State<FeaturedContent> {
           Column(
             children: [
               Container(
-                height: 530,
+                height:
+                    500, // Adjusted height to better match poster aspect ratio
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color:
@@ -176,8 +177,8 @@ class _FeaturedContentState extends State<FeaturedContent> {
             bottom:
                 widget.additionalContent != null &&
                         widget.additionalContent!.isNotEmpty
-                    ? 15
-                    : -25,
+                    ? 25 // Increased from 15 to move buttons up
+                    : -10, // Adjusted from -20 to move buttons up
             left: 0,
             right: 0,
             child: ValueListenableBuilder<int>(
@@ -235,8 +236,8 @@ class _FeaturedContentState extends State<FeaturedContent> {
                     children: [
                       // Play button
                       Container(
-                        height: 50,
-                        width: 150,
+                        height: 40, // Reduced from 50
+                        width: 120, // Reduced from 150
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(5),
@@ -252,13 +253,13 @@ class _FeaturedContentState extends State<FeaturedContent> {
                                 Icon(
                                   Icons.play_arrow,
                                   color: Colors.black,
-                                  size: 30,
+                                  size: 24, // Reduced from 30
                                 ),
                                 Text(
                                   "Play",
                                   style: TextStyle(
                                     color: Colors.black,
-                                    fontSize: 18,
+                                    fontSize: 16, // Reduced from 18
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -267,11 +268,11 @@ class _FeaturedContentState extends State<FeaturedContent> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 15),
+                      SizedBox(width: 10), // Reduced from 15
                       // My List button
                       Container(
-                        height: 50,
-                        width: 150,
+                        height: 40, // Reduced from 50
+                        width: 120, // Reduced from 150
                         decoration: BoxDecoration(
                           color: Colors.grey.shade800,
                           borderRadius: BorderRadius.circular(5),
@@ -284,12 +285,16 @@ class _FeaturedContentState extends State<FeaturedContent> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.add, color: Colors.white, size: 30),
+                                Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                  size: 24,
+                                ), // Reduced from 30
                                 Text(
                                   "My List",
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 18,
+                                    fontSize: 16, // Reduced from 18
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -335,7 +340,9 @@ class _FeaturedContentState extends State<FeaturedContent> {
                   // Actual image
                   Image.network(
                     _backdropUrl!,
-                    fit: BoxFit.contain,
+                    fit:
+                        BoxFit
+                            .cover, // Changed from contain to cover to fill the container
                     errorBuilder:
                         (_, __, ___) => Container(
                           color: Colors.grey.shade900,
@@ -487,7 +494,7 @@ class _FeaturedContentState extends State<FeaturedContent> {
     if (item['fallbackImageUrl'] != null) {
       return Image.network(
         item['fallbackImageUrl'],
-        fit: BoxFit.contain,
+        fit: BoxFit.cover, // Changed from contain to cover
         errorBuilder:
             (_, __, ___) => Container(
               color: Colors.grey.shade900,
@@ -566,7 +573,7 @@ class _FeaturedContentState extends State<FeaturedContent> {
                         snapshot.data != null) {
                       return Image.network(
                         snapshot.data!,
-                        fit: BoxFit.contain,
+                        fit: BoxFit.cover, // Changed from contain to cover
                         errorBuilder: (_, __, ___) {
                           // On error, try fallback
                           return _buildFallbackImage(item);
@@ -577,7 +584,7 @@ class _FeaturedContentState extends State<FeaturedContent> {
                     else if (item['backdropUrl'] != null) {
                       return Image.network(
                         item['backdropUrl'],
-                        fit: BoxFit.contain,
+                        fit: BoxFit.cover, // Changed from contain to cover
                         errorBuilder: (_, __, ___) {
                           // On error, try fallback
                           return _buildFallbackImage(item);
