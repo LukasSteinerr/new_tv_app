@@ -168,7 +168,8 @@ class PlaylistService {
             return fetchedEpisodes;
           }
         } catch (e) {
-          print('Error fetching episodes: $e');
+          // Rethrow as a more specific exception with context
+          throw Exception('Failed to load episodes for ${series.name}: $e');
         }
       }
     }

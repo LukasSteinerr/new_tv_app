@@ -294,24 +294,53 @@ class XtreamService {
 
         if (seasonData is List) {
           for (final episodeData in seasonData) {
-            final episodeNumber =
-                int.tryParse(episodeData['episode_num'] ?? '0') ?? 0;
-            final streamUrl =
-                '$baseUrl/series/${playlist.username}/${playlist.password}/${episodeData['id']}.mp4';
+            try {
+              // Make sure episodeData is a Map
+              if (episodeData is! Map) continue;
 
-            final episode = TvEpisode(
-              title: episodeData['title'] ?? 'Episode $episodeNumber',
-              streamUrl: streamUrl,
-              seasonNumber: seasonNumber,
-              episodeNumber: episodeNumber,
-              coverUrl: episodeData['info']['movie_image'] ?? series.coverUrl,
-              description: episodeData['info']['plot'] ?? '',
-              duration: episodeData['info']['duration'] ?? '',
-              streamId: episodeData['id'].toString(),
-            );
+              final episodeNumber =
+                  int.tryParse(episodeData['episode_num']?.toString() ?? '0') ??
+                  0;
 
-            episode.series.target = series;
-            episodes.add(episode);
+              // Make sure id exists and can be converted to string
+              if (episodeData['id'] == null) continue;
+
+              final streamUrl =
+                  '$baseUrl/series/${playlist.username}/${playlist.password}/${episodeData['id']}.mp4';
+
+              // Safely access nested properties with null checks
+              String? coverUrl;
+              String? description;
+              String? duration;
+
+              if (episodeData.containsKey('info') &&
+                  episodeData['info'] is Map) {
+                final info = episodeData['info'] as Map;
+                coverUrl = info['movie_image']?.toString();
+                description = info['plot']?.toString() ?? '';
+                duration = info['duration']?.toString() ?? '';
+              }
+
+              final episode = TvEpisode(
+                title:
+                    episodeData['title']?.toString() ??
+                    'Episode $episodeNumber',
+                streamUrl: streamUrl,
+                seasonNumber: seasonNumber,
+                episodeNumber: episodeNumber,
+                coverUrl: coverUrl ?? series.coverUrl,
+                description: description ?? '',
+                duration: duration ?? '',
+                streamId: episodeData['id'].toString(),
+              );
+
+              episode.series.target = series;
+              episodes.add(episode);
+            } catch (e) {
+              // Log error but continue to the next episode
+              // Using a silent catch to avoid crashing the app
+              continue;
+            }
           }
         }
       });

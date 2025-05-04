@@ -102,19 +102,32 @@ class _NetflixStyleTvSeriesDetailScreenState
       // Get sorted list of seasons
       final seasons = seasonEpisodes.keys.toList()..sort();
 
-      setState(() {
-        _episodes = episodes;
-        _seasonEpisodes = seasonEpisodes;
-        _seasons = seasons;
-        _selectedSeason = seasons.isNotEmpty ? seasons.first : null;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _episodes = episodes;
+          _seasonEpisodes = seasonEpisodes;
+          _seasons = seasons;
+          _selectedSeason = seasons.isNotEmpty ? seasons.first : null;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error loading episodes: $e')));
+        // Show a more user-friendly error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Unable to load episodes. Please try again later.'),
+            duration: Duration(seconds: 5),
+            action: SnackBarAction(label: 'Retry', onPressed: _loadEpisodes),
+          ),
+        );
+
+        // Set empty state but not loading
         setState(() {
+          _episodes = [];
+          _seasonEpisodes = {};
+          _seasons = [];
+          _selectedSeason = null;
           _isLoading = false;
         });
       }
