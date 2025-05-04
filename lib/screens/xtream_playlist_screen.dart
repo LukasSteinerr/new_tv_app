@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../models/playlist.dart';
 import '../services/playlist_service.dart';
 import 'live_tv_screen.dart';
@@ -77,7 +78,12 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
       appBar: AppBar(title: Text(widget.playlist.name)),
       body:
           _isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(
+                child: LoadingAnimationWidget.dotsTriangle(
+                  color: Colors.white,
+                  size: 50,
+                ),
+              )
               : _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,

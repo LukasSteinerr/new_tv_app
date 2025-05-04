@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../models/playlist.dart';
 import '../services/playlist_service.dart';
 
@@ -83,6 +84,26 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
         await widget.playlistService.refreshPlaylist(playlist);
 
         if (mounted) {
+          // Show success message with green checkmark
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.green),
+                  SizedBox(width: 10),
+                  Text(
+                    widget.playlist == null
+                        ? 'Playlist added successfully'
+                        : 'Playlist updated successfully',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+              backgroundColor: Colors.black87,
+              duration: Duration(seconds: 2),
+            ),
+          );
+
           Navigator.pop(context, true);
         }
       } catch (e) {
@@ -90,9 +111,24 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
           _isLoading = false;
         });
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Error saving playlist: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.error, color: Colors.red),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Error saving playlist: $e',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+              backgroundColor: Colors.black87,
+              duration: Duration(seconds: 4),
+            ),
+          );
         }
       }
     }
@@ -106,7 +142,12 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
       ),
       body:
           _isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(
+                child: LoadingAnimationWidget.dotsTriangle(
+                  color: Colors.white,
+                  size: 50,
+                ),
+              )
               : SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: Form(

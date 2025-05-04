@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../models/playlist.dart';
 import '../models/channel.dart';
 import '../models/category.dart';
@@ -110,7 +111,12 @@ class _M3uPlaylistScreenState extends State<_M3uPlaylistScreen>
       ),
       body:
           _isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(
+                child: LoadingAnimationWidget.dotsTriangle(
+                  color: Colors.white,
+                  size: 50,
+                ),
+              )
               : TabBarView(
                 controller: _tabController,
                 children: [_buildCategoriesTab(), _buildAllChannelsTab()],

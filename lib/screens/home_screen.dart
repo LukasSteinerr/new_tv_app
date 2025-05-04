@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../models/playlist.dart';
 import '../services/playlist_service.dart';
 import 'add_playlist_screen.dart';
@@ -38,9 +39,26 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error loading playlists: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.error, color: Colors.red),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Error loading playlists: $e',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.black87,
+            duration: Duration(seconds: 4),
+          ),
+        );
+      }
     }
   }
 
@@ -52,13 +70,50 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       await widget.playlistService.refreshPlaylist(playlist);
       await _loadPlaylists();
+
+      // Show success message with green checkmark
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.green),
+                SizedBox(width: 10),
+                Text(
+                  'Playlist refreshed successfully',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.black87,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
     } catch (e) {
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error refreshing playlist: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.error, color: Colors.red),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Error refreshing playlist: $e',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.black87,
+            duration: Duration(seconds: 4),
+          ),
+        );
+      }
     }
   }
 
@@ -92,13 +147,50 @@ class _HomeScreenState extends State<HomeScreen> {
       try {
         await widget.playlistService.deletePlaylist(playlist.id);
         await _loadPlaylists();
+
+        // Show success message with green checkmark
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.green),
+                  SizedBox(width: 10),
+                  Text(
+                    'Playlist deleted successfully',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+              backgroundColor: Colors.black87,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
       } catch (e) {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error deleting playlist: $e')));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.error, color: Colors.red),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Error deleting playlist: $e',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+              backgroundColor: Colors.black87,
+              duration: Duration(seconds: 4),
+            ),
+          );
+        }
       }
     }
   }
@@ -109,7 +201,12 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(title: const Text('IPTV Playlists')),
       body:
           _isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(
+                child: LoadingAnimationWidget.dotsTriangle(
+                  color: Colors.white,
+                  size: 50,
+                ),
+              )
               : _playlists.isEmpty
               ? Center(
                 child: Column(
