@@ -159,8 +159,11 @@ class XtreamService {
     final movies = <Movie>[];
 
     for (final movieData in moviesJson) {
+      // Extract container extension from the API response or default to mp4
+      final containerExtension = movieData['container_extension'] ?? 'mp4';
+
       final streamUrl =
-          '$baseUrl/movie/${playlist.username}/${playlist.password}/${movieData['stream_id']}.mp4';
+          '$baseUrl/movie/${playlist.username}/${playlist.password}/${movieData['stream_id']}.$containerExtension';
 
       final movie = Movie(
         name: movieData['name'],
@@ -305,8 +308,12 @@ class XtreamService {
               // Make sure id exists and can be converted to string
               if (episodeData['id'] == null) continue;
 
+              // Extract container extension from the API response or default to mp4
+              final containerExtension =
+                  episodeData['container_extension'] ?? 'mp4';
+
               final streamUrl =
-                  '$baseUrl/series/${playlist.username}/${playlist.password}/${episodeData['id']}.mp4';
+                  '$baseUrl/series/${playlist.username}/${playlist.password}/${episodeData['id']}.$containerExtension';
 
               // Safely access nested properties with null checks
               String? coverUrl;
