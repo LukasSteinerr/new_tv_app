@@ -4,7 +4,7 @@ import '../models/playlist.dart';
 import '../models/channel.dart';
 import '../models/category.dart';
 import '../services/playlist_service.dart';
-import 'player_screen.dart';
+import 'universal_video_player.dart';
 import 'category_channels_screen.dart';
 
 class LiveTvScreen extends StatefulWidget {
@@ -241,8 +241,9 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder:
-                                        (context) =>
-                                            PlayerScreen(channel: channel),
+                                        (context) => UniversalVideoPlayer(
+                                          channel: channel,
+                                        ),
                                   ),
                                 );
                               },

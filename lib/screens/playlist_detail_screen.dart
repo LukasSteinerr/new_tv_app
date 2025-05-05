@@ -4,7 +4,7 @@ import '../models/playlist.dart';
 import '../models/channel.dart';
 import '../models/category.dart';
 import '../services/playlist_service.dart';
-import 'player_screen.dart';
+import 'universal_video_player.dart';
 import 'xtream_playlist_screen.dart';
 
 class PlaylistDetailScreen extends StatelessWidget {
@@ -227,7 +227,7 @@ class ChannelListTile extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PlayerScreen(channel: channel),
+            builder: (context) => UniversalVideoPlayer(channel: channel),
           ),
         );
       },

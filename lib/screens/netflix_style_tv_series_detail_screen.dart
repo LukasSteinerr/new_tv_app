@@ -4,7 +4,7 @@ import '../models/tv_series.dart';
 import '../models/tv_episode.dart';
 import '../services/playlist_service.dart';
 import '../services/tmdb_image_provider.dart';
-import 'tv_episode_player_screen.dart';
+import 'universal_video_player.dart';
 
 class NetflixStyleTvSeriesDetailScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -204,8 +204,7 @@ class _NetflixStyleTvSeriesDetailScreenState
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder:
-                (context) => TvEpisodePlayerScreen(episode: episodes.first),
+            builder: (context) => UniversalVideoPlayer(episode: episodes.first),
           ),
         );
       }
@@ -492,7 +491,7 @@ class _NetflixStyleTvSeriesDetailScreenState
                   context,
                   MaterialPageRoute(
                     builder:
-                        (context) => TvEpisodePlayerScreen(episode: episode),
+                        (context) => UniversalVideoPlayer(episode: episode),
                   ),
                 );
               },
@@ -582,7 +581,7 @@ class _NetflixStyleTvSeriesDetailScreenState
                         MaterialPageRoute(
                           builder:
                               (context) =>
-                                  TvEpisodePlayerScreen(episode: episode),
+                                  UniversalVideoPlayer(episode: episode),
                         ),
                       );
                     },

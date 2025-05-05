@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/category.dart';
 import '../models/channel.dart';
-import 'player_screen.dart';
+import 'universal_video_player.dart';
 
 class CategoryChannelsScreen extends StatelessWidget {
   final Category category;
@@ -42,7 +42,9 @@ class CategoryChannelsScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => PlayerScreen(channel: channel),
+                          builder:
+                              (context) =>
+                                  UniversalVideoPlayer(channel: channel),
                         ),
                       );
                     },

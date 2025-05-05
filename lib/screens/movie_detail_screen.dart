@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/movie.dart';
 import '../services/tmdb_image_provider.dart';
-import 'movie_player_screen.dart';
+import 'universal_video_player.dart';
 
 class MovieDetailScreen extends StatefulWidget {
   final Movie movie;
@@ -65,7 +65,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MoviePlayerScreen(movie: widget.movie),
+        builder: (context) => UniversalVideoPlayer(movie: widget.movie),
       ),
     );
   }

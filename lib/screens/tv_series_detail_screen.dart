@@ -3,7 +3,7 @@ import '../models/tv_series.dart';
 import '../models/tv_episode.dart';
 import '../services/playlist_service.dart';
 import '../services/tmdb_image_provider.dart';
-import 'tv_episode_player_screen.dart';
+import 'universal_video_player.dart';
 
 class TvSeriesDetailScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -324,7 +324,7 @@ class _TvSeriesDetailScreenState extends State<TvSeriesDetailScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder:
-                                            (context) => TvEpisodePlayerScreen(
+                                            (context) => UniversalVideoPlayer(
                                               episode: episode,
                                             ),
                                       ),
