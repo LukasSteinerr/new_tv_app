@@ -76,16 +76,17 @@ class ContentCarousel<T> extends StatelessWidget {
         ),
         // Content carousel with Netflix styling
         SizedBox(
-          height: 220, // Taller for Netflix style
+          height:
+              165, // Height calculated based on width (110) and aspect ratio (3/2)
           child: ListView.builder(
             padding: const EdgeInsets.only(left: 16.0, right: 8.0),
             scrollDirection: Axis.horizontal,
             itemCount: items.length,
             itemBuilder: (context, index) {
               return SizedBox(
-                width: 140, // Wider for Netflix style
+                width: 110, // Reduced width to fit more cards
                 child: Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
+                  padding: const EdgeInsets.only(right: 6.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

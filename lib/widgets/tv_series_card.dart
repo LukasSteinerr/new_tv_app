@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/tv_series.dart';
 import 'tmdb_image.dart';
-import '../constants/app_theme.dart';
 
 class TvSeriesCard extends StatelessWidget {
   final TvSeries series;

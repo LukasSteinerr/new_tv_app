@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/movie.dart';
 import 'tmdb_image.dart';
-import '../constants/app_theme.dart';
 
 class MovieCard extends StatelessWidget {
   final Movie movie;
