@@ -5,6 +5,7 @@ import '../models/category.dart';
 import '../models/channel.dart';
 import '../services/playlist_service.dart';
 import 'category_channels_screen.dart';
+import '../widgets/time_slider_widget.dart';
 
 class LiveTvScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -24,6 +25,8 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   List<Category> _categories = [];
   Map<int, String?> _categoryLogos = {};
   bool _isLoading = true;
+  TimeOfDay _selectedTime = TimeOfDay.now();
+  bool _isTimeSliderInteracting = false;
 
   @override
   void initState() {
@@ -47,7 +50,9 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
       // Load first channel logo for each category
       final categoryLogos = <int, String?>{};
       for (final category in liveTvCategories) {
-        final channels = await widget.playlistService.getCategoryChannels(category.id);
+        final channels = await widget.playlistService.getCategoryChannels(
+          category.id,
+        );
         if (channels.isNotEmpty) {
           categoryLogos[category.id] = channels.first.logoUrl;
         }
@@ -80,10 +85,11 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => CategoryChannelsScreen(
-            category: category,
-            channels: channels,
-          ),
+          builder:
+              (context) => CategoryChannelsScreen(
+                category: category,
+                channels: channels,
+              ),
         ),
       );
     }
@@ -100,88 +106,128 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
               : _categories.isEmpty
               ? const Center(child: Text('No categories found'))
               : ListView.builder(
-                  padding: const EdgeInsets.only(top: 70),
-                  itemCount: _categories.length,
-                  itemBuilder: (context, index) {
-                    final category = _categories[index];
-                    return InkWell(
-                      onTap: () => _navigateToCategory(category),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: Colors.grey[800]!,
-                              width: 0.5,
-                            ),
+                padding: const EdgeInsets.only(top: 70),
+                itemCount: _categories.length,
+                itemBuilder: (context, index) {
+                  final category = _categories[index];
+                  return InkWell(
+                    onTap: () => _navigateToCategory(category),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Colors.grey[800]!,
+                            width: 0.5,
                           ),
                         ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: MediaQuery.of(context).size.width * 0.25,
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  right: BorderSide(
-                                    color: Colors.grey[800]!,
-                                    width: 0.5,
-                                  ),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.25,
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              border: Border(
+                                right: BorderSide(
+                                  color: Colors.grey[800]!,
+                                  width: 0.5,
                                 ),
                               ),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[850],
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: _categoryLogos[category.id] != null && 
-                                           _categoryLogos[category.id]!.isNotEmpty
-                                        ? ClipRRect(
-                                            borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[850],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child:
+                                      _categoryLogos[category.id] != null &&
+                                              _categoryLogos[category.id]!
+                                                  .isNotEmpty
+                                          ? ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
                                             child: Image.network(
                                               _categoryLogos[category.id]!,
                                               width: 40,
                                               height: 40,
                                               fit: BoxFit.cover,
-                                              errorBuilder: (_, __, ___) => const Icon(
-                                                Icons.live_tv,
-                                                color: Colors.white,
-                                                size: 24,
-                                              ),
+                                              errorBuilder:
+                                                  (_, __, ___) => const Icon(
+                                                    Icons.live_tv,
+                                                    color: Colors.white,
+                                                    size: 24,
+                                                  ),
                                             ),
                                           )
-                                        : const Icon(
+                                          : const Icon(
                                             Icons.live_tv,
                                             color: Colors.white,
                                             size: 24,
                                           ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  category.name,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    category.name,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
-                            Expanded(
-                              child: Container(),
-                            ),
-                          ],
-                        ),
+                          ),
+                          // Removed Expanded TimeSlider from here
+                          const Expanded(
+                            child: SizedBox(),
+                          ), // Add SizedBox to fill remaining space if needed, or adjust layout
+                        ],
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
+              ),
+          // Add the TimeSlider fixed to the right
+          Positioned(
+            top: 70, // Below the app bar
+            right: 0,
+            bottom: 0,
+            width: 45, // Slightly wider fixed width for the slider
+            child: Container(
+              color: Theme.of(
+                context,
+              ).scaffoldBackgroundColor.withOpacity(0.8), // Optional background
+              child: TimeSlider(
+                selectedTime: _selectedTime,
+                showBumpOut: true, // Keep or adjust as needed
+                // availableHeight: // Removed this parameter
+                //     MediaQuery.of(context).size.height -
+                //     70, // Adjust height calculation
+                onTimeChange: (TimeOfDay newTime) {
+                  setState(() {
+                    _selectedTime = newTime;
+                  });
+                },
+                onInteractionStart: () {
+                  setState(() {
+                    _isTimeSliderInteracting = true;
+                  });
+                },
+                onInteractionEnd: () {
+                  setState(() {
+                    _isTimeSliderInteracting = false;
+                  });
+                },
+              ),
+            ),
+          ),
           Positioned(
             top: 0,
             left: 0,
