@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../models/playlist.dart';
-import '../models/channel.dart';
 import '../models/category.dart';
+import '../models/channel.dart';
 import '../services/playlist_service.dart';
-import 'universal_video_player.dart';
 import 'category_channels_screen.dart';
 
 class LiveTvScreen extends StatefulWidget {
@@ -23,9 +22,8 @@ class LiveTvScreen extends StatefulWidget {
 
 class _LiveTvScreenState extends State<LiveTvScreen> {
   List<Category> _categories = [];
-  List<Channel> _channels = [];
+  Map<int, String?> _categoryLogos = {};
   bool _isLoading = true;
-  Category? _selectedCategory;
 
   @override
   void initState() {
@@ -46,20 +44,27 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
       final liveTvCategories =
           allCategories.where((category) => category.isLiveTV).toList();
 
-      final channels = await widget.playlistService.getPlaylistChannels(
-        widget.playlist.id,
-      );
+      // Load first channel logo for each category
+      final categoryLogos = <int, String?>{};
+      for (final category in liveTvCategories) {
+        final channels = await widget.playlistService.getCategoryChannels(category.id);
+        if (channels.isNotEmpty) {
+          categoryLogos[category.id] = channels.first.logoUrl;
+        }
+      }
 
-      setState(() {
-        _categories = liveTvCategories;
-        _channels = channels;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _categories = liveTvCategories;
+          _categoryLogos = categoryLogos;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error loading data: $e')));
+        ).showSnackBar(SnackBar(content: Text('Error loading categories: $e')));
         setState(() {
           _isLoading = false;
         });
@@ -67,194 +72,116 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
     }
   }
 
-  Future<void> _selectCategory(Category? category) async {
-    setState(() {
-      _isLoading = true;
-      _selectedCategory = category;
-    });
-
-    try {
-      List<Channel> channels;
-      if (category == null) {
-        channels = await widget.playlistService.getPlaylistChannels(
-          widget.playlist.id,
-        );
-      } else {
-        channels = await widget.playlistService.getCategoryChannels(
-          category.id,
-        );
-      }
-
-      setState(() {
-        _channels = channels;
-        _isLoading = false;
-      });
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error loading channels: $e')));
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  void _navigateToSeeAllChannels() {
-    if (_channels.isEmpty) return;
-
-    final title = _selectedCategory?.name ?? 'All Channels';
-    final category =
-        _selectedCategory ??
-        Category(name: title, contentType: ContentType.liveTV);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) =>
-                CategoryChannelsScreen(category: category, channels: _channels),
-      ),
+  void _navigateToCategory(Category category) async {
+    final channels = await widget.playlistService.getCategoryChannels(
+      category.id,
     );
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CategoryChannelsScreen(
+            category: category,
+            channels: channels,
+          ),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Remove the standard app bar
-      extendBodyBehindAppBar: true, // Allow content to go behind app bar
+      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          // Main content
-          Column(
-            children: [
-              // Add padding at the top to account for the app bar
-              const SizedBox(height: 70),
-              // Categories horizontal list
-              SizedBox(
-                height: 50,
-                child:
-                    _isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount:
-                              _categories.length + 1, // +1 for "All" option
-                          itemBuilder: (context, index) {
-                            if (index == 0) {
-                              // "All" option
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 4.0,
-                                ),
-                                child: ChoiceChip(
-                                  label: const Text('All'),
-                                  selected: _selectedCategory == null,
-                                  onSelected: (selected) {
-                                    if (selected) {
-                                      _selectCategory(null);
-                                    }
-                                  },
-                                ),
-                              );
-                            } else {
-                              final category = _categories[index - 1];
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 4.0,
-                                ),
-                                child: ChoiceChip(
-                                  label: Text(category.name),
-                                  selected:
-                                      _selectedCategory?.id == category.id,
-                                  onSelected: (selected) {
-                                    if (selected) {
-                                      _selectCategory(category);
-                                    }
-                                  },
-                                ),
-                              );
-                            }
-                          },
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _categories.isEmpty
+              ? const Center(child: Text('No categories found'))
+              : ListView.builder(
+                  padding: const EdgeInsets.only(top: 70),
+                  itemCount: _categories.length,
+                  itemBuilder: (context, index) {
+                    final category = _categories[index];
+                    return InkWell(
+                      onTap: () => _navigateToCategory(category),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Colors.grey[800]!,
+                              width: 0.5,
+                            ),
+                          ),
                         ),
-              ),
-
-              // Category title and See All button
-              if (!_isLoading && _channels.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        _selectedCategory?.name ?? 'All Channels',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: _navigateToSeeAllChannels,
-                        child: const Text('See All'),
-                      ),
-                    ],
-                  ),
-                ),
-
-              // Channels list
-              Expanded(
-                child:
-                    _isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : _channels.isEmpty
-                        ? const Center(child: Text('No channels found'))
-                        : ListView.builder(
-                          itemCount: _channels.length,
-                          itemBuilder: (context, index) {
-                            final channel = _channels[index];
-                            return ListTile(
-                              leading:
-                                  channel.logoUrl != null &&
-                                          channel.logoUrl!.isNotEmpty
-                                      ? CircleAvatar(
-                                        backgroundImage: NetworkImage(
-                                          channel.logoUrl!,
-                                        ),
-                                        onBackgroundImageError: (_, __) {},
-                                        child:
-                                            channel.logoUrl == null ||
-                                                    channel.logoUrl!.isEmpty
-                                                ? const Icon(Icons.tv)
-                                                : null,
-                                      )
-                                      : const CircleAvatar(
-                                        child: Icon(Icons.tv),
-                                      ),
-                              title: Text(channel.name),
-                              subtitle:
-                                  channel.category.target != null
-                                      ? Text(channel.category.target!.name)
-                                      : null,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) => UniversalVideoPlayer(
-                                          channel: channel,
-                                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.25,
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  right: BorderSide(
+                                    color: Colors.grey[800]!,
+                                    width: 0.5,
                                   ),
-                                );
-                              },
-                            );
-                          },
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[850],
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: _categoryLogos[category.id] != null && 
+                                           _categoryLogos[category.id]!.isNotEmpty
+                                        ? ClipRRect(
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Image.network(
+                                              _categoryLogos[category.id]!,
+                                              width: 40,
+                                              height: 40,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (_, __, ___) => const Icon(
+                                                Icons.live_tv,
+                                                color: Colors.white,
+                                                size: 24,
+                                              ),
+                                            ),
+                                          )
+                                        : const Icon(
+                                            Icons.live_tv,
+                                            color: Colors.white,
+                                            size: 24,
+                                          ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    category.name,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(),
+                            ),
+                          ],
                         ),
-              ),
-            ],
-          ),
-
-          // Custom app bar with blur effect
+                      ),
+                    );
+                  },
+                ),
           Positioned(
             top: 0,
             left: 0,
@@ -278,7 +205,6 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
                         children: [
-                          // Back button
                           IconButton(
                             icon: const Icon(
                               Icons.arrow_back,
@@ -287,7 +213,6 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                             onPressed: () => Navigator.of(context).pop(),
                           ),
                           const SizedBox(width: 8),
-                          // Title - Show playlist name
                           Text(
                             widget.playlist.name,
                             style: const TextStyle(
@@ -298,7 +223,6 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                             overflow: TextOverflow.ellipsis,
                           ),
                           const Spacer(),
-                          // Search button
                           IconButton(
                             icon: const Icon(Icons.search, color: Colors.white),
                             onPressed: () {
