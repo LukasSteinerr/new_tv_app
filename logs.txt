@@ -1,234 +1,243 @@
-d 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000033239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000054572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000075905 for FFmpeg
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000097239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000118572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000139905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000161239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000182572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000203905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000225239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000246572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000267905 for FFmpeg
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000289239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000310572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000331905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000353239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000374572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000395905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000417239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000438572 for FFmpeg
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000459905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000481239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000502572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000523905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000545239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000566572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000587905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000609239 for FFmpeg
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000630572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000651905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000673239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000694572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000715905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000737239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000758572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000779905 for FFmpeg
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000801239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000822572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000843905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000865239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000886572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000907905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000929239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000950572 for FFmpeg
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000971905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153000993239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001014572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001035905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001057239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001078572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001099905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001121239 for FFmpeg
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001142572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001163905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001185239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001206572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001227905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001249239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001270572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001291905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001313239 for FFmpeg
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001334572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001355905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001377239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001398572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001419905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001441239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001462572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001483905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001505239 for FFmpeg
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001526572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001547905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001569239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001590572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001611905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001633239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001654572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001675905 for FFmpeg
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/FrameEvents(17204): updateAcquireFence: Did not find frame.
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001697239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001718572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001739905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001761239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001782572 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001803905 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Could not convert timestamp 153001825239 for FFmpeg
-E/VLC     (17204): [b400007b747b7230/48cf] libvlc decoder: Timestamp conversion failed (delay 1500000, buffering 100000, bound 3000000)
+✓ Built build\app\outputs\flutter-apk\app-debug.apk
+Installing build\app\outputs\flutter-apk\app-debug.apk... 
+          3,6s
+I/flutter (20133): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(60)] Using the Impeller rendering backend (Vulkan).
+Syncing files to device SM G998B...                       
+         256ms
+
+Flutter run key commands.
+r Hot reload. 🔥🔥🔥
+R Hot restart.
+h List all available interactive commands.
+d Detach (terminate "flutter run" but leave application   
+running).
+c Clear the screen
+q Quit (terminate the application on the device).
+
+A Dart VM Service on SM G998B is available at:
+http://127.0.0.1:64629/YuWP-6I-w6g=/
+The Flutter DevTools debugger and profiler on SM G998B is
+available at:
+http://127.0.0.1:9103?uri=http://127.0.0.1:64629/YuWP-6I-w
+6g=/
+D/ProfileInstaller(20133): Installing profile for com.example.tv
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+W/WindowOnBackDispatcher(20133): OnBackInvokedCallback is not enabled for the application.
+W/WindowOnBackDispatcher(20133): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.      
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+W/WindowOnBackDispatcher(20133): OnBackInvokedCallback is not enabled for the application.
+W/WindowOnBackDispatcher(20133): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.      
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+I/InputMethodManager_LC(20133): showSoftInput(View,I)     
+I/ImeTracker(20133): com.example.tv:62da451c: onRequestShow at ORIGIN_CLIENT_SHOW_SOFT_INPUT reason SHOW_SOFT_INPUT 
+I/InputMethodManager_LC(20133): ssi(): flags=0 view=com.example.tv reason = SHOW_SOFT_INPUT
+I/InputMethodManager_LC(20133): ssi() view is not EditText
+D/InputMethodManagerUtils(20133): startInputInner - Id : 0
+I/InputMethodManager(20133): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus       
+D/InputMethodManager(20133): showSoftInput() view=io.flutter.embedding.android.FlutterView{81d96db VFED..... .F....ID 0,0-1440,3020 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/InputConnectionAdaptor(20133): The input method toggled cursor monitoring on
+I/ViewRootImpl@deba88a[MainActivity](20133): Resizing android.view.ViewRootImpl@cc2dc8b: frame = [0,0][1440,3200] reportDraw = false forceLayout = false syncSeqId = -1       
+I/InsetsController(20133): onStateChanged: host=com.example.tv/com.example.tv.MainActivity, from=android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7196, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1440, 3200), mDisplayCutout=DisplayCutout{insets=Rect(0, 100 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(681, 0 - 759, 100), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1440 displayHeight=3200 physicalDisplayWidth=1440 physicalDisplayHeight=3200 density={3.75} cutoutSpec={M 0, 0 H -10.4 V 26.66666666666667 H 10.4 V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}  mRoundedCornerFrame=Rect(0, 0 - 1440, 3200), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(1275, 0 - 1440, 100) rotation=0}, mDisplayShape=DisplayShape{ spec=-311912193 displayWidth=1440 displayHeight=3200 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {3 mType=ime mFrame=[0,1855][1440,3200] mVisible=false mFlags=[]}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1440,100] mVisible=true mFlags=[]}, InsetsSource: {2ff00001 mType=navigationBars mFrame=[0,3020][1440,3200] mVisible=true mFlags=[]}, InsetsSource: {2ff00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {2ff00005 mType=mandatorySystemGestures mFrame=[0,3020][1440,3200] mVisible=true mFlags=[]}, InsetsSource: {2ff00006 mType=tappableElement mFrame=[0,3020][1440,3200] mVisible=true mFlags=[]}, InsetsSource: {2ff00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {68b70000 mType=statusBars mFrame=[0,0][1440,100] mVisible=true mFlags=[]}, InsetsSource: {68b70005 mType=mandatorySystemGestures mFrame=[0,0][1440,145] mVisible=true mFlags=[]}, InsetsSource: {68b70006 mType=tappableElement mFrame=[0,0][1440,100] mVisible=true mFlags=[]} }
+I/ViewRootImpl@deba88a[MainActivity](20133): handleResized, msg = 4 frames=ClientWindowFrames{frame=[0,0][1440,3200] display=[0,0][1440,3200] parentFrame=[0,0][0,0]} forceNextWindowRelayout=false displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false
+D/InsetsController(20133): show(ime(), fromIme=true)
+I/InsetsController(20133): setRequestedVisibleTypes: visible=true, mask=ime, host=com.example.tv/com.example.tv.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1445 android.view.InsetsController.applyAnimation:2005 android.view.InsetsController.applyAnimation:1968 android.view.InsetsController.show:1309 android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7233 android.view.ViewRootImpl$ViewRootHandler.handleMessage:7166 android.os.Handler.dispatchMessage:106 android.os.Looper.loopOnce:230 android.os.Looper.loop:319 android.app.ActivityThread.main:8919
+I/InsetsController(20133): controlAnimationUncheckedInner: Added types=ime, animType=0, host=com.example.tv/com.example.tv.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1449 android.view.InsetsController.applyAnimation:2005 android.view.InsetsController.applyAnimation:1968
+I/ViewRootImpl@deba88a[MainActivity](20133): Resizing android.view.ViewRootImpl@cc2dc8b: frame = [0,0][1440,3200] reportDraw = false forceLayout = false syncSeqId = -1       
+D/InputTransport(20133): Input channel destroyed: 'ClientS', fd=168
+W/com.example.tv(20133): ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/DictDiotekForSec/DictDiotekForSec.apk' with 1 weak references
+W/com.example.tv(20133): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~CPi_J62XKHc343_f5hwX1A==/com.samsung.android.samsungpass-OjdefbuIXF29L64f-F_X-w==/base.apk' with 1 weak references
+W/com.example.tv(20133): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~nZl8FD8Ekez9DUrVS-IqSg==/com.google.android.apps.translate-c98oMbPbkaH_btJHbdyrTw==/base.apk' with 1 weak references
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079cafa0690 mBlastBufferQueue=0xb400007aeafafd10 fn= 3 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/InsetsController(20133): onStateChanged: host=com.example.tv/com.example.tv.MainActivity, from=android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7209, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1440, 3200), mDisplayCutout=DisplayCutout{insets=Rect(0, 100 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(681, 0 - 759, 100), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1440 displayHeight=3200 physicalDisplayWidth=1440 physicalDisplayHeight=3200 density={3.75} cutoutSpec={M 0, 0 H -10.4 V 26.66666666666667 H 10.4 V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}  mRoundedCornerFrame=Rect(0, 0 - 1440, 3200), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(1275, 0 - 1440, 100) rotation=0}, mDisplayShape=DisplayShape{ spec=-311912193 displayWidth=1440 displayHeight=3200 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {3 mType=ime mFrame=[0,1855][1440,3200] mVisible=true mFlags=[]}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1440,100] mVisible=true mFlags=[]}, InsetsSource: {2ff00001 mType=navigationBars mFrame=[0,3020][1440,3200] mVisible=true mFlags=[]}, InsetsSource: {2ff00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {2ff00005 mType=mandatorySystemGestures mFrame=[0,3020][1440,3200] mVisible=true mFlags=[]}, InsetsSource: {2ff00006 mType=tappableElement mFrame=[0,3020][1440,3200] mVisible=true mFlags=[]}, InsetsSource: {2ff00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {68b70000 mType=statusBars mFrame=[0,0][1440,100] mVisible=true mFlags=[]}, InsetsSource: {68b70005 mType=mandatorySystemGestures mFrame=[0,0][1440,145] mVisible=true mFlags=[]}, InsetsSource: {68b70006 mType=tappableElement mFrame=[0,0][1440,100] mVisible=true mFlags=[]} }
+W/com.example.tv(20133): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~TCaVpefmi1vxQV_G_PN7tw==/com.ichi2.anki-VnZ3gi23cPiBnCfMe3gt8A==/base.apk' with 1 weak references
+I/ViewRootImpl@deba88a[MainActivity](20133): handleResized, msg = 4 frames=ClientWindowFrames{frame=[0,0][1440,3200] display=[0,0][1440,3200] parentFrame=[0,0][0,0]} forceNextWindowRelayout=false displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false
+W/com.example.tv(20133): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~-bvJZPE7rv-dgJrNnYRmPA==/com.microsoft.emmx-j-pGQ8XpFB0qeW9TbB89ug==/base.apk' with 1 weak references
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9e850 mBlastBufferQueue=0xb400007aeafafd10 fn= 4 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+W/com.example.tv(20133): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~aCOLMt5yQ3kgUNOoy6RFKQ==/com.microsoft.office.officehubrow-6G-x_lCponUVVVXMVe-Syw==/base.apk' with 1 weak references
+W/com.example.tv(20133): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~aCOLMt5yQ3kgUNOoy6RFKQ==/com.microsoft.office.officehubrow-6G-x_lCponUVVVXMVe-Syw==/split_config.en.apk' with 1 weak references
+W/com.example.tv(20133): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~aCOLMt5yQ3kgUNOoy6RFKQ==/com.microsoft.office.officehubrow-6G-x_lCponUVVVXMVe-Syw==/split_config.sv.apk' with 1 weak references
+W/com.example.tv(20133): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~aCOLMt5yQ3kgUNOoy6RFKQ==/com.microsoft.office.officehubrow-6G-x_lCponUVVVXMVe-Syw==/split_config.xxhdpi.apk' with 1 weak references
+W/com.example.tv(20133): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~aCOLMt5yQ3kgUNOoy6RFKQ==/com.microsoft.office.officehubrow-6G-x_lCponUVVVXMVe-Syw==/split_dynamic_videoplayback_module.apk' with 1 weak references
+W/com.example.tv(20133): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~aCOLMt5yQ3kgUNOoy6RFKQ==/com.microsoft.office.officehubrow-6G-x_lCponUVVVXMVe-Syw==/split_lenssampledoc.apk' with 1 weak references
+W/com.example.tv(20133): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~aCOLMt5yQ3kgUNOoy6RFKQ==/com.microsoft.office.officehubrow-6G-x_lCponUVVVXMVe-Syw==/split_mainassetpack.apk' with 1 weak references
+W/com.example.tv(20133): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~w7z3wqppOMWPQM8bLyrLAA==/com.translate.all.language.speech.text.translator-TTbd0mDPn0isTUks01o8Lw==/base.apk' with 1 weak references
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9fa30 mBlastBufferQueue=0xb400007aeafafd10 fn= 5 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+W/com.example.tv(20133): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~w7z3wqppOMWPQM8bLyrLAA==/com.translate.all.language.speech.text.translator-TTbd0mDPn0isTUks01o8Lw==/split_config.xxhdpi.apk' with 1 weak references
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9e010 mBlastBufferQueue=0xb400007aeafafd10 fn= 6 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9d0f0 mBlastBufferQueue=0xb400007aeafafd10 fn= 7 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9ffb0 mBlastBufferQueue=0xb400007aeafafd10 fn= 8 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9f1f0 mBlastBufferQueue=0xb400007aeafafd10 fn= 9 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9cb70 mBlastBufferQueue=0xb400007aeafafd10 fn= 10 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9d510 mBlastBufferQueue=0xb400007aeafafd10 fn= 11 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9e9b0 mBlastBufferQueue=0xb400007aeafafd10 fn= 12 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9ccd0 mBlastBufferQueue=0xb400007aeafafd10 fn= 13 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9b570 mBlastBufferQueue=0xb400007aeafafd10 fn= 14 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf983f0 mBlastBufferQueue=0xb400007aeafafd10 fn= 15 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9a0d0 mBlastBufferQueue=0xb400007aeafafd10 fn= 16 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf98810 mBlastBufferQueue=0xb400007aeafafd10 fn= 17 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9ce30 mBlastBufferQueue=0xb400007aeafafd10 fn= 18 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/InsetsController(20133): cancelAnimation: types=ime, animType=0, host=com.example.tv/com.example.tv.MainActivity, from=android.view.InsetsController.notifyFinished:1748 android.view.InsetsAnimationControlImpl.applyChangeInsets:312 android.view.InsetsController.lambda$new$3:918
+I/ImeTracker(20133): com.example.tv:62da451c: onShown     
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9c070 mBlastBufferQueue=0xb400007aeafafd10 fn= 19 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf986b0 mBlastBufferQueue=0xb400007aeafafd10 fn= 19 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/InputMethodManager_LC(20133): showSoftInput(View,I)
+I/ImeTracker(20133): com.example.tv:44cbfc2e: onRequestShow at ORIGIN_CLIENT_SHOW_SOFT_INPUT reason SHOW_SOFT_INPUT 
+I/InputMethodManager_LC(20133): ssi(): flags=0 view=com.example.tv reason = SHOW_SOFT_INPUT
+I/InputMethodManager_LC(20133): ssi() view is not EditText
+D/InputMethodManager(20133): showSoftInput() view=io.flutter.embedding.android.FlutterView{81d96db VFED..... .F...... 0,0-1440,3020 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/InsetsController(20133): show(ime(), fromIme=true)
+I/ImeTracker(20133): com.example.tv:44cbfc2e: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+D/InputMethodManagerUtils(20133): startInputInner - Id : 0
+I/InputMethodManager(20133): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus       
+I/InputMethodManager_LC(20133): showSoftInput(View,I)     
+I/ImeTracker(20133): com.example.tv:6b80eab6: onRequestShow at ORIGIN_CLIENT_SHOW_SOFT_INPUT reason SHOW_SOFT_INPUT 
+I/InputMethodManager_LC(20133): ssi(): flags=0 view=com.example.tv reason = SHOW_SOFT_INPUT
+I/InputMethodManager_LC(20133): ssi() view is not EditText
+D/InputMethodManager(20133): showSoftInput() view=io.flutter.embedding.android.FlutterView{81d96db VFED..... .F...... 0,0-1440,3020 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/InputConnectionAdaptor(20133): The input method toggled cursor monitoring on
+D/InsetsController(20133): show(ime(), fromIme=true)
+I/ImeTracker(20133): com.example.tv:6b80eab6: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+D/InputConnectionAdaptor(20133): The input method toggled text monitoring on
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+D/InputMethodManagerUtils(20133): startInputInner - Id : 0
+I/InputMethodManager(20133): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus       
+I/InputMethodManager_LC(20133): showSoftInput(View,I)     
+I/ImeTracker(20133): com.example.tv:5f240a6f: onRequestShow at ORIGIN_CLIENT_SHOW_SOFT_INPUT reason SHOW_SOFT_INPUT 
+I/InputMethodManager_LC(20133): ssi(): flags=0 view=com.example.tv reason = SHOW_SOFT_INPUT
+I/InputMethodManager_LC(20133): ssi() view is not EditText
+D/InputMethodManager(20133): showSoftInput() view=io.flutter.embedding.android.FlutterView{81d96db VFED..... .F...... 0,0-1440,3020 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/InputConnectionAdaptor(20133): The input method toggled cursor monitoring on
+D/InsetsController(20133): show(ime(), fromIme=true)
+I/ImeTracker(20133): com.example.tv:5f240a6f: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+D/InputConnectionAdaptor(20133): The input method toggled text monitoring on
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+D/InputMethodManagerUtils(20133): startInputInner - Id : 0
+I/InputMethodManager(20133): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus       
+I/InputMethodManager_LC(20133): showSoftInput(View,I)     
+I/ImeTracker(20133): com.example.tv:d4b74bca: onRequestShow at ORIGIN_CLIENT_SHOW_SOFT_INPUT reason SHOW_SOFT_INPUT 
+I/InputMethodManager_LC(20133): ssi(): flags=0 view=com.example.tv reason = SHOW_SOFT_INPUT
+I/InputMethodManager_LC(20133): ssi() view is not EditText
+D/InputMethodManager(20133): showSoftInput() view=io.flutter.embedding.android.FlutterView{81d96db VFED..... .F...... 0,0-1440,3020 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/InputConnectionAdaptor(20133): The input method toggled cursor monitoring on
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+D/InsetsController(20133): show(ime(), fromIme=true)
+I/ImeTracker(20133): com.example.tv:d4b74bca: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+D/InputMethodManagerUtils(20133): startInputInner - Id : 0
+I/InputMethodManager(20133): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus       
+I/InputMethodManager_LC(20133): showSoftInput(View,I)     
+I/ImeTracker(20133): com.example.tv:79369921: onRequestShow at ORIGIN_CLIENT_SHOW_SOFT_INPUT reason SHOW_SOFT_INPUT 
+I/InputMethodManager_LC(20133): ssi(): flags=0 view=com.example.tv reason = SHOW_SOFT_INPUT
+I/InputMethodManager_LC(20133): ssi() view is not EditText
+D/InputMethodManager(20133): showSoftInput() view=io.flutter.embedding.android.FlutterView{81d96db VFED..... .F...... 0,0-1440,3020 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/InputConnectionAdaptor(20133): The input method toggled cursor monitoring on
+D/InsetsController(20133): show(ime(), fromIme=true)
+I/ImeTracker(20133): com.example.tv:79369921: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+I/ViewRootImpl@deba88a[MainActivity](20133): setInTouchMode(false), android.view.ViewRootImpl.checkForLeavingTouchModeAndConsume:9568 android.view.ViewRootImpl.-$$Nest$mcheckForLeavingTouchModeAndConsume:0 android.view.ViewRootImpl$EarlyPostImeInputStage.processKeyEvent:8214 android.view.ViewRootImpl$EarlyPostImeInputStage.onProcess:8198 android.view.ViewRootImpl$InputStage.deliver:7682 android.view.ViewRootImpl$InputStage.onDeliverToNext:7739 android.view.ViewRootImpl$InputStage.forward:7705 android.view.ViewRootImpl$AsyncInputStage.forward:7941 android.view.ViewRootImpl$ImeInputStage.onFinishedInputEvent:8183 android.view.inputmethod.InputMethodManager$PendingEvent.run:4578
+I/ViewRootImpl@deba88a[MainActivity](20133): ViewPostIme key 0
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+I/ViewRootImpl@deba88a[MainActivity](20133): ViewPostIme key 1
+D/InputConnectionAdaptor(20133): The input method toggled text monitoring on
+I/ViewRootImpl@deba88a[MainActivity](20133): ViewPostIme key 0
+I/ViewRootImpl@deba88a[MainActivity](20133): ViewPostIme key 1
+I/ViewRootImpl@deba88a[MainActivity](20133): MSG_WINDOW_TOUCH_MODE_CHANGED
+I/ViewRootImpl@deba88a[MainActivity](20133): MSG_WINDOW_TOUCH_MODE_CHANGED
+D/InputConnectionAdaptor(20133): The input method toggled text monitoring off
+I/ViewRootImpl@deba88a[MainActivity](20133): ViewPostIme key 0
+I/ViewRootImpl@deba88a[MainActivity](20133): ViewPostIme key 1
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+I/ViewRootImpl@deba88a[MainActivity](20133): MSG_WINDOW_TOUCH_MODE_CHANGED
+I/ViewRootImpl@deba88a[MainActivity](20133): MSG_WINDOW_TOUCH_MODE_CHANGED
+I/ImeTracker(20133): com.example.tv:b325a948: onRequestHide at ORIGIN_CLIENT_HIDE_SOFT_INPUT reason HIDE_SOFT_INPUT 
+I/InputMethodManager_LC(20133): hsifw() - flag : 0
+I/InputMethodManager_LC(20133): hsifw() - mService.hideSoftInput
+D/InputConnectionAdaptor(20133): The input method toggled cursor monitoring off
+I/InsetsController(20133): setRequestedVisibleTypes: visible=false, mask=ime, host=com.example.tv/com.example.tv.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1445 android.view.InsetsController.applyAnimation:2005 android.view.InsetsController.applyAnimation:1968 android.view.InsetsController.hide:1403 android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7240 android.view.ViewRootImpl$ViewRootHandler.handleMessage:7166 android.os.Handler.dispatchMessage:106 android.os.Looper.loopOnce:230 android.os.Looper.loop:319 android.app.ActivityThread.main:8919
+I/InsetsController(20133): controlAnimationUncheckedInner: Added types=ime, animType=1, host=com.example.tv/com.example.tv.MainActivity, from=android.view.InsetsController.controlAnimationUnchecked:1449 android.view.InsetsController.applyAnimation:2005 android.view.InsetsController.applyAnimation:1968
+W/WindowOnBackDispatcher(20133): sendCancelIfRunning: isInProgress=falsecallback=ImeCallback=ImeOnBackInvokedCallback@63213986 Callback=android.window.IOnBackInvokedCallback$Stub$Proxy@1028212
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079cafaf9f0 mBlastBufferQueue=0xb400007aeafafd10 fn= 20 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): Resizing android.view.ViewRootImpl@cc2dc8b: frame = [0,0][1440,3200] reportDraw = false forceLayout = false syncSeqId = -1       
+I/InsetsController(20133): onStateChanged: host=com.example.tv/com.example.tv.MainActivity, from=android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7209, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1440, 3200), mDisplayCutout=DisplayCutout{insets=Rect(0, 100 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(681, 0 - 759, 100), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1440 displayHeight=3200 physicalDisplayWidth=1440 physicalDisplayHeight=3200 density={3.75} cutoutSpec={M 0, 0 H -10.4 V 26.66666666666667 H 10.4 V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}  mRoundedCornerFrame=Rect(0, 0 - 1440, 3200), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(1275, 0 - 1440, 100) rotation=0}, mDisplayShape=DisplayShape{ spec=-311912193 displayWidth=1440 displayHeight=3200 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {3 mType=ime mFrame=[0,1855][1440,3200] mVisible=false mFlags=[]}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1440,100] mVisible=true mFlags=[]}, InsetsSource: {2ff00001 mType=navigationBars mFrame=[0,3020][1440,3200] mVisible=true mFlags=[]}, InsetsSource: {2ff00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {2ff00005 mType=mandatorySystemGestures mFrame=[0,3020][1440,3200] mVisible=true mFlags=[]}, InsetsSource: {2ff00006 mType=tappableElement mFrame=[0,3020][1440,3200] mVisible=true mFlags=[]}, InsetsSource: {2ff00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {68b70000 mType=statusBars mFrame=[0,0][1440,100] mVisible=true mFlags=[]}, InsetsSource: {68b70005 mType=mandatorySystemGestures mFrame=[0,0][1440,145] mVisible=true mFlags=[]}, InsetsSource: {68b70006 mType=tappableElement mFrame=[0,0][1440,100] mVisible=true mFlags=[]} }
+I/InsetsSourceConsumer(20133): applyRequestedVisibilityToControl: visible=true, type=navigationBars, host=com.example.tv/com.example.tv.MainActivity
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079cafb0a70 mBlastBufferQueue=0xb400007aeafafd10 fn= 21 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): handleResized, msg = 4 frames=ClientWindowFrames{frame=[0,0][1440,3200] display=[0,0][1440,3200] parentFrame=[0,0][0,0]} forceNextWindowRelayout=false displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9e9b0 mBlastBufferQueue=0xb400007aeafafd10 fn= 22 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079cafb25f0 mBlastBufferQueue=0xb400007aeafafd10 fn= 23 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079cafacc90 mBlastBufferQueue=0xb400007aeafafd10 fn= 24 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079cafa4310 mBlastBufferQueue=0xb400007aeafafd10 fn= 25 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf7d590 mBlastBufferQueue=0xb400007aeafafd10 fn= 26 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079cafa2d10 mBlastBufferQueue=0xb400007aeafafd10 fn= 27 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079cafadd10 mBlastBufferQueue=0xb400007aeafafd10 fn= 28 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079cafada50 mBlastBufferQueue=0xb400007aeafafd10 fn= 29 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079cafa1f50 mBlastBufferQueue=0xb400007aeafafd10 fn= 30 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079cafb9d90 mBlastBufferQueue=0xb400007aeafafd10 fn= 31 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9c330 mBlastBufferQueue=0xb400007aeafafd10 fn= 32 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf995d0 mBlastBufferQueue=0xb400007aeafafd10 fn= 33 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf99e10 mBlastBufferQueue=0xb400007aeafafd10 fn= 34 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079caf9bf10 mBlastBufferQueue=0xb400007aeafafd10 fn= 35 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/InsetsController(20133): cancelAnimation: types=ime, animType=1, host=com.example.tv/com.example.tv.MainActivity, from=android.view.InsetsController.notifyFinished:1748 android.view.InsetsAnimationControlImpl.applyChangeInsets:312 android.view.InsetsController.lambda$new$3:918
+I/ImeTracker(20133): com.example.tv:26330301: onRequestHide at ORIGIN_CLIENT_HIDE_SOFT_INPUT reason HIDE_SOFT_INPUT_BY_INSETS_API
+I/InputMethodManager_LC(20133): notifyImeHidden: IInputMethodManagerGlobalInvoker.hideSoftInput
+I/ImeTracker(20133): com.example.tv:b325a948: onHidden    
+I/ViewRootImpl@deba88a[MainActivity](20133): mWNT: t=0xb4000079cafaf470 mBlastBufferQueue=0xb400007aeafafd10 fn= 36 mRenderHdrSdrRatio=1.0 caller= android.view.SyncRtSurfaceTransactionApplier.applyTransaction:96 android.view.SyncRtSurfaceTransactionApplier.lambda$scheduleApply$0:69 android.view.SyncRtSurfaceTransactionApplier.$r8$lambda$SgowXC58rj3PR958kHUfRgLZmvE:0
+I/ViewRootImpl@deba88a[MainActivity](20133): Resizing android.view.ViewRootImpl@cc2dc8b: frame = [0,0][1440,3200] reportDraw = false forceLayout = false syncSeqId = -1       
+I/InsetsController(20133): onStateChanged: host=com.example.tv/com.example.tv.MainActivity, from=android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7196, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1440, 3200), mDisplayCutout=DisplayCutout{insets=Rect(0, 100 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(681, 0 - 759, 100), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1440 displayHeight=3200 physicalDisplayWidth=1440 physicalDisplayHeight=3200 density={3.75} cutoutSpec={M 0, 0 H -10.4 V 26.66666666666667 H 10.4 V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}  mRoundedCornerFrame=Rect(0, 0 - 1440, 3200), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(1275, 0 - 1440, 100) rotation=0}, mDisplayShape=DisplayShape{ spec=-311912193 displayWidth=1440 displayHeight=3200 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {3 mType=ime mFrame=[0,0][0,0] mVisible=false mFlags=[]}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1440,100] mVisible=true mFlags=[]}, InsetsSource: {2ff00001 mType=navigationBars mFrame=[0,3020][1440,3200] mVisible=true mFlags=[]}, InsetsSource: {2ff00004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {2ff00005 mType=mandatorySystemGestures mFrame=[0,3020][1440,3200] mVisible=true mFlags=[]}, InsetsSource: {2ff00006 mType=tappableElement mFrame=[0,3020][1440,3200] mVisible=true mFlags=[]}, InsetsSource: {2ff00024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {68b70000 mType=statusBars mFrame=[0,0][1440,100] mVisible=true mFlags=[]}, InsetsSource: {68b70005 mType=mandatorySystemGestures mFrame=[0,0][1440,145] mVisible=true mFlags=[]}, InsetsSource: {68b70006 mType=tappableElement mFrame=[0,0][1440,100] mVisible=true mFlags=[]} }       
+I/ViewRootImpl@deba88a[MainActivity](20133): handleResized, msg = 4 frames=ClientWindowFrames{frame=[0,0][1440,3200] display=[0,0][1440,3200] parentFrame=[0,0][0,0]} forceNextWindowRelayout=false displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+I/ViewRootImpl(20133): updatePointerIcon pointerType = 1, calling pid = 20133
+D/InputManagerGlobal(20133): setPointerIconType iconId = 1, callingPid = 20133
+I/flutter (20133): Fetching EPG data from: http://aabb.is:2095/xmltv.php?username=test&password=test        
+I/flutter (20133): Successfully stored 3648 unique EPG channels.
+I/Box     (20133): [SvHtHd] Request completed with 200 in 0.31 ms 745 bytes (GET /)
+I/Box     (20133): [SvHtHd] Request completed with 200 in 0.29 ms 18636 bytes (GET /material-design-icons.css)      
+I/Box     (20133): [SvHtHd] Request completed with 200 in 0.50 ms 625 bytes (GET /css/app.492c65cc.css)
+I/Box     (20133): [SvHtHd] Request completed with 200 in 0.30 ms 57131 bytes (GET /css/chunk-vendors.ec5a2697.css) 
+I/Box     (20133): [SvHtHd] Request completed with 200 in 0.23 ms 27642 bytes (GET /js/app.77f4e648.js)
+I/Box     (20133): [SvHtHd] Request completed with 200 in 1.36 ms 329770 bytes (GET /js/chunk-vendors.46840fae.js)  
+I/Box     (20133): [SvHtHd] Request completed with 200 in 0.61 ms 228 bytes (GET /api/v2/auth-info)
+I/Box     (20133): [SvHtHd] Request failed with 401 in 1.47 ms 127 bytes (GET /api/schema)
+I/Box     (20133): [SvHtHd] Request completed with 200 in 0.29 ms 125185 bytes (GET /MaterialIcons-Regular.woff2)   
+I/Box     (20133): [SvHtHd] Request failed with 401 in 0.39 ms 127 bytes (GET /api/v2/status)
+I/Box     (20133): [SvHtHd] Request completed with 200 in 0.20 ms 228 bytes (GET /api/v2/auth-info)
+I/Box     (20133): [SvHtHd] Request completed with 200 in 0.18 ms 228 bytes (GET /api/v2/auth-info)
+I/Box     (20133): [SvHtHd] Request completed with 200 in 0.07 ms 39 bytes (POST /api/v2/sessions)
+I/Box     (20133): [SvHtHd] Request completed with 200 in 0.64 ms 39 bytes (POST /api/v2/sessions)
+I/Box     (20133): [SvHtHd] Request completed with 200 in 0.47 ms 131 bytes (GET /api/v2/status)
+I/Box     (20133): [SvHtHd] Request completed with 200 in 0.31 ms 13796 bytes (GET /api/schema)
+I/Box     (20133): [SvHtHd] Request completed with 200 in 0.64 ms 12052 bytes (GET /favicon.png)
+I/Box     (20133): [SvHtHd] Request completed with 200 in 0.23 ms 131 bytes (GET /api/v2/status)
+I/Box     (20133): [SvHtHd] Request completed with 200 in 0.67 ms 1938 bytes (GET /api/query?entity_name=Category&offset=0&limit=50)

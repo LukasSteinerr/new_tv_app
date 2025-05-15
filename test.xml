@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE tv SYSTEM "xmltv.dtd">
+<tv generator-info-name="My Streaming Server" generator-info-url="aabb.is">
+<channel id="bbcnordic.no">
+    <display-name>BBC Nordic FHD NO</display-name>
+    <icon src="http://icon-tmdb.me/stalker_portal/misc/logos/320/8261.png?29436" />
+<channel id="">
+    <display-name>Discovery Science FHD IS</display-name>
+</channel>
+<channel id="siminnsport4.is">
+    <display-name>Síminn Sport 4 FHD IS</display-name>
+    <icon src="http://icon-tmdb.me/stalker_portal/misc/logos/320/8261.png?29436" />
+</channel>
+<channel id="siminnsport5.is">
+    <display-name>Síminn Sport 4 FHD IS</display-name>
+</channel>
+<channel id="vodasport.is">
+    <display-name>Vodafone Sports FHD IS</display-name>
+</channel>
+<channel id="wobi.mx">
+    <display-name>Wobi FHD LAM</display-name>
+    <icon src="http://103.176.90.118/picons/logos/logos/WOBI.png" />
+</channel>
+<channel id="afizzionados.mx">
+    <display-name>Afizzionados FHD MX</display-name>
+    <icon src="http://logo.protv.cc/picons/logos/AFIZZIONADOS.png" />
+</channel>
+<channel id="teleformula.mx">
+    <display-name>Teleformula MX</display-name>
+    <icon src="https://static.epg.best/mx/TeleFormula.mx.png" />
+</channel>
+<channel id="xhpdt.mx">
+    <display-name>Televisa Puebla FHD MX</display-name>
+</channel>
+<channel id="">
+    <display-name>Canal 12 Melo HD UY</display-name>
+</channel>
+<programme start="20250512230500 +0200" stop="20250513000500 +0200" channel="bbcnordic.no">
+    <title>The Graham Norton Show</title>
+    <desc>Talkshow, Storbritannia, 2024. Den prisbelønte irske talkshow-verten Graham Norton har
+        store navn på gjestelisten hver uke. Graham Norton presenterer et livlig prateprogram fullt
+        Billy Crystal, Hugh Bonneville, Emily Mortimer, Pharrell Williams og Michael Kiwanuka.</desc>
+</programme>
+<programme start="20250512230000 +0200" stop="20250513000000 +0200" channel="nrkrogaland24.no">
+    <title>NRK Rogaland 24</title>
+    <desc>Regionalt innhold, Norge. NRK Rogaland 24 er et døgnet-rundt-tilbud med lokalnyheter,
+        kultur, sport og vær.</desc>
+</programme>
+<programme start="20250512230000 +0200" stop="20250512231500 +0200" channel="nrk1lydtekst.no">
+    <title>Kveldsnytt</title>
+    <desc>Kveldens siste nyheter med sport og vær. Siste nytt fra NRKs nyhetsredaksjon med sport og
+        vær.</desc>
+</programme>
+<programme start="20250512231500 +0200" stop="20250513000500 +0200" channel="nrk1lydtekst.no">
+    <title>Bardot</title>
+    <desc>Drama, Frankrike, 2023. Dramaserie om den franske filmstjerna Brigitte Bardots stormfulle
+        veg frå uskyldig skolejente til sexikon og provokatør. Filmkarrieren skyt fart, og Brigitte
+        blir raskt ein medieyndling. Men draumehuset i Saint-Tropez blir eit fengsel omringa av
+        turistar og journalistar.</desc>
+</programme>
+<programme start="20250512231500 +0200" stop="20250513000000 +0200" channel="nrk3lydtekst.no">
+    <title>Made in Korea: The K-Pop Experience</title>
+    <desc>Dokumentar, Storbritannia, 2024. Fem unge menn, ein stor draum. Britane i boybandet Dear
+        Alice vil erobre k-pop-verda. Dei har 100 dagar i Seoul på å imponere folka bak NCT og
+        Riize. Blaise strever med å finne plassen sin i gruppa. Gutane får prøve seg på noko av det
+        viktigste for alle k-pop-band – musikkvideoen.</desc>
+</programme>
+<programme start="20250512230000 +0200" stop="20250512231500 +0200" channel="nrk1osloogviken.no">
+    <title>Kveldsnytt</title>
+    <desc>Kveldens siste nyheter med sport og vær. Siste nytt fra NRKs nyhetsredaksjon med sport og
+        vær.</desc>
+</programme>
+<programme start="20250512231500 +0200" stop="20250513000500 +0200" channel="nrk1osloogviken.no">
+    <title>Bardot</title>
+    <desc>Drama, Frankrike, 2023. Dramaserie om den franske filmstjerna Brigitte Bardots stormfulle
+        veg frå uskyldig skolejente til sexikon og provokatør. Filmkarrieren skyt fart, og Brigitte
+        blir raskt ein medieyndling. Men draumehuset i Saint-Tropez blir eit fengsel omringa av
+        turistar og journalistar.</desc>
+</programme>
+<programme start="20250512230000 +0200" stop="20250512231500 +0200"
+    channel="nrk1vestfoldogtelemark.no">
+    <title>Kveldsnytt</title>
+    <desc>Kveldens siste nyheter med sport og vær. Siste nytt fra NRKs nyhetsredaksjon med sport og
+        vær.</desc>
+</programme>
+<programme start="20250512231500 +0200" stop="20250513000500 +0200"
+    channel="nrk1vestfoldogtelemark.no">
+    <title>Bardot</title>
+    <desc>Drama, Frankrike, 2023. Dramaserie om den franske filmstjerna Brigitte Bardots stormfulle
+        veg frå uskyldig skolejente til sexikon og provokatør. Filmkarrieren skyt fart, og Brigitte
+        blir raskt ein medieyndling. Men draumehuset i Saint-Tropez blir eit fengsel omringa av
+        turistar og journalistar.</desc>
+</programme>
+<programme start="20250512230000 +0200" stop="20250512231500 +0200"
+    channel="nrk1trondelag.no">
+    <title>Kveldsnytt</title>
+    <desc>Kveldens siste nyheter med sport og vær. Siste nytt fra NRKs nyhetsredaksjon med sport og
+        vær.</desc>
+
+        

@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:xml/xml.dart';
+import '../models/epg_channel_info.dart';
+import '../services/objectbox_service.dart'; // Added for ObjectBoxService
 import '../models/playlist.dart';
 import '../models/channel.dart';
 import '../models/category.dart';
@@ -8,6 +11,10 @@ import '../models/tv_series.dart';
 import '../models/tv_episode.dart';
 
 class XtreamService {
+  final ObjectBoxService _objectBoxService; // Added ObjectBoxService instance
+
+  XtreamService(this._objectBoxService); // Added constructor
+
   Future<Map<String, dynamic>> fetchXtreamData(Playlist playlist) async {
     if (playlist.username == null || playlist.password == null) {
       throw Exception(
@@ -28,6 +35,14 @@ class XtreamService {
 
       // Fetch series categories and series
       final seriesData = await _fetchSeriesData(baseUrl, playlist);
+
+      // Fetch and store EPG data
+      try {
+        await _fetchAndStoreEpgData(baseUrl, playlist);
+      } catch (e) {
+        // Log EPG fetching error but don't let it break the whole process
+        print('Error fetching or storing EPG data: $e');
+      }
 
       return {
         'channels': liveData['channels'],
@@ -354,5 +369,67 @@ class XtreamService {
     }
 
     return episodes;
+  }
+
+  Future<void> _fetchAndStoreEpgData(String baseUrl, Playlist playlist) async {
+    if (playlist.username == null || playlist.password == null) {
+      print('Username or password missing, skipping EPG fetch.');
+      return;
+    }
+
+    final epgUrl =
+        '$baseUrl/xmltv.php?username=${playlist.username}&password=${playlist.password}';
+    print('Fetching EPG data from: $epgUrl');
+
+    try {
+      final response = await http.get(Uri.parse(epgUrl));
+      if (response.statusCode == 200) {
+        final document = XmlDocument.parse(response.body);
+        final channelsXml = document.findAllElements('channel');
+        // Use a Map to ensure uniqueness of xmlTvId before creating EpgChannelInfo objects
+        final uniqueEpgInfosMap = <String, EpgChannelInfo>{};
+
+        for (final channelElement in channelsXml) {
+          final xmlTvId = channelElement.getAttribute('id');
+          final displayNameElement =
+              channelElement.findElements('display-name').firstOrNull;
+          final iconElement = channelElement.findElements('icon').firstOrNull;
+
+          if (xmlTvId != null &&
+              xmlTvId.isNotEmpty &&
+              displayNameElement != null) {
+            final displayName = displayNameElement.innerText;
+            final iconUrl = iconElement?.getAttribute('src');
+
+            // If an ID is already processed, the new one will overwrite the old one in the map.
+            // This effectively keeps the last encountered version for a duplicate ID.
+            uniqueEpgInfosMap[xmlTvId] = EpgChannelInfo(
+              xmlTvId: xmlTvId,
+              displayName: displayName,
+              iconUrl: iconUrl,
+            );
+          }
+        }
+
+        final epgChannelInfos =
+            uniqueEpgInfosMap.values.toList(); // Convert map values to list
+
+        if (epgChannelInfos.isNotEmpty) {
+          await _objectBoxService.storeEpgChannelInfos(epgChannelInfos);
+          print(
+            'Successfully stored ${epgChannelInfos.length} unique EPG channels.',
+          );
+        } else {
+          print('No EPG channel information found in the XML.');
+        }
+      } else {
+        print(
+          'Failed to load EPG data: ${response.statusCode} ${response.reasonPhrase}',
+        );
+      }
+    } catch (e) {
+      print('Error parsing EPG XML or storing data: $e');
+      // Optionally rethrow or handle more gracefully
+    }
   }
 }

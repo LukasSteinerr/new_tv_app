@@ -16,6 +16,7 @@ import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
 import 'models/category.dart';
 import 'models/channel.dart';
+import 'models/epg_channel_info.dart';
 import 'models/movie.dart';
 import 'models/playlist.dart';
 import 'models/tv_episode.dart';
@@ -433,6 +434,41 @@ final _entities = <obx_int.ModelEntity>[
       ),
     ],
   ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(7, 8557467261400270990),
+    name: 'EpgChannelInfo',
+    lastPropertyId: const obx_int.IdUid(4, 5468249262399665047),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 94372922698955013),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 6384017336063810301),
+        name: 'xmlTvId',
+        type: 9,
+        flags: 2080,
+        indexId: const obx_int.IdUid(9, 6058583542607390521),
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(3, 1297958449039772196),
+        name: 'displayName',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 5468249262399665047),
+        name: 'iconUrl',
+        type: 9,
+        flags: 0,
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
 ];
 
 /// Shortcut for [obx.Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -473,8 +509,8 @@ Future<obx.Store> openStore({
 obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
     entities: _entities,
-    lastEntityId: const obx_int.IdUid(6, 4381905975208352576),
-    lastIndexId: const obx_int.IdUid(8, 4248628634840899570),
+    lastEntityId: const obx_int.IdUid(7, 8557467261400270990),
+    lastIndexId: const obx_int.IdUid(9, 6058583542607390521),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
     retiredEntityUids: const [],
@@ -1027,6 +1063,55 @@ obx_int.ModelDefinition getObjectBoxModel() {
         return object;
       },
     ),
+    EpgChannelInfo: obx_int.EntityDefinition<EpgChannelInfo>(
+      model: _entities[6],
+      toOneRelations: (EpgChannelInfo object) => [],
+      toManyRelations: (EpgChannelInfo object) => {},
+      getId: (EpgChannelInfo object) => object.id,
+      setId: (EpgChannelInfo object, int id) {
+        object.id = id;
+      },
+      objectToFB: (EpgChannelInfo object, fb.Builder fbb) {
+        final xmlTvIdOffset = fbb.writeString(object.xmlTvId);
+        final displayNameOffset = fbb.writeString(object.displayName);
+        final iconUrlOffset =
+            object.iconUrl == null ? null : fbb.writeString(object.iconUrl!);
+        fbb.startTable(5);
+        fbb.addInt64(0, object.id);
+        fbb.addOffset(1, xmlTvIdOffset);
+        fbb.addOffset(2, displayNameOffset);
+        fbb.addOffset(3, iconUrlOffset);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+        final idParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          4,
+          0,
+        );
+        final xmlTvIdParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 6, '');
+        final displayNameParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 8, '');
+        final iconUrlParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGetNullable(buffer, rootOffset, 10);
+        final object = EpgChannelInfo(
+          id: idParam,
+          xmlTvId: xmlTvIdParam,
+          displayName: displayNameParam,
+          iconUrl: iconUrlParam,
+        );
+
+        return object;
+      },
+    ),
   };
 
   return obx_int.ModelDefinition(model, bindings);
@@ -1325,5 +1410,28 @@ class TvSeries_ {
   /// see [TvSeries.episodes]
   static final episodes = obx.QueryBacklinkToMany<TvEpisode, TvSeries>(
     TvEpisode_.series,
+  );
+}
+
+/// [EpgChannelInfo] entity fields to define ObjectBox queries.
+class EpgChannelInfo_ {
+  /// See [EpgChannelInfo.id].
+  static final id = obx.QueryIntegerProperty<EpgChannelInfo>(
+    _entities[6].properties[0],
+  );
+
+  /// See [EpgChannelInfo.xmlTvId].
+  static final xmlTvId = obx.QueryStringProperty<EpgChannelInfo>(
+    _entities[6].properties[1],
+  );
+
+  /// See [EpgChannelInfo.displayName].
+  static final displayName = obx.QueryStringProperty<EpgChannelInfo>(
+    _entities[6].properties[2],
+  );
+
+  /// See [EpgChannelInfo.iconUrl].
+  static final iconUrl = obx.QueryStringProperty<EpgChannelInfo>(
+    _entities[6].properties[3],
   );
 }

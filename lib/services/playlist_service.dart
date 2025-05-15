@@ -11,9 +11,10 @@ import 'xtream_service.dart';
 class PlaylistService {
   final ObjectBoxService _objectBoxService;
   final M3uService _m3uService = M3uService();
-  final XtreamService _xtreamService = XtreamService();
+  final XtreamService _xtreamService;
 
-  PlaylistService(this._objectBoxService);
+  PlaylistService(this._objectBoxService)
+    : _xtreamService = XtreamService(_objectBoxService);
 
   Future<List<Playlist>> getAllPlaylists() async {
     return _objectBoxService.getAllPlaylists();

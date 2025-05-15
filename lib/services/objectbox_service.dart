@@ -6,6 +6,7 @@ import '../models/category.dart';
 import '../models/movie.dart';
 import '../models/tv_series.dart';
 import '../models/tv_episode.dart';
+import '../models/epg_channel_info.dart'; // Added EPG Channel Info
 import '../objectbox.g.dart';
 
 class ObjectBoxService {
@@ -17,6 +18,8 @@ class ObjectBoxService {
   late final Box<Movie> _movieBox;
   late final Box<TvSeries> _tvSeriesBox;
   late final Box<TvEpisode> _tvEpisodeBox;
+  late final Box<EpgChannelInfo>
+  _epgChannelInfoBox; // Added EPG Channel Info Box
 
   // Admin instance for ObjectBox browser
   Admin? _admin;
@@ -28,6 +31,9 @@ class ObjectBoxService {
     _movieBox = Box<Movie>(_store);
     _tvSeriesBox = Box<TvSeries>(_store);
     _tvEpisodeBox = Box<TvEpisode>(_store);
+    _epgChannelInfoBox = Box<EpgChannelInfo>(
+      _store,
+    ); // Initialize EPG Channel Info Box
 
     // Initialize Admin for debug builds
     if (Admin.isAvailable()) {
@@ -209,5 +215,48 @@ class ObjectBoxService {
     // Close Admin if it was initialized
     _admin?.close();
     _store.close();
+  }
+
+  // EPG Channel Info operations
+  Future<void> storeEpgChannelInfos(
+    List<EpgChannelInfo> epgChannelInfos,
+  ) async {
+    final List<EpgChannelInfo> toPut = [];
+    for (var newInfo in epgChannelInfos) {
+      // Check if an EPG entry with this xmlTvId already exists
+      final query =
+          _epgChannelInfoBox
+              .query(EpgChannelInfo_.xmlTvId.equals(newInfo.xmlTvId))
+              .build();
+      final existingInfo = query.findFirst();
+      query.close();
+
+      if (existingInfo != null) {
+        // Update existing entry
+        existingInfo.displayName = newInfo.displayName;
+        existingInfo.iconUrl = newInfo.iconUrl; // Update icon URL as well
+        toPut.add(existingInfo);
+      } else {
+        // Add new entry
+        toPut.add(newInfo);
+      }
+    }
+    if (toPut.isNotEmpty) {
+      _epgChannelInfoBox.putMany(toPut);
+    }
+  }
+
+  List<EpgChannelInfo> getAllEpgChannelInfos() {
+    return _epgChannelInfoBox.getAll();
+  }
+
+  EpgChannelInfo? getEpgChannelInfoByXmlTvId(String xmlTvId) {
+    final query =
+        _epgChannelInfoBox
+            .query(EpgChannelInfo_.xmlTvId.equals(xmlTvId))
+            .build();
+    final result = query.findFirst();
+    query.close();
+    return result;
   }
 }
