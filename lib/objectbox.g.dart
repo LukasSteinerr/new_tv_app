@@ -20,6 +20,7 @@ import 'models/epg_channel_info.dart';
 import 'models/movie.dart';
 import 'models/playlist.dart';
 import 'models/tv_episode.dart';
+import 'models/tv_program.dart';
 import 'models/tv_series.dart';
 
 export 'package:objectbox/objectbox.dart'; // so that callers only have to import this file
@@ -469,6 +470,53 @@ final _entities = <obx_int.ModelEntity>[
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[],
   ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(8, 3456862542921013776),
+    name: 'TvProgram',
+    lastPropertyId: const obx_int.IdUid(6, 3384765055618164560),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 9182398847096650432),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 879429844366273503),
+        name: 'channelXmlTvId',
+        type: 9,
+        flags: 2048,
+        indexId: const obx_int.IdUid(10, 8146096163909404869),
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(3, 4220292751474022412),
+        name: 'title',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 5639544347299011667),
+        name: 'description',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(5, 7542204186001361067),
+        name: 'startTime',
+        type: 10,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(6, 3384765055618164560),
+        name: 'stopTime',
+        type: 10,
+        flags: 0,
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
 ];
 
 /// Shortcut for [obx.Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -509,8 +557,8 @@ Future<obx.Store> openStore({
 obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
     entities: _entities,
-    lastEntityId: const obx_int.IdUid(7, 8557467261400270990),
-    lastIndexId: const obx_int.IdUid(9, 6058583542607390521),
+    lastEntityId: const obx_int.IdUid(8, 3456862542921013776),
+    lastIndexId: const obx_int.IdUid(10, 8146096163909404869),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
     retiredEntityUids: const [],
@@ -1112,6 +1160,67 @@ obx_int.ModelDefinition getObjectBoxModel() {
         return object;
       },
     ),
+    TvProgram: obx_int.EntityDefinition<TvProgram>(
+      model: _entities[7],
+      toOneRelations: (TvProgram object) => [],
+      toManyRelations: (TvProgram object) => {},
+      getId: (TvProgram object) => object.id,
+      setId: (TvProgram object, int id) {
+        object.id = id;
+      },
+      objectToFB: (TvProgram object, fb.Builder fbb) {
+        final channelXmlTvIdOffset = fbb.writeString(object.channelXmlTvId);
+        final titleOffset = fbb.writeString(object.title);
+        final descriptionOffset =
+            object.description == null
+                ? null
+                : fbb.writeString(object.description!);
+        fbb.startTable(7);
+        fbb.addInt64(0, object.id);
+        fbb.addOffset(1, channelXmlTvIdOffset);
+        fbb.addOffset(2, titleOffset);
+        fbb.addOffset(3, descriptionOffset);
+        fbb.addInt64(4, object.startTime.millisecondsSinceEpoch);
+        fbb.addInt64(5, object.stopTime.millisecondsSinceEpoch);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+        final idParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          4,
+          0,
+        );
+        final channelXmlTvIdParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 6, '');
+        final titleParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 8, '');
+        final descriptionParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGetNullable(buffer, rootOffset, 10);
+        final startTimeParam = DateTime.fromMillisecondsSinceEpoch(
+          const fb.Int64Reader().vTableGet(buffer, rootOffset, 12, 0),
+        );
+        final stopTimeParam = DateTime.fromMillisecondsSinceEpoch(
+          const fb.Int64Reader().vTableGet(buffer, rootOffset, 14, 0),
+        );
+        final object = TvProgram(
+          id: idParam,
+          channelXmlTvId: channelXmlTvIdParam,
+          title: titleParam,
+          description: descriptionParam,
+          startTime: startTimeParam,
+          stopTime: stopTimeParam,
+        );
+
+        return object;
+      },
+    ),
   };
 
   return obx_int.ModelDefinition(model, bindings);
@@ -1433,5 +1542,38 @@ class EpgChannelInfo_ {
   /// See [EpgChannelInfo.iconUrl].
   static final iconUrl = obx.QueryStringProperty<EpgChannelInfo>(
     _entities[6].properties[3],
+  );
+}
+
+/// [TvProgram] entity fields to define ObjectBox queries.
+class TvProgram_ {
+  /// See [TvProgram.id].
+  static final id = obx.QueryIntegerProperty<TvProgram>(
+    _entities[7].properties[0],
+  );
+
+  /// See [TvProgram.channelXmlTvId].
+  static final channelXmlTvId = obx.QueryStringProperty<TvProgram>(
+    _entities[7].properties[1],
+  );
+
+  /// See [TvProgram.title].
+  static final title = obx.QueryStringProperty<TvProgram>(
+    _entities[7].properties[2],
+  );
+
+  /// See [TvProgram.description].
+  static final description = obx.QueryStringProperty<TvProgram>(
+    _entities[7].properties[3],
+  );
+
+  /// See [TvProgram.startTime].
+  static final startTime = obx.QueryDateProperty<TvProgram>(
+    _entities[7].properties[4],
+  );
+
+  /// See [TvProgram.stopTime].
+  static final stopTime = obx.QueryDateProperty<TvProgram>(
+    _entities[7].properties[5],
   );
 }

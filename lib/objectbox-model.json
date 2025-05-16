@@ -361,10 +361,51 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "8:3456862542921013776",
+      "lastPropertyId": "6:3384765055618164560",
+      "name": "TvProgram",
+      "properties": [
+        {
+          "id": "1:9182398847096650432",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:879429844366273503",
+          "name": "channelXmlTvId",
+          "type": 9,
+          "flags": 2048,
+          "indexId": "10:8146096163909404869"
+        },
+        {
+          "id": "3:4220292751474022412",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "4:5639544347299011667",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "5:7542204186001361067",
+          "name": "startTime",
+          "type": 10
+        },
+        {
+          "id": "6:3384765055618164560",
+          "name": "stopTime",
+          "type": 10
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "7:8557467261400270990",
-  "lastIndexId": "9:6058583542607390521",
+  "lastEntityId": "8:3456862542921013776",
+  "lastIndexId": "10:8146096163909404869",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,

@@ -4,7 +4,7 @@ import '../models/playlist.dart';
 import '../models/category.dart';
 import '../models/channel.dart';
 import '../services/playlist_service.dart';
-import 'category_channels_screen.dart'; // Will likely remove or change usage
+// Will likely remove or change usage
 import '../widgets/time_slider_widget.dart';
 import 'universal_video_player.dart'; // Assuming a player screen
 
@@ -163,7 +163,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
               onTap: () => _onCategorySelectedInDrawer(category),
               selected: _selectedCategoryInDrawer?.id == category.id,
             );
-          }).toList(),
+          }),
         ],
       ),
     );

@@ -6,8 +6,10 @@ import '../models/category.dart';
 import '../models/movie.dart';
 import '../models/tv_series.dart';
 import '../models/tv_episode.dart';
-import '../models/epg_channel_info.dart'; // Added EPG Channel Info
+import '../models/epg_channel_info.dart';
+import '../models/tv_program.dart';
 import '../objectbox.g.dart';
+import 'dart:developer' as developer;
 
 class ObjectBoxService {
   static ObjectBoxService? _instance;
@@ -18,10 +20,9 @@ class ObjectBoxService {
   late final Box<Movie> _movieBox;
   late final Box<TvSeries> _tvSeriesBox;
   late final Box<TvEpisode> _tvEpisodeBox;
-  late final Box<EpgChannelInfo>
-  _epgChannelInfoBox; // Added EPG Channel Info Box
+  late final Box<EpgChannelInfo> _epgChannelInfoBox;
+  late final Box<TvProgram> _tvProgramBox;
 
-  // Admin instance for ObjectBox browser
   Admin? _admin;
 
   ObjectBoxService._create(this._store) {
@@ -31,13 +32,34 @@ class ObjectBoxService {
     _movieBox = Box<Movie>(_store);
     _tvSeriesBox = Box<TvSeries>(_store);
     _tvEpisodeBox = Box<TvEpisode>(_store);
-    _epgChannelInfoBox = Box<EpgChannelInfo>(
-      _store,
-    ); // Initialize EPG Channel Info Box
+    _epgChannelInfoBox = Box<EpgChannelInfo>(_store);
+    _tvProgramBox = Box<TvProgram>(_store);
 
-    // Initialize Admin for debug builds
-    if (Admin.isAvailable()) {
-      _admin = Admin(_store);
+    final isAdminAvailable = Admin.isAvailable();
+    developer.log(
+      'Admin.isAvailable(): $isAdminAvailable',
+      name: 'ObjectBoxService',
+    );
+    if (isAdminAvailable) {
+      try {
+        _admin = Admin(_store);
+        developer.log(
+          'Admin initialized. Admin instance: ${_admin != null ? "created" : "null"}',
+          name: 'ObjectBoxService',
+        );
+      } catch (e, s) {
+        developer.log(
+          'Error initializing Admin: $e',
+          name: 'ObjectBoxService',
+          error: e,
+          stackTrace: s,
+        );
+      }
+    } else {
+      developer.log(
+        'Admin is not available. Ensure you are in a debug build and native dependencies are correct.',
+        name: 'ObjectBoxService',
+      );
     }
   }
 
@@ -51,27 +73,13 @@ class ObjectBoxService {
   }
 
   // Playlist operations
-  List<Playlist> getAllPlaylists() {
-    return _playlistBox.getAll();
-  }
-
-  int addPlaylist(Playlist playlist) {
-    return _playlistBox.put(playlist);
-  }
-
-  bool deletePlaylist(int id) {
-    return _playlistBox.remove(id);
-  }
-
-  Playlist? getPlaylist(int id) {
-    return _playlistBox.get(id);
-  }
+  List<Playlist> getAllPlaylists() => _playlistBox.getAll();
+  int addPlaylist(Playlist playlist) => _playlistBox.put(playlist);
+  bool deletePlaylist(int id) => _playlistBox.remove(id);
+  Playlist? getPlaylist(int id) => _playlistBox.get(id);
 
   // Channel operations
-  List<Channel> getAllChannels() {
-    return _channelBox.getAll();
-  }
-
+  List<Channel> getAllChannels() => _channelBox.getAll();
   List<Channel> getChannelsByPlaylist(int playlistId) {
     final query =
         _channelBox.query(Channel_.playlist.equals(playlistId)).build();
@@ -88,23 +96,12 @@ class ObjectBoxService {
     return results;
   }
 
-  int addChannel(Channel channel) {
-    return _channelBox.put(channel);
-  }
-
-  void addChannels(List<Channel> channels) {
-    _channelBox.putMany(channels);
-  }
-
-  bool deleteChannel(int id) {
-    return _channelBox.remove(id);
-  }
+  int addChannel(Channel channel) => _channelBox.put(channel);
+  void addChannels(List<Channel> channels) => _channelBox.putMany(channels);
+  bool deleteChannel(int id) => _channelBox.remove(id);
 
   // Category operations
-  List<Category> getAllCategories() {
-    return _categoryBox.getAll();
-  }
-
+  List<Category> getAllCategories() => _categoryBox.getAll();
   List<Category> getCategoriesByPlaylist(int playlistId) {
     final query =
         _categoryBox.query(Category_.playlist.equals(playlistId)).build();
@@ -113,23 +110,13 @@ class ObjectBoxService {
     return results;
   }
 
-  int addCategory(Category category) {
-    return _categoryBox.put(category);
-  }
-
-  void addCategories(List<Category> categories) {
-    _categoryBox.putMany(categories);
-  }
-
-  bool deleteCategory(int id) {
-    return _categoryBox.remove(id);
-  }
+  int addCategory(Category category) => _categoryBox.put(category);
+  void addCategories(List<Category> categories) =>
+      _categoryBox.putMany(categories);
+  bool deleteCategory(int id) => _categoryBox.remove(id);
 
   // Movie operations
-  List<Movie> getAllMovies() {
-    return _movieBox.getAll();
-  }
-
+  List<Movie> getAllMovies() => _movieBox.getAll();
   List<Movie> getMoviesByPlaylist(int playlistId) {
     final query = _movieBox.query(Movie_.playlist.equals(playlistId)).build();
     final results = query.find();
@@ -144,23 +131,12 @@ class ObjectBoxService {
     return results;
   }
 
-  int addMovie(Movie movie) {
-    return _movieBox.put(movie);
-  }
-
-  void addMovies(List<Movie> movies) {
-    _movieBox.putMany(movies);
-  }
-
-  bool deleteMovie(int id) {
-    return _movieBox.remove(id);
-  }
+  int addMovie(Movie movie) => _movieBox.put(movie);
+  void addMovies(List<Movie> movies) => _movieBox.putMany(movies);
+  bool deleteMovie(int id) => _movieBox.remove(id);
 
   // TV Series operations
-  List<TvSeries> getAllTvSeries() {
-    return _tvSeriesBox.getAll();
-  }
-
+  List<TvSeries> getAllTvSeries() => _tvSeriesBox.getAll();
   List<TvSeries> getTvSeriesByPlaylist(int playlistId) {
     final query =
         _tvSeriesBox.query(TvSeries_.playlist.equals(playlistId)).build();
@@ -177,17 +153,10 @@ class ObjectBoxService {
     return results;
   }
 
-  int addTvSeries(TvSeries series) {
-    return _tvSeriesBox.put(series);
-  }
-
-  void addTvSeriesList(List<TvSeries> seriesList) {
-    _tvSeriesBox.putMany(seriesList);
-  }
-
-  bool deleteTvSeries(int id) {
-    return _tvSeriesBox.remove(id);
-  }
+  int addTvSeries(TvSeries series) => _tvSeriesBox.put(series);
+  void addTvSeriesList(List<TvSeries> seriesList) =>
+      _tvSeriesBox.putMany(seriesList);
+  bool deleteTvSeries(int id) => _tvSeriesBox.remove(id);
 
   // TV Episode operations
   List<TvEpisode> getEpisodesBySeries(int seriesId) {
@@ -198,24 +167,10 @@ class ObjectBoxService {
     return results;
   }
 
-  int addTvEpisode(TvEpisode episode) {
-    return _tvEpisodeBox.put(episode);
-  }
-
-  void addTvEpisodes(List<TvEpisode> episodes) {
-    _tvEpisodeBox.putMany(episodes);
-  }
-
-  bool deleteTvEpisode(int id) {
-    return _tvEpisodeBox.remove(id);
-  }
-
-  // Close the store when done
-  void close() {
-    // Close Admin if it was initialized
-    _admin?.close();
-    _store.close();
-  }
+  int addTvEpisode(TvEpisode episode) => _tvEpisodeBox.put(episode);
+  void addTvEpisodes(List<TvEpisode> episodes) =>
+      _tvEpisodeBox.putMany(episodes);
+  bool deleteTvEpisode(int id) => _tvEpisodeBox.remove(id);
 
   // EPG Channel Info operations
   Future<void> storeEpgChannelInfos(
@@ -223,21 +178,17 @@ class ObjectBoxService {
   ) async {
     final List<EpgChannelInfo> toPut = [];
     for (var newInfo in epgChannelInfos) {
-      // Check if an EPG entry with this xmlTvId already exists
       final query =
           _epgChannelInfoBox
               .query(EpgChannelInfo_.xmlTvId.equals(newInfo.xmlTvId))
               .build();
       final existingInfo = query.findFirst();
       query.close();
-
       if (existingInfo != null) {
-        // Update existing entry
         existingInfo.displayName = newInfo.displayName;
-        existingInfo.iconUrl = newInfo.iconUrl; // Update icon URL as well
+        existingInfo.iconUrl = newInfo.iconUrl;
         toPut.add(existingInfo);
       } else {
-        // Add new entry
         toPut.add(newInfo);
       }
     }
@@ -258,5 +209,65 @@ class ObjectBoxService {
     final result = query.findFirst();
     query.close();
     return result;
+  }
+
+  // TV Program operations
+  void addTvPrograms(List<TvProgram> programs) {
+    _tvProgramBox.putMany(programs);
+  }
+
+  List<TvProgram> getTvProgramsForChannel(String channelXmlTvId) {
+    final QueryBuilder<TvProgram> queryBuilder = _tvProgramBox.query(
+      TvProgram_.channelXmlTvId.equals(channelXmlTvId),
+    );
+    queryBuilder.order(TvProgram_.startTime);
+    final Query<TvProgram> query = queryBuilder.build();
+    final results = query.find();
+    query.close();
+    return results;
+  }
+
+  List<TvProgram> getTvProgramsForChannelInTimeRange(
+    String channelXmlTvId,
+    DateTime start,
+    DateTime end,
+  ) {
+    final QueryBuilder<TvProgram> queryBuilder = _tvProgramBox.query(
+      TvProgram_.channelXmlTvId.equals(channelXmlTvId) &
+          TvProgram_.startTime.lessThan(end.millisecondsSinceEpoch) &
+          TvProgram_.stopTime.greaterThan(start.millisecondsSinceEpoch),
+    );
+    queryBuilder.order(TvProgram_.startTime);
+    final Query<TvProgram> query = queryBuilder.build();
+    final results = query.find();
+    query.close();
+    return results;
+  }
+
+  List<TvProgram> getAllTvPrograms() {
+    return _tvProgramBox.getAll();
+  }
+
+  void deleteAllTvProgramsForChannel(String channelXmlTvId) {
+    final QueryBuilder<TvProgram> queryBuilder = _tvProgramBox.query(
+      TvProgram_.channelXmlTvId.equals(channelXmlTvId),
+    );
+    final Query<TvProgram> query = queryBuilder.build();
+    final programsToDelete = query.findIds();
+    query.close();
+    if (programsToDelete.isNotEmpty) {
+      _tvProgramBox.removeMany(programsToDelete);
+    }
+  }
+
+  void deleteAllTvPrograms() {
+    _tvProgramBox.removeAll();
+    developer.log('All TV programs deleted.', name: 'ObjectBoxService');
+  }
+
+  // Close the store when done
+  void close() {
+    _admin?.close();
+    _store.close();
   }
 }

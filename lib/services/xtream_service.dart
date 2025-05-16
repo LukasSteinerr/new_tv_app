@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:xml/xml.dart';
+import 'package:xml/xml.dart' as xml_parser; // Aliased to avoid conflict
 import '../models/epg_channel_info.dart';
-import '../services/objectbox_service.dart'; // Added for ObjectBoxService
+import '../models/tv_program.dart'; // Added TvProgram model
+import '../services/objectbox_service.dart';
+import '../services/epg_service.dart'; // Added EpgService
 import '../models/playlist.dart';
 import '../models/channel.dart';
 import '../models/category.dart';
@@ -11,9 +13,10 @@ import '../models/tv_series.dart';
 import '../models/tv_episode.dart';
 
 class XtreamService {
-  final ObjectBoxService _objectBoxService; // Added ObjectBoxService instance
+  final ObjectBoxService _objectBoxService;
+  final EpgService _epgService = EpgService(); // Instantiate EpgService
 
-  XtreamService(this._objectBoxService); // Added constructor
+  XtreamService(this._objectBoxService);
 
   Future<Map<String, dynamic>> fetchXtreamData(Playlist playlist) async {
     if (playlist.username == null || playlist.password == null) {
@@ -384,9 +387,11 @@ class XtreamService {
     try {
       final response = await http.get(Uri.parse(epgUrl));
       if (response.statusCode == 200) {
-        final document = XmlDocument.parse(response.body);
+        final xmlString = response.body;
+        final document = xml_parser.XmlDocument.parse(xmlString);
+
+        // Parse and store EpgChannelInfo
         final channelsXml = document.findAllElements('channel');
-        // Use a Map to ensure uniqueness of xmlTvId before creating EpgChannelInfo objects
         final uniqueEpgInfosMap = <String, EpgChannelInfo>{};
 
         for (final channelElement in channelsXml) {
@@ -400,9 +405,6 @@ class XtreamService {
               displayNameElement != null) {
             final displayName = displayNameElement.innerText;
             final iconUrl = iconElement?.getAttribute('src');
-
-            // If an ID is already processed, the new one will overwrite the old one in the map.
-            // This effectively keeps the last encountered version for a duplicate ID.
             uniqueEpgInfosMap[xmlTvId] = EpgChannelInfo(
               xmlTvId: xmlTvId,
               displayName: displayName,
@@ -410,17 +412,36 @@ class XtreamService {
             );
           }
         }
-
-        final epgChannelInfos =
-            uniqueEpgInfosMap.values.toList(); // Convert map values to list
-
+        final epgChannelInfos = uniqueEpgInfosMap.values.toList();
         if (epgChannelInfos.isNotEmpty) {
           await _objectBoxService.storeEpgChannelInfos(epgChannelInfos);
           print(
             'Successfully stored ${epgChannelInfos.length} unique EPG channels.',
           );
         } else {
-          print('No EPG channel information found in the XML.');
+          print(
+            'No EPG channel information found in the XML for EpgChannelInfo.',
+          );
+        }
+
+        // Parse and store TvProgram data
+        // First, clear existing programs for this playlist to avoid duplicates if EPG is refetched.
+        // This assumes all programs from an EPG source are fetched at once.
+        // If your EPG source provides partial updates, this strategy might need adjustment.
+        // For simplicity, we'll clear all programs. If you associate programs with playlists,
+        // you'd clear programs for the specific playlist.
+        _objectBoxService
+            .deleteAllTvPrograms(); // Consider if this is too broad.
+        // You might want to delete programs only related to the channels in this EPG.
+
+        final List<TvProgram> tvPrograms = _epgService.parseTvProgramsFromXml(
+          xmlString,
+        );
+        if (tvPrograms.isNotEmpty) {
+          _objectBoxService.addTvPrograms(tvPrograms);
+          print('Successfully stored ${tvPrograms.length} TV programs.');
+        } else {
+          print('No TV program data found in the XML.');
         }
       } else {
         print(
