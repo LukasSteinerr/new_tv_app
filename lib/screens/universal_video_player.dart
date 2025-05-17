@@ -63,6 +63,9 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
         rtp: VlcRtpOptions([VlcRtpOptions.rtpOverRtsp(true)]),
       ),
     );
+    _controller.addOnInitListener(() async {
+      await _controller.startRendererScanning();
+    });
   }
 
   String _getStreamUrl() {
@@ -79,6 +82,7 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
 
   @override
   void dispose() {
+    _controller.stopRendererScanning();
     _controller.dispose();
 
     // Reset orientation and UI mode when leaving the player
@@ -129,6 +133,105 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
       return widget.channel!.name;
     } else {
       return 'Now Playing';
+    }
+  }
+
+  Future<void> _getSubtitleTracks() async {
+    if (!_controller.value.isPlaying) return;
+
+    final subtitleTracks = await _controller.getSpuTracks();
+
+    if (subtitleTracks.isNotEmpty) {
+      if (!mounted) return;
+      final selectedSubId = await showDialog<int>(
+        context: context,
+        builder: (BuildContext _) {
+          return AlertDialog(
+            title: const Text('Select Subtitle'),
+            content: SizedBox(
+              width: double.maxFinite,
+              height: 250,
+              child: ListView.builder(
+                itemCount: subtitleTracks.keys.length + 1,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(
+                      index < subtitleTracks.keys.length
+                          ? subtitleTracks.values.elementAt(index)
+                          : 'Disable',
+                    ),
+                    onTap: () {
+                      Navigator.pop(
+                        context,
+                        index < subtitleTracks.keys.length
+                            ? subtitleTracks.keys.elementAt(index)
+                            : -1,
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      );
+
+      if (selectedSubId != null) {
+        await _controller.setSpuTrack(selectedSubId);
+      }
+    }
+  }
+
+  Future<void> _getRendererDevices() async {
+    final castDevices = await _controller.getRendererDevices();
+
+    if (castDevices.isNotEmpty) {
+      if (!mounted) return;
+      final selectedCastDeviceName = await showDialog<String>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Select Cast Device'),
+            content: SizedBox(
+              width: double.maxFinite,
+              height: 250,
+              child: ListView.builder(
+                itemCount: castDevices.keys.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return ListTile(
+                      title: const Text('Play on device'),
+                      onTap: () {
+                        Navigator.pop(context, null);
+                      },
+                    );
+                  }
+                  final key = castDevices.keys.elementAt(index - 1);
+                  final name = castDevices[key];
+                  return ListTile(
+                    title: Text(name ?? 'Unknown device'),
+                    onTap: () {
+                      Navigator.pop(context, name);
+                    },
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      );
+      if (selectedCastDeviceName != null) {
+        await _controller.castToRenderer(selectedCastDeviceName);
+      } else {
+        // User selected to play on device, stop casting
+        await _controller
+            .startRendererScanning(); // This will stop casting and start scanning again
+      }
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('No Cast Devices Found!')));
     }
   }
 
@@ -346,6 +449,19 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
                                   () => _controller.seekTo(
                                     Duration(seconds: position.inSeconds + 10),
                                   ),
+                            ),
+                            // Subtitle button
+                            IconButton(
+                              icon: const Icon(
+                                Icons.closed_caption,
+                                color: Colors.white,
+                              ),
+                              onPressed: _getSubtitleTracks,
+                            ),
+                            // Cast button
+                            IconButton(
+                              icon: const Icon(Icons.cast, color: Colors.white),
+                              onPressed: _getRendererDevices,
                             ),
                           ],
                         ),
