@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Added for SystemChrome
 import '../models/tv_series.dart';
 import '../models/tv_episode.dart';
 import '../services/playlist_service.dart';
@@ -35,8 +36,16 @@ class _NetflixStyleTvSeriesDetailScreenState
   @override
   void initState() {
     super.initState();
+    _setPortraitMode(); // Ensure portrait mode on init
     _loadEpisodes();
     _loadTMDBData();
+  }
+
+  void _setPortraitMode() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   Future<void> _loadTMDBData() async {
@@ -196,17 +205,24 @@ class _NetflixStyleTvSeriesDetailScreenState
   }
 
   // Play the first episode of the selected season
-  void _playFirstEpisode() {
+  void _playFirstEpisode() async {
+    // Made async
     if (_selectedSeason != null &&
         _seasonEpisodes.containsKey(_selectedSeason)) {
       final episodes = _seasonEpisodes[_selectedSeason]!;
       if (episodes.isNotEmpty) {
-        Navigator.push(
+        await Navigator.push(
+          // await
           context,
           MaterialPageRoute(
             builder: (context) => UniversalVideoPlayer(episode: episodes.first),
           ),
         );
+        _setPortraitMode(); // Restore portrait mode
+        SystemChrome.setEnabledSystemUIMode(
+          SystemUiMode.manual,
+          overlays: SystemUiOverlay.values,
+        ); // Restore UI
       }
     }
   }
@@ -486,14 +502,21 @@ class _NetflixStyleTvSeriesDetailScreenState
           return Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: InkWell(
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+                // Made async
+                await Navigator.push(
+                  // await
                   context,
                   MaterialPageRoute(
                     builder:
                         (context) => UniversalVideoPlayer(episode: episode),
                   ),
                 );
+                _setPortraitMode(); // Restore portrait mode
+                SystemChrome.setEnabledSystemUIMode(
+                  SystemUiMode.manual,
+                  overlays: SystemUiOverlay.values,
+                ); // Restore UI
               },
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -575,8 +598,10 @@ class _NetflixStyleTvSeriesDetailScreenState
                       Icons.play_circle_outline,
                       color: Colors.white,
                     ),
-                    onPressed: () {
-                      Navigator.push(
+                    onPressed: () async {
+                      // Made async
+                      await Navigator.push(
+                        // await
                         context,
                         MaterialPageRoute(
                           builder:
@@ -584,6 +609,11 @@ class _NetflixStyleTvSeriesDetailScreenState
                                   UniversalVideoPlayer(episode: episode),
                         ),
                       );
+                      _setPortraitMode(); // Restore portrait mode
+                      SystemChrome.setEnabledSystemUIMode(
+                        SystemUiMode.manual,
+                        overlays: SystemUiOverlay.values,
+                      ); // Restore UI
                     },
                   ),
                 ],

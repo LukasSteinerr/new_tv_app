@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Added for SystemChrome
 import '../models/movie.dart';
 import '../services/tmdb_image_provider.dart';
 import 'universal_video_player.dart';
@@ -24,7 +25,15 @@ class _NetflixStyleMovieDetailScreenState
   @override
   void initState() {
     super.initState();
+    _setPortraitMode(); // Ensure portrait mode on init
     _loadTMDBData();
+  }
+
+  void _setPortraitMode() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   Future<void> _loadTMDBData() async {
@@ -64,12 +73,21 @@ class _NetflixStyleMovieDetailScreenState
     }
   }
 
-  void _playMovie() {
-    Navigator.push(
+  void _playMovie() async {
+    // Made async to await Navigator.pop
+    // UniversalVideoPlayer will set landscape mode
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => UniversalVideoPlayer(movie: widget.movie),
       ),
+    );
+    // After returning from player, ensure detail screen is portrait
+    _setPortraitMode();
+    // Also restore SystemUIOverlays if needed, though UniversalVideoPlayer should handle its own.
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
     );
   }
 

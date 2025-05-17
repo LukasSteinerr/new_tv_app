@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Added for SystemChrome
 import '../models/playlist.dart';
 import '../models/category.dart';
 import '../models/channel.dart';
@@ -41,9 +42,17 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   @override
   void initState() {
     super.initState();
+    _setPortraitMode(); // Ensure portrait mode on init
     _scrollController = ScrollController(); // Initialize ScrollController
     _scrollController.addListener(_notifyScrollUpdate); // Add listener
     _loadData();
+  }
+
+  void _setPortraitMode() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   @override
@@ -124,16 +133,23 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
     });
   }
 
-  void _playChannel(Channel channel) {
+  void _playChannel(Channel channel) async {
+    // Made async
     // Navigate to a video player screen
     // For example, using UniversalVideoPlayer if it's suitable
     if (channel.streamUrl.isNotEmpty) {
-      Navigator.push(
+      await Navigator.push(
+        // await
         context,
         MaterialPageRoute(
           builder: (context) => UniversalVideoPlayer(channel: channel),
         ),
       );
+      _setPortraitMode(); // Restore portrait mode
+      SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.manual,
+        overlays: SystemUiOverlay.values,
+      ); // Restore UI
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Channel stream URL is not available.')),
