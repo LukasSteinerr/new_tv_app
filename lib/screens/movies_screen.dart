@@ -270,12 +270,14 @@ class _MoviesScreenState extends State<MoviesScreen> {
                 ), // Ensure widget rebuilds if featured movie changes
                 imageUrls: featuredImageUrls,
                 onPlayTapped: (index) {
-                  if (index < featuredPlayActions.length)
+                  if (index < featuredPlayActions.length) {
                     featuredPlayActions[index]();
+                  }
                 },
                 onDetailsTapped: (index) {
-                  if (index < featuredDetailsActions.length)
+                  if (index < featuredDetailsActions.length) {
                     featuredDetailsActions[index]();
+                  }
                 },
                 // We'll need to pass movie details for the "Details" button if it's generic
                 // For now, the actions above handle navigation.

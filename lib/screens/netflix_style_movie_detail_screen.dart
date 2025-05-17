@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
 import '../models/movie.dart';
 import '../services/tmdb_image_provider.dart';
+import '../services/tmdb_service.dart'; // Import TMDBService
 import 'universal_video_player.dart';
 
 class NetflixStyleMovieDetailScreen extends StatefulWidget {
@@ -18,9 +19,11 @@ class NetflixStyleMovieDetailScreen extends StatefulWidget {
 class _NetflixStyleMovieDetailScreenState
     extends State<NetflixStyleMovieDetailScreen> {
   final TMDBImageProvider _imageProvider = TMDBImageProvider();
+  final TMDBService _tmdbService = TMDBService(); // Instantiate TMDBService
   bool _isLoading = true;
   String? _posterUrl;
   String? _backdropUrl;
+  String? _overview; // Add a field for overview
 
   @override
   void initState() {
@@ -39,7 +42,7 @@ class _NetflixStyleMovieDetailScreenState
   Future<void> _loadTMDBData() async {
     if (widget.movie.tmdbId != null && widget.movie.tmdbId!.isNotEmpty) {
       try {
-        // Load poster and backdrop in parallel
+        // Load poster, backdrop, and movie details in parallel
         final posterFuture = _imageProvider.getPosterUrl(
           widget.movie.tmdbId,
           widget.movie.coverUrl,
@@ -47,17 +50,29 @@ class _NetflixStyleMovieDetailScreenState
         final backdropFuture = _imageProvider.getBackdropUrl(
           widget.movie.tmdbId,
         );
+        final movieDetailsFuture = _tmdbService.getMovieDetails(
+          widget.movie.tmdbId!,
+        ); // Fetch movie details
 
-        final results = await Future.wait([posterFuture, backdropFuture]);
+        final results = await Future.wait([
+          posterFuture,
+          backdropFuture,
+          movieDetailsFuture,
+        ]);
 
         if (mounted) {
           setState(() {
-            _posterUrl = results[0]; // Poster URL
-            _backdropUrl = results[1]; // Backdrop URL
+            _posterUrl = results[0] as String?; // Poster URL
+            _backdropUrl = results[1] as String?; // Backdrop URL
+            final movieDetails =
+                results[2] as Map<String, dynamic>?; // Movie details
+            _overview =
+                movieDetails?['overview'] as String?; // Extract overview
             _isLoading = false;
           });
         }
       } catch (e) {
+        print('Error loading TMDB data: $e'); // Print error for debugging
         if (mounted) {
           setState(() {
             _posterUrl = widget.movie.coverUrl;
@@ -255,10 +270,10 @@ class _NetflixStyleMovieDetailScreenState
                     ),
                   ),
                   SizedBox(height: 8),
-                  if (widget.movie.description != null &&
-                      widget.movie.description!.isNotEmpty)
+                  if (_overview != null &&
+                      _overview!.isNotEmpty) // Use _overview
                     Text(
-                      widget.movie.description!,
+                      _overview!,
                       style: TextStyle(
                         color: Colors.grey[400],
                         fontSize: 14,

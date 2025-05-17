@@ -263,12 +263,14 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
                 key: ValueKey(_featuredSeries?.id ?? 'featured_series'),
                 imageUrls: featuredImageUrls,
                 onPlayTapped: (index) {
-                  if (index < featuredPlayActions.length)
+                  if (index < featuredPlayActions.length) {
                     featuredPlayActions[index]();
+                  }
                 },
                 onDetailsTapped: (index) {
-                  if (index < featuredDetailsActions.length)
+                  if (index < featuredDetailsActions.length) {
                     featuredDetailsActions[index]();
+                  }
                 },
               ),
             ),
