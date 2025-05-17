@@ -29,15 +29,21 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
   // For AppBar opacity based on scroll
   double _appBarOpacity = 0.0; // Keep opacity state
 
+  // Add PageController for PageView
+  late PageController _pageController;
+
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(
+      initialPage: _currentIndex,
+    ); // Initialize PageController
     _initScreens();
   }
 
   @override
   void dispose() {
-    // No ScrollController to dispose here
+    _pageController.dispose(); // Dispose PageController
     super.dispose();
   }
 
@@ -195,9 +201,17 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
                   size: 50,
                 ),
               )
-              : IndexedStack(
-                // Use IndexedStack to keep screens alive
-                index: _currentIndex,
+              : PageView(
+                // Use PageView instead of IndexedStack
+                controller: _pageController, // Attach PageController
+                physics:
+                    const NeverScrollableScrollPhysics(), // Disable swiping
+                onPageChanged: (index) {
+                  // Update index if user swipes (this will now only be called by animateToPage)
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
                 children: _screens,
               ),
       bottomNavigationBar: Theme(
@@ -228,8 +242,12 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
             ),
           ],
           onTap: (index) {
+            // Jump to the selected page instantly (no animation)
+            _pageController.jumpToPage(index);
+            // Update the index state (also handled by onPageChanged if swiping is re-enabled)
             setState(() {
               _currentIndex = index;
+              _appBarOpacity = 0.0; // Reset AppBar opacity to fully transparent
             });
           },
         ),
