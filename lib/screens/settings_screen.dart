@@ -7,11 +7,13 @@ import 'add_playlist_screen.dart';
 class SettingsScreen extends StatefulWidget {
   final PlaylistService playlistService;
   final Playlist playlist;
+  final Function(double scrollOffset)? onScrollUpdate; // Add callback
 
   const SettingsScreen({
     super.key,
     required this.playlistService,
     required this.playlist,
+    this.onScrollUpdate, // Add callback parameter
   });
 
   @override
@@ -20,6 +22,27 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _isLoading = false;
+  late ScrollController _scrollController; // Add ScrollController
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController(); // Initialize ScrollController
+    _scrollController.addListener(_notifyScrollUpdate); // Add listener
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_notifyScrollUpdate); // Remove listener
+    _scrollController.dispose(); // Dispose ScrollController
+    super.dispose();
+  }
+
+  void _notifyScrollUpdate() {
+    if (widget.onScrollUpdate != null) {
+      widget.onScrollUpdate!(_scrollController.offset); // Call the callback
+    }
+  }
 
   Future<void> _refreshPlaylist() async {
     setState(() {
@@ -76,103 +99,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       // Remove the standard app bar
       extendBodyBehindAppBar: true, // Allow content to go behind app bar
-      body: Stack(
+      // AppBar is removed from here and will be in the parent XtreamPlaylistScreen
+      body: ListView(
+        // Keep ListView for content
+        padding: const EdgeInsets.only(
+          top: kToolbarHeight + 24, // Add back top padding
+        ),
         children: [
-          // Main content
-          ListView(
-            padding: const EdgeInsets.only(
-              top: 70,
-            ), // Add padding for the app bar
-            children: [
-              ListTile(
-                title: const Text('Playlist Information'),
-                subtitle: Text(widget.playlist.name),
-              ),
-              const Divider(),
-              ListTile(
-                leading: const Icon(Icons.edit),
-                title: const Text('Edit Playlist'),
-                onTap: _editPlaylist,
-              ),
-              ListTile(
-                leading: const Icon(Icons.refresh),
-                title: const Text('Refresh Playlist'),
-                subtitle: Text(
-                  'Last updated: ${_formatDate(widget.playlist.lastUpdated)}',
-                ),
-                onTap: _refreshPlaylist,
-              ),
-              const Divider(),
-              ListTile(
-                leading: const Icon(Icons.info),
-                title: const Text('Playlist Details'),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Type: ${widget.playlist.typeName}'),
-                    Text('URL: ${widget.playlist.url}'),
-                    if (widget.playlist.username != null)
-                      Text('Username: ${widget.playlist.username}'),
-                  ],
-                ),
-              ),
-              const Divider(),
-              const ListTile(
-                title: Text('About'),
-                subtitle: Text('IPTV Player App\nVersion 1.0.0'),
-              ),
-            ],
+          ListTile(
+            title: const Text('Playlist Information'),
+            subtitle: Text(widget.playlist.name),
           ),
-
-          // Custom app bar with blur effect
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: ClipRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                child: Container(
-                  height: 70,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withAlpha(150),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withAlpha(50),
-                        blurRadius: 5,
-                      ),
-                    ],
-                  ),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        children: [
-                          // Back button
-                          IconButton(
-                            icon: const Icon(
-                              Icons.arrow_back,
-                              color: Colors.white,
-                            ),
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
-                          const SizedBox(width: 8),
-                          // Title - Show playlist name
-                          Text(
-                            'Settings',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.edit),
+            title: const Text('Edit Playlist'),
+            onTap: _editPlaylist,
+          ),
+          ListTile(
+            leading: const Icon(Icons.refresh),
+            title: const Text('Refresh Playlist'),
+            subtitle: Text(
+              'Last updated: ${_formatDate(widget.playlist.lastUpdated)}',
             ),
+            onTap: _refreshPlaylist,
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.info),
+            title: const Text('Playlist Details'),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Type: ${widget.playlist.typeName}'),
+                Text('URL: ${widget.playlist.url}'),
+                if (widget.playlist.username != null)
+                  Text('Username: ${widget.playlist.username}'),
+              ],
+            ),
+          ),
+          const Divider(),
+          const ListTile(
+            title: Text('About'),
+            subtitle: Text('IPTV Player App\nVersion 1.0.0'),
           ),
         ],
       ),

@@ -13,11 +13,13 @@ import 'category_content_screen.dart';
 class MoviesScreen extends StatefulWidget {
   final PlaylistService playlistService;
   final Playlist playlist;
+  final Function(double scrollOffset)? onScrollUpdate; // Add callback
 
   const MoviesScreen({
     super.key,
     required this.playlistService,
     required this.playlist,
+    this.onScrollUpdate, // Add callback parameter
   });
 
   @override
@@ -30,39 +32,30 @@ class _MoviesScreenState extends State<MoviesScreen> {
   bool _isLoading = true;
   Movie? _featuredMovie;
   late ScrollController _scrollController;
-  double _appBarOpacity = 0.0;
+  // _appBarOpacity is now managed by the parent, remove from here
+  // double _appBarOpacity = 0.0;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _scrollController.addListener(() {
-      double offset = _scrollController.offset;
-      double quickThreshold = 10.0;
-      double targetOpacity = 0.7;
-      double newOpacity;
-
-      if (offset <= 0) {
-        newOpacity = 0.0;
-      } else {
-        newOpacity = (offset / quickThreshold).clamp(0.0, targetOpacity);
-      }
-
-      if (newOpacity != _appBarOpacity) {
-        if (mounted) {
-          setState(() {
-            _appBarOpacity = newOpacity;
-          });
-        }
-      }
-    });
+    _scrollController.addListener(
+      _notifyScrollUpdate,
+    ); // Use a dedicated method
     _loadData();
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_notifyScrollUpdate); // Remove listener
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _notifyScrollUpdate() {
+    if (widget.onScrollUpdate != null) {
+      widget.onScrollUpdate!(_scrollController.offset); // Call the callback
+    }
   }
 
   Future<void> _loadData() async {
@@ -261,38 +254,12 @@ class _MoviesScreenState extends State<MoviesScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.black.withOpacity(_appBarOpacity),
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          widget.playlist.name,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: Colors.white, size: 30),
-            onPressed: () {
-              // TODO: Implement Search
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Search tapped!')));
-            },
-            tooltip: 'Search',
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
+      // AppBar is removed from here and will be in the parent XtreamPlaylistScreen
       body: CustomScrollView(
-        controller: _scrollController,
+        controller:
+            _scrollController, // Keep controller for opacity calculation
         slivers: <Widget>[
+          // Remove top padding, content should go behind the parent AppBar
           // Featured Content - to be replaced with a new/modified FeaturedContent widget
           if (featuredImageUrls.isNotEmpty)
             SliverToBoxAdapter(

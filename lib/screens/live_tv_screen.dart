@@ -11,11 +11,13 @@ import 'universal_video_player.dart'; // Assuming a player screen
 class LiveTvScreen extends StatefulWidget {
   final PlaylistService playlistService;
   final Playlist playlist;
+  final Function(double scrollOffset)? onScrollUpdate; // Add callback
 
   const LiveTvScreen({
     super.key,
     required this.playlistService,
     required this.playlist,
+    this.onScrollUpdate, // Add callback parameter
   });
 
   @override
@@ -34,10 +36,28 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   TimeOfDay _selectedTime = TimeOfDay.now();
   bool _isTimeSliderInteracting = false;
 
+  // Add ScrollController for the ListView
+  late ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController(); // Initialize ScrollController
+    _scrollController.addListener(_notifyScrollUpdate); // Add listener
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_notifyScrollUpdate); // Remove listener
+    _scrollController.dispose(); // Dispose ScrollController
+    super.dispose();
+  }
+
+  void _notifyScrollUpdate() {
+    if (widget.onScrollUpdate != null) {
+      widget.onScrollUpdate!(_scrollController.offset); // Call the callback
+    }
   }
 
   Future<void> _loadData() async {
@@ -175,7 +195,9 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
       key: _scaffoldKey,
       extendBodyBehindAppBar: true,
       drawer: _buildDrawer(),
+      // AppBar is removed from here and will be in the parent XtreamPlaylistScreen
       body: Stack(
+        // Keep Stack for TimeSlider and Drawer Edge Indicator
         children: [
           _isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -188,8 +210,9 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                 ),
               )
               : ListView.builder(
+                controller: _scrollController, // Attach ScrollController
                 padding: const EdgeInsets.only(
-                  top: 70,
+                  top: kToolbarHeight + 24, // Add back top padding
                   bottom: 10,
                   left: 10,
                   right: 55,
@@ -288,7 +311,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                 },
               ),
           Positioned(
-            top: 70,
+            top: kToolbarHeight + 24, // Adjust top position for parent AppBar
             right: 0,
             bottom: 0,
             width: 45,
@@ -315,69 +338,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
               ),
             ),
           ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: ClipRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                child: Container(
-                  height: 70,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withAlpha(150),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withAlpha(50),
-                        blurRadius: 5,
-                      ),
-                    ],
-                  ),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                      ), // Reduced horizontal padding
-                      child: Row(
-                        children: [
-                          // IconButton for drawer removed
-                          // const SizedBox(width: 8), // Keep or remove depending on desired title spacing
-                          Expanded(
-                            // Added Expanded for title
-                            child: Text(
-                              widget.playlist.name,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          // Removed Spacer to allow title to take more space if needed
-                          IconButton(
-                            icon: const Icon(Icons.search, color: Colors.white),
-                            onPressed: () {
-                              // TODO: Add search functionality for channels
-                            },
-                          ),
-                          IconButton(
-                            // Keep back button if needed, or remove if drawer is primary navigation
-                            icon: const Icon(
-                              Icons.arrow_back,
-                              color: Colors.white,
-                            ),
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          // Drawer Edge Indicator
+          // Drawer Edge Indicator - Keep as is, its position is relative to the Stack
           Positioned(
             left: 0,
             top:
