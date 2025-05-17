@@ -1,40 +1,21 @@
 import 'package:flutter/material.dart';
-import '../services/tmdb_image_provider.dart';
-import 'fade_loading.dart';
+// Assuming Movie model might be needed if we pass full details later,
+// but for now, callbacks are index-based.
+// import '../models/movie.dart';
 
 class FeaturedContent extends StatefulWidget {
-  final String title;
-  final String? description;
-  final String? tmdbId;
-  final String? fallbackImageUrl;
-  final VoidCallback onTap;
-  final VoidCallback? onInfoTap;
-  final VoidCallback? onMyListTap;
-  final bool isMovie;
-  final String? year;
-  final String? rating;
-  final List<Map<String, dynamic>>? additionalContent;
-  // Add callbacks for additional content items
-  final Function(int index)? onAdditionalContentTap;
-  final Function(int index)? onAdditionalContentInfoTap;
-  final Function(int index)? onAdditionalContentMyListTap;
+  final List<String> imageUrls;
+  final Function(int index) onPlayTapped;
+  final Function(int index) onDetailsTapped;
+  // Optional: if you want to pass titles or other data per featured item for the buttons
+  // final List<String>? titles;
 
   const FeaturedContent({
     super.key,
-    required this.title,
-    this.description,
-    required this.tmdbId,
-    this.fallbackImageUrl,
-    required this.onTap,
-    this.onInfoTap,
-    this.onMyListTap,
-    required this.isMovie,
-    this.year,
-    this.rating,
-    this.additionalContent,
-    this.onAdditionalContentTap,
-    this.onAdditionalContentInfoTap,
-    this.onAdditionalContentMyListTap,
+    required this.imageUrls,
+    required this.onPlayTapped,
+    required this.onDetailsTapped,
+    // this.titles,
   });
 
   @override
@@ -42,661 +23,219 @@ class FeaturedContent extends StatefulWidget {
 }
 
 class _FeaturedContentState extends State<FeaturedContent> {
-  final TMDBImageProvider _imageProvider = TMDBImageProvider();
-  String? _backdropUrl;
-  bool _isLoading = true;
-  final PageController _pageController = PageController();
-  final ValueNotifier<int> _currentPageNotifier = ValueNotifier<int>(0);
+  late PageController _pageController;
+  int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
-    _loadBackdropImage();
+    _pageController = PageController();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    _currentPageNotifier.dispose();
     super.dispose();
   }
 
-  @override
-  void didUpdateWidget(FeaturedContent oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.tmdbId != widget.tmdbId) {
-      _loadBackdropImage();
-    }
-  }
-
-  Future<void> _loadBackdropImage() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      // Use poster images for featured content instead of backdrop images
-      String? posterUrl;
-
-      if (widget.tmdbId != null && widget.tmdbId!.isNotEmpty) {
-        posterUrl =
-            widget.isMovie
-                ? await _imageProvider.getPosterUrl(
-                  widget.tmdbId,
-                  widget.fallbackImageUrl,
-                )
-                : await _imageProvider.getTvPosterUrl(
-                  widget.tmdbId,
-                  widget.fallbackImageUrl,
-                );
-      }
-
-      // If no poster available, try to use the fallback
-      if (posterUrl == null && widget.fallbackImageUrl != null) {
-        posterUrl = widget.fallbackImageUrl;
-      }
-
-      if (mounted) {
-        setState(() {
-          _backdropUrl =
-              posterUrl; // We're still using the same variable name for compatibility
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _backdropUrl = widget.fallbackImageUrl;
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Column(
-            children: [
-              Container(
-                height:
-                    500, // Adjusted height to better match poster aspect ratio
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color:
-                      Colors
-                          .grey
-                          .shade900, // Darker background for poster images
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.grey.shade800),
-                ),
-                child:
-                    widget.additionalContent != null &&
-                            widget.additionalContent!.isNotEmpty
-                        ? _buildPageView()
-                        : _buildSingleContent(),
-              ),
-              // Page indicators
-              if (widget.additionalContent != null &&
-                  widget.additionalContent!.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: ValueListenableBuilder<int>(
-                    valueListenable: _currentPageNotifier,
-                    builder: (context, currentPage, _) {
-                      final totalPages = widget.additionalContent!.length + 1;
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(
-                          totalPages,
-                          (index) => Container(
-                            width: 8,
-                            height: 8,
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color:
-                                  currentPage == index
-                                      ? Colors.white
-                                      : Colors.grey.shade600,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-            ],
-          ),
-          // Buttons positioned at bottom like Netflix
-          Positioned(
-            bottom:
-                widget.additionalContent != null &&
-                        widget.additionalContent!.isNotEmpty
-                    ? 25 // Increased from 15 to move buttons up
-                    : -10, // Adjusted from -20 to move buttons up
-            left: 0,
-            right: 0,
-            child: ValueListenableBuilder<int>(
-              valueListenable: _currentPageNotifier,
-              builder: (context, currentPage, _) {
-                // Determine which callbacks to use based on current page
-                final VoidCallback onPlayTap;
-                final VoidCallback onMyListTap;
-
-                if (currentPage == 0) {
-                  // First item (main content)
-                  onPlayTap = widget.onTap;
-                  onMyListTap =
-                      widget.onMyListTap ?? widget.onInfoTap ?? widget.onTap;
-                } else if (widget.additionalContent != null &&
-                    currentPage - 1 < widget.additionalContent!.length) {
-                  // Additional content items
-                  final additionalIndex = currentPage - 1;
-                  onPlayTap = () {
-                    if (widget.onAdditionalContentTap != null) {
-                      widget.onAdditionalContentTap!(additionalIndex);
-                    } else {
-                      widget.onTap();
-                    }
-                  };
-
-                  onMyListTap = () {
-                    if (widget.onAdditionalContentMyListTap != null) {
-                      widget.onAdditionalContentMyListTap!(additionalIndex);
-                    } else if (widget.onAdditionalContentInfoTap != null) {
-                      widget.onAdditionalContentInfoTap!(additionalIndex);
-                    } else if (widget.onAdditionalContentTap != null) {
-                      widget.onAdditionalContentTap!(additionalIndex);
-                    } else {
-                      if (widget.onMyListTap != null) {
-                        widget.onMyListTap!();
-                      } else if (widget.onInfoTap != null) {
-                        widget.onInfoTap!();
-                      } else {
-                        widget.onTap();
-                      }
-                    }
-                  };
-                } else {
-                  // Fallback
-                  onPlayTap = widget.onTap;
-                  onMyListTap =
-                      widget.onMyListTap ?? widget.onInfoTap ?? widget.onTap;
-                }
-
-                return SizedBox(
-                  width: double.infinity,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Play button
-                      Container(
-                        height: 40, // Reduced from 50
-                        width: 120, // Reduced from 150
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: onPlayTap,
-                            borderRadius: BorderRadius.circular(5),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.play_arrow,
-                                  color: Colors.black,
-                                  size: 24, // Reduced from 30
-                                ),
-                                Text(
-                                  "Play",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16, // Reduced from 18
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 10), // Reduced from 15
-                      // My List button
-                      Container(
-                        height: 40, // Reduced from 50
-                        width: 120, // Reduced from 150
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade800,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: onMyListTap,
-                            borderRadius: BorderRadius.circular(5),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.add,
-                                  color: Colors.white,
-                                  size: 24,
-                                ), // Reduced from 30
-                                Text(
-                                  "My List",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16, // Reduced from 18
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSingleContent() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Backdrop image with loading state
-          _isLoading
-              ? const FadeLoading(
-                height: double.infinity,
-                width: double.infinity,
-                borderRadius: 0,
-              )
-              : _backdropUrl != null
-              ? Stack(
-                fit: StackFit.expand,
-                children: [
-                  // Loading placeholder
-                  const FadeLoading(
-                    height: double.infinity,
-                    width: double.infinity,
-                    borderRadius: 0,
-                  ),
-                  // Actual image
-                  Image.network(
-                    _backdropUrl!,
-                    fit:
-                        BoxFit
-                            .cover, // Changed from contain to cover to fill the container
-                    errorBuilder:
-                        (_, __, ___) => Container(
-                          color: Colors.grey.shade900,
-                          child: Center(
-                            child: Icon(
-                              widget.isMovie ? Icons.movie : Icons.tv,
-                              size: 80,
-                              color: Colors.white54,
-                            ),
-                          ),
-                        ),
-                  ),
-                ],
-              )
-              : Container(
-                color: Colors.grey.shade900,
-                child: Center(
-                  child: Icon(
-                    widget.isMovie ? Icons.movie : Icons.tv,
-                    size: 80,
-                    color: Colors.white54,
-                  ),
-                ),
-              ),
-
-          // Gradient overlay for better text visibility - Netflix style
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withAlpha(77), // 0.3 opacity
-                    Colors.black.withAlpha(128), // 0.5 opacity
-                    Colors.black.withAlpha(204), // 0.8 opacity
-                  ],
-                  stops: const [0.3, 0.5, 0.7, 1.0],
-                ),
-              ),
-            ),
-          ),
-
-          // Content info - positioned at top (title removed)
-          Positioned(
-            top: 20,
-            left: 20,
-            right: 20,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (widget.year != null || widget.rating != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Row(
-                      children: [
-                        if (widget.year != null)
-                          Text(
-                            widget.year!,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              shadows: [
-                                Shadow(
-                                  blurRadius: 10.0,
-                                  color: Colors.black,
-                                  offset: Offset(2.0, 2.0),
-                                ),
-                              ],
-                            ),
-                          ),
-                        if (widget.year != null && widget.rating != null)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0,
-                            ),
-                            child: Text(
-                              "•",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                shadows: [
-                                  Shadow(
-                                    blurRadius: 10.0,
-                                    color: Colors.black,
-                                    offset: Offset(2.0, 2.0),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        if (widget.rating != null)
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withAlpha(128), // 0.5 opacity
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              widget.rating!,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Helper method to load poster image for an item
-  Future<String?> _loadItemBackdrop(Map<String, dynamic> item) async {
-    final String? tmdbId = item['tmdbId'];
-    final bool isMovie = item['isMovie'] ?? widget.isMovie;
-    final String? fallbackUrl = item['fallbackImageUrl'];
-
-    if (tmdbId == null || tmdbId.isEmpty) {
-      return item['backdropUrl'] ?? fallbackUrl;
-    }
-
-    try {
-      final posterUrl =
-          isMovie
-              ? await _imageProvider.getPosterUrl(tmdbId, fallbackUrl)
-              : await _imageProvider.getTvPosterUrl(tmdbId, fallbackUrl);
-
-      return posterUrl;
-    } catch (e) {
-      return fallbackUrl;
-    }
-  }
-
-  // Helper method to build fallback image
-  Widget _buildFallbackImage(Map<String, dynamic> item) {
-    final bool isMovie = item['isMovie'] ?? widget.isMovie;
-
-    if (item['fallbackImageUrl'] != null) {
-      return Image.network(
-        item['fallbackImageUrl'],
-        fit: BoxFit.cover, // Changed from contain to cover
-        errorBuilder:
-            (_, __, ___) => Container(
-              color: Colors.grey.shade900,
-              child: Center(
-                child: Icon(
-                  isMovie ? Icons.movie : Icons.tv,
-                  size: 80,
-                  color: Colors.white54,
-                ),
-              ),
-            ),
-      );
-    } else {
-      return Container(
-        color: Colors.grey.shade900,
-        child: Center(
-          child: Icon(
-            isMovie ? Icons.movie : Icons.tv,
-            size: 80,
-            color: Colors.white54,
+  Widget _buildPageIndicator() {
+    List<Widget> indicators = [];
+    for (int i = 0; i < widget.imageUrls.length; i++) {
+      indicators.add(
+        Container(
+          width: 8.0,
+          height: 8.0,
+          margin: const EdgeInsets.symmetric(horizontal: 4.0),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color:
+                _currentPage == i
+                    ? Colors.white
+                    : Colors.white.withOpacity(0.5),
           ),
         ),
       );
     }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: indicators,
+    );
   }
 
-  Widget _buildPageView() {
-    // Create a copy of the main content with the current backdrop URL
-    final Map<String, dynamic> mainContent = {
-      'title': widget.title,
-      'description': widget.description,
-      'backdropUrl': _backdropUrl,
-      'fallbackImageUrl': widget.fallbackImageUrl,
-      'year': widget.year,
-      'rating': widget.rating,
-      'isMovie': widget.isMovie,
-      'tmdbId': widget.tmdbId, // Include TMDB ID for potential image loading
-    };
+  @override
+  Widget build(BuildContext context) {
+    if (widget.imageUrls.isEmpty) {
+      return const SizedBox.shrink(); // Don't build if there are no images
+    }
 
-    // Combine main content with additional content
-    final List<Map<String, dynamic>> allContent = [
-      mainContent,
-      ...widget.additionalContent!,
-    ];
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: PageView.builder(
-        controller: _pageController,
-        itemCount: allContent.length,
-        onPageChanged: (index) {
-          _currentPageNotifier.value = index;
-        },
-        itemBuilder: (context, index) {
-          final item = allContent[index];
-          return GestureDetector(
-            onTap: () {
-              final additionalIndex = index - 1;
-              if (index == 0) {
-                widget.onTap();
-              } else if (widget.onAdditionalContentTap != null) {
-                widget.onAdditionalContentTap!(additionalIndex);
-              } else {
-                widget.onTap();
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.65,
+      color: Colors.black,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          PageView.builder(
+            controller: _pageController,
+            itemCount: widget.imageUrls.length,
+            onPageChanged: (int page) {
+              if (mounted) {
+                setState(() {
+                  _currentPage = page;
+                });
               }
             },
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                // Background image - load backdrop for each item
-                FutureBuilder<String?>(
-                  future: _loadItemBackdrop(item),
-                  builder: (context, snapshot) {
-                    // If we have a backdrop URL from the snapshot, use it
-                    if (snapshot.connectionState == ConnectionState.done &&
-                        snapshot.data != null) {
-                      return Image.network(
-                        snapshot.data!,
-                        fit: BoxFit.cover, // Changed from contain to cover
-                        errorBuilder: (_, __, ___) {
-                          // On error, try fallback
-                          return _buildFallbackImage(item);
-                        },
-                      );
-                    }
-                    // If we already have a backdrop URL in the item, use it
-                    else if (item['backdropUrl'] != null) {
-                      return Image.network(
-                        item['backdropUrl'],
-                        fit: BoxFit.cover, // Changed from contain to cover
-                        errorBuilder: (_, __, ___) {
-                          // On error, try fallback
-                          return _buildFallbackImage(item);
-                        },
-                      );
-                    }
-                    // Otherwise use fallback or placeholder
-                    else {
-                      return _buildFallbackImage(item);
-                    }
-                  },
-                ),
-
-                // Gradient overlay
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withAlpha(77), // 0.3 opacity
-                          Colors.black.withAlpha(128), // 0.5 opacity
-                          Colors.black.withAlpha(204), // 0.8 opacity
-                        ],
-                        stops: const [0.3, 0.5, 0.7, 1.0],
-                      ),
+            itemBuilder: (context, index) {
+              // Ensure URL is not empty before trying to load
+              if (widget.imageUrls[index].isEmpty) {
+                return Container(
+                  color: Colors.grey[900],
+                  child: const Center(
+                    child: Icon(
+                      Icons.broken_image,
+                      color: Colors.white24,
+                      size: 100,
                     ),
                   ),
+                );
+              }
+              return Image.network(
+                widget.imageUrls[index],
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+                loadingBuilder: (
+                  BuildContext context,
+                  Widget child,
+                  ImageChunkEvent? loadingProgress,
+                ) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value:
+                          loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                    ),
+                  );
+                },
+                errorBuilder:
+                    (context, error, stackTrace) => Container(
+                      color: Colors.grey[900],
+                      child: const Center(
+                        child: Icon(
+                          Icons.movie_creation_outlined, // Or Icons.error
+                          color: Colors.white24,
+                          size: 100,
+                        ),
+                      ),
+                    ),
+              );
+            },
+          ),
+          IgnorePointer(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withOpacity(0.9),
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.95),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: const [0.0, 0.4, 1.0],
                 ),
-
-                // Content info (title removed)
-                Positioned(
-                  top: 20,
-                  left: 20,
-                  right: 20,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (item['year'] != null || item['rating'] != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Row(
-                            children: [
-                              if (item['year'] != null)
-                                Text(
-                                  item['year'],
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    shadows: [
-                                      Shadow(
-                                        blurRadius: 10.0,
-                                        color: Colors.black,
-                                        offset: Offset(2.0, 2.0),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              if (item['year'] != null &&
-                                  item['rating'] != null)
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8.0,
-                                  ),
-                                  child: Text(
-                                    "•",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      shadows: [
-                                        Shadow(
-                                          blurRadius: 10.0,
-                                          color: Colors.black,
-                                          offset: Offset(2.0, 2.0),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              if (item['rating'] != null)
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withAlpha(
-                                      128,
-                                    ), // 0.5 opacity
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    item['rating'],
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                            ],
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 10,
+            left: 0,
+            right: 0,
+            child: _buildPageIndicator(),
+          ),
+          Positioned(
+            bottom: 30, // As per reference UI
+            left: 20,
+            right: 20,
+            child: Column(
+              // Column to ensure buttons are centered if they wrap (though unlikely here)
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 120.0, // As per reference UI
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          widget.onPlayTapped(_currentPage);
+                        },
+                        icon: const Icon(Icons.play_arrow, size: 20),
+                        label: const Text('Play'),
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.white.withOpacity(0.25),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20, // Adjusted to match reference
+                            vertical: 8, // Adjusted to match reference
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              20,
+                            ), // As per reference
+                            side: BorderSide(
+                              color: Colors.white.withOpacity(0.3),
+                              width: 1,
+                            ),
+                          ),
+                          elevation: 0,
+                          textStyle: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
                           ),
                         ),
-                    ],
-                  ),
+                      ),
+                    ),
+                    const SizedBox(width: 15), // As per reference UI
+                    SizedBox(
+                      width: 120.0, // As per reference UI
+                      child: ElevatedButton(
+                        onPressed: () {
+                          widget.onDetailsTapped(_currentPage);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.black.withOpacity(0.7),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20, // Adjusted to match reference
+                            vertical: 8, // Adjusted to match reference
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              20,
+                            ), // As per reference
+                            side: BorderSide(
+                              color: Colors.white.withOpacity(0.4),
+                              width: 1,
+                            ),
+                          ),
+                          elevation: 2, // As per reference
+                          textStyle: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                        child: const Text('Details'),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }

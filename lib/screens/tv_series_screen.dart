@@ -29,11 +29,40 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
   Map<int, List<TvSeries>> _categorySeries = {};
   bool _isLoading = true;
   TvSeries? _featuredSeries;
+  late ScrollController _scrollController;
+  double _appBarOpacity = 0.0;
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(() {
+      double offset = _scrollController.offset;
+      double quickThreshold = 10.0;
+      double targetOpacity = 0.7;
+      double newOpacity;
+
+      if (offset <= 0) {
+        newOpacity = 0.0;
+      } else {
+        newOpacity = (offset / quickThreshold).clamp(0.0, targetOpacity);
+      }
+
+      if (newOpacity != _appBarOpacity) {
+        if (mounted) {
+          setState(() {
+            _appBarOpacity = newOpacity;
+          });
+        }
+      }
+    });
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -66,7 +95,7 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
       if (allSeries.isNotEmpty) {
         // First try to find a series with a TMDB ID
         featuredSeries = allSeries.firstWhere(
-          (series) => series.tmdbId != null && series.tmdbId!.isNotEmpty,
+          (s) => s.tmdbId != null && s.tmdbId!.isNotEmpty,
           orElse: () => allSeries.first,
         );
       }
@@ -118,222 +147,191 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_categories.isEmpty) {
-      return const Center(child: Text('No TV series found'));
-    }
-
-    return Scaffold(
-      // Remove the standard app bar
-      extendBodyBehindAppBar: true, // Allow content to go behind app bar
-      body: Stack(
-        children: [
-          // Main content
-          ListView(
-            padding: const EdgeInsets.only(
-              top: 70,
-            ), // Add padding for the app bar
-            children: [
-              // Featured Series - Netflix style
-              if (_featuredSeries != null)
-                FeaturedContent(
-                  title: _featuredSeries!.name,
-                  description: _featuredSeries!.description,
-                  tmdbId: _featuredSeries!.tmdbId,
-                  fallbackImageUrl: _featuredSeries!.coverUrl,
-                  year: _featuredSeries!.year,
-                  rating: _featuredSeries!.rating,
-                  isMovie: false,
-                  onTap: () => _navigateToSeries(_featuredSeries!),
-                  onInfoTap: () => _navigateToSeries(_featuredSeries!),
-                  onMyListTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Added to My List: ${_featuredSeries!.name}',
-                        ),
-                      ),
-                    );
-                  },
-                  // Optional: Add more series for PageView
-                  additionalContent:
-                      _categorySeries.values
-                          .expand((series) => series)
-                          .where(
-                            (series) =>
-                                series.id != _featuredSeries!.id &&
-                                series.tmdbId != null &&
-                                series.tmdbId!.isNotEmpty,
-                          )
-                          .take(5)
-                          .map(
-                            (series) => {
-                              'title': series.name,
-                              'description': series.description,
-                              'backdropUrl':
-                                  null, // Will be loaded by TMDB service
-                              'fallbackImageUrl': series.coverUrl,
-                              'year': series.year,
-                              'rating': series.rating,
-                              'isMovie': false,
-                              'id':
-                                  series
-                                      .id, // Store the ID to identify the series later
-                              'tmdbId':
-                                  series
-                                      .tmdbId, // Include TMDB ID for image loading
-                            },
-                          )
-                          .toList(),
-                  // Add callbacks for additional content
-                  onAdditionalContentTap: (index) {
-                    final additionalSeries =
-                        _categorySeries.values
-                            .expand((series) => series)
-                            .where(
-                              (series) =>
-                                  series.id != _featuredSeries!.id &&
-                                  series.tmdbId != null &&
-                                  series.tmdbId!.isNotEmpty,
-                            )
-                            .take(5)
-                            .toList();
-
-                    if (index < additionalSeries.length) {
-                      _navigateToSeries(additionalSeries[index]);
-                    }
-                  },
-                  onAdditionalContentInfoTap: (index) {
-                    final additionalSeries =
-                        _categorySeries.values
-                            .expand((series) => series)
-                            .where(
-                              (series) =>
-                                  series.id != _featuredSeries!.id &&
-                                  series.tmdbId != null &&
-                                  series.tmdbId!.isNotEmpty,
-                            )
-                            .take(5)
-                            .toList();
-
-                    if (index < additionalSeries.length) {
-                      _navigateToSeries(additionalSeries[index]);
-                    }
-                  },
-                  onAdditionalContentMyListTap: (index) {
-                    final additionalSeries =
-                        _categorySeries.values
-                            .expand((series) => series)
-                            .where(
-                              (series) =>
-                                  series.id != _featuredSeries!.id &&
-                                  series.tmdbId != null &&
-                                  series.tmdbId!.isNotEmpty,
-                            )
-                            .take(5)
-                            .toList();
-
-                    if (index < additionalSeries.length) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Added to My List: ${additionalSeries[index].name}',
-                          ),
-                        ),
-                      );
-                    }
-                  },
+  // Copied and adapted from UI/lib/home_screen.dart / movies_screen.dart
+  Widget _buildSectionHeader(
+    BuildContext context,
+    String title,
+    VoidCallback onSeeAllTapped,
+  ) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: 24.0,
+          left: 16.0,
+          right: 16.0,
+          bottom: 12.0,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
-
-              // Category Carousels
-              ..._categories.map((category) {
-                final seriesList = _categorySeries[category.id] ?? [];
-                if (seriesList.isEmpty) {
-                  return const SizedBox.shrink();
-                }
-
-                return ContentCarousel<TvSeries>(
-                  title: category.name,
-                  items: seriesList,
-                  itemBuilder:
-                      (series) => TvSeriesCard(
-                        series: series,
-                        onTap: () => _navigateToSeries(series),
-                      ),
-                  onSeeAllPressed:
-                      () => _navigateToSeeAll(category, seriesList),
-                );
-              }),
-
-              // Add some padding at the bottom
-              const SizedBox(height: 20),
-            ],
-          ),
-
-          // Custom app bar with blur effect
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: ClipRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                child: Container(
-                  height: 70,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withAlpha(150),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withAlpha(50),
-                        blurRadius: 5,
-                      ),
-                    ],
-                  ),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        children: [
-                          // Back button
-                          IconButton(
-                            icon: const Icon(
-                              Icons.arrow_back,
-                              color: Colors.white,
-                            ),
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
-                          const SizedBox(width: 8),
-                          // Title - Show playlist name
-                          Text(
-                            widget.playlist.name,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const Spacer(),
-                          // Search button
-                          IconButton(
-                            icon: const Icon(Icons.search, color: Colors.white),
-                            onPressed: () {
-                              // Add search functionality here
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            TextButton(
+              onPressed: onSeeAllTapped,
+              child: const Text(
+                'See all',
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_categories.isEmpty && _featuredSeries == null) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.of(context).pop(),
           ),
+          title: Text(
+            widget.playlist.name,
+            style: const TextStyle(color: Colors.white),
+          ),
+        ),
+        body: const Center(
+          child: Text(
+            'No TV series found',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+    }
+
+    List<String> featuredImageUrls = [];
+    List<Function()> featuredPlayActions = [];
+    List<Function()> featuredDetailsActions = [];
+
+    if (_featuredSeries != null) {
+      featuredImageUrls.add(_featuredSeries!.coverUrl ?? '');
+      featuredPlayActions.add(() => _navigateToSeries(_featuredSeries!));
+      featuredDetailsActions.add(() => _navigateToSeries(_featuredSeries!));
+
+      final allOtherSeries =
+          _categorySeries.values
+              .expand((seriesList) => seriesList)
+              .where(
+                (s) =>
+                    s.id != _featuredSeries!.id &&
+                    (s.coverUrl != null && s.coverUrl!.isNotEmpty),
+              )
+              .take(5)
+              .toList();
+
+      for (var seriesItem in allOtherSeries) {
+        featuredImageUrls.add(seriesItem.coverUrl ?? '');
+        featuredPlayActions.add(() => _navigateToSeries(seriesItem));
+        featuredDetailsActions.add(() => _navigateToSeries(seriesItem));
+      }
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.black.withOpacity(_appBarOpacity),
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          widget.playlist.name,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search, color: Colors.white, size: 30),
+            onPressed: () {
+              // TODO: Implement Search
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Search tapped!')));
+            },
+            tooltip: 'Search',
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: CustomScrollView(
+        controller: _scrollController,
+        slivers: <Widget>[
+          if (featuredImageUrls.isNotEmpty)
+            SliverToBoxAdapter(
+              child: FeaturedContent(
+                key: ValueKey(_featuredSeries?.id ?? 'featured_series'),
+                imageUrls: featuredImageUrls,
+                onPlayTapped: (index) {
+                  if (index < featuredPlayActions.length)
+                    featuredPlayActions[index]();
+                },
+                onDetailsTapped: (index) {
+                  if (index < featuredDetailsActions.length)
+                    featuredDetailsActions[index]();
+                },
+              ),
+            ),
+
+          ..._categories.expand((category) {
+            final seriesList = _categorySeries[category.id] ?? [];
+            if (seriesList.isEmpty) {
+              return [const SliverToBoxAdapter(child: SizedBox.shrink())];
+            }
+
+            return [
+              _buildSectionHeader(
+                context,
+                category.name,
+                () => _navigateToSeeAll(category, seriesList),
+              ),
+              SliverToBoxAdapter(
+                child: ContentCarousel<TvSeries>(
+                  items: seriesList,
+                  itemBuilder:
+                      (series) => TvSeriesCard(
+                        // This will need to be updated like MovieCard
+                        series: series,
+                        onTap: () => _navigateToSeries(series),
+                      ),
+                ),
+              ),
+            ];
+          }),
+
+          const SliverToBoxAdapter(child: SizedBox(height: 20)),
         ],
       ),
     );
