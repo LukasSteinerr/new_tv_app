@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../constants/app_theme.dart';
 
 class ContentCarousel<T> extends StatelessWidget {
   final String title;
@@ -57,7 +56,7 @@ class ContentCarousel<T> extends StatelessWidget {
                         Text(
                           'See All',
                           style: TextStyle(
-                            color: AppColors.netflixTextSecondary,
+                            color: Colors.grey,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -65,7 +64,7 @@ class ContentCarousel<T> extends StatelessWidget {
                         Icon(
                           Icons.arrow_forward_ios,
                           size: 12,
-                          color: AppColors.netflixTextSecondary,
+                          color: Colors.grey,
                         ),
                       ],
                     ),
