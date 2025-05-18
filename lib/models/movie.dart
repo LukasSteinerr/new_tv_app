@@ -16,6 +16,9 @@ class Movie {
   String? rating;
   String? streamId;
   String? tmdbId;
+  String? trailer;
+  String? added;
+  double? rating_5based;
 
   final category = ToOne<Category>();
   final playlist = ToOne<Playlist>();
@@ -30,5 +33,8 @@ class Movie {
     this.rating,
     this.streamId,
     this.tmdbId,
+    this.trailer,
+    this.added,
+    this.rating_5based,
   });
 }

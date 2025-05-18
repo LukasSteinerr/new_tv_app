@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:ui'; // Will be used for BackdropFilter if we keep parts of old FeaturedContent
+// Will be used for BackdropFilter if we keep parts of old FeaturedContent
 import '../models/playlist.dart';
 import '../models/movie.dart';
 import '../models/category.dart';

@@ -193,6 +193,9 @@ class XtreamService {
         rating: movieData['rating'] ?? '',
         streamId: movieData['stream_id'].toString(),
         tmdbId: movieData['tmdb']?.toString(),
+        trailer: movieData['trailer']?.toString(),
+        added: movieData['added']?.toString(),
+        rating_5based: _parseRating5Based(movieData['rating_5based']),
       );
 
       movie.playlist.target = playlist;
@@ -452,5 +455,18 @@ class XtreamService {
       print('Error parsing EPG XML or storing data: $e');
       // Optionally rethrow or handle more gracefully
     }
+  }
+
+  double? _parseRating5Based(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+    if (value is num) {
+      return value.toDouble();
+    }
+    if (value is String) {
+      return double.tryParse(value);
+    }
+    return null;
   }
 }
