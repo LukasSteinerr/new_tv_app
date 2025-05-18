@@ -4,6 +4,7 @@ import '../models/playlist.dart';
 import '../models/movie.dart';
 import '../models/category.dart';
 import '../services/playlist_service.dart';
+import '../services/tmdb_service.dart'; // Added TMDB Service import
 import '../widgets/content_carousel.dart';
 import '../widgets/movie_card.dart';
 import '../widgets/featured_content.dart';
@@ -29,15 +30,20 @@ class MoviesScreen extends StatefulWidget {
 class _MoviesScreenState extends State<MoviesScreen> {
   List<Category> _categories = [];
   Map<int, List<Movie>> _categoryMovies = {};
+  List<Movie> _popularTmdbMovies = []; // Added for TMDB popular movies
   bool _isLoading = true;
-  Movie? _featuredMovie;
+  Movie?
+  _featuredMovie; // This might still be used or could be replaced by the first TMDB movie
   late ScrollController _scrollController;
+  late TMDBService _tmdbService; // Corrected class name TMDBService
+
   // _appBarOpacity is now managed by the parent, remove from here
   // double _appBarOpacity = 0.0;
 
   @override
   void initState() {
     super.initState();
+    _tmdbService = TMDBService(); // Corrected class name TMDBService
     _scrollController = ScrollController();
     _scrollController.addListener(
       _notifyScrollUpdate,
@@ -64,40 +70,82 @@ class _MoviesScreenState extends State<MoviesScreen> {
     });
 
     try {
-      // Get only movie categories
+      // Fetch popular TMDB movies (these are Movie objects from TMDB API)
+      final popularTmdbApiMovies = await _tmdbService.getPopularMovies();
+
+      // Get only movie categories from the playlist
       final allCategories = await widget.playlistService.getPlaylistCategories(
         widget.playlist.id,
       );
       final movieCategories =
           allCategories.where((category) => category.isMovie).toList();
 
-      // Get movies for each category
+      // Get all movies from the local playlist and their TMDB IDs
       final categoryMoviesMap = <int, List<Movie>>{};
-      List<Movie> allMovies = [];
-
+      List<Movie> allLocalMovies = [];
       for (final category in movieCategories) {
         final movies = await widget.playlistService.getCategoryMovies(
           category.id,
         );
         categoryMoviesMap[category.id] = movies;
-        allMovies.addAll(movies);
+        allLocalMovies.addAll(movies);
       }
 
-      // Select a featured movie (one with a TMDB ID if possible)
-      Movie? featuredMovie;
-      if (allMovies.isNotEmpty) {
-        // First try to find a movie with a TMDB ID
-        featuredMovie = allMovies.firstWhere(
+      // Create a map of local movies by their TMDB ID for easy lookup
+      Map<String, Movie> localMoviesByTmdbId = {
+        for (var movie in allLocalMovies)
+          if (movie.tmdbId != null && movie.tmdbId!.isNotEmpty)
+            movie.tmdbId!: movie,
+      };
+
+      // Iterate through popular TMDB movies. If a popular movie's TMDB ID is in our local map,
+      // add the *local* movie object (which has the correct streamUrl) to the list of movies to feature.
+      // Update the local movie's details (like image URLs, description, rating) with fresh data from TMDB.
+      List<Movie> moviesToFeature = [];
+      for (var tmdbApiMovie in popularTmdbApiMovies) {
+        if (localMoviesByTmdbId.containsKey(tmdbApiMovie.tmdbId)) {
+          Movie localVersion = localMoviesByTmdbId[tmdbApiMovie.tmdbId]!;
+
+          // Update localVersion with fresh TMDB data for display purposes,
+          // while retaining its core identity and streamUrl.
+          localVersion.name =
+              tmdbApiMovie.name; // TMDB 'title' is mapped to 'name'
+          localVersion.description =
+              tmdbApiMovie.description ?? localVersion.description;
+          localVersion.posterUrl =
+              tmdbApiMovie.posterUrl ?? localVersion.posterUrl;
+          localVersion.backdropUrl =
+              tmdbApiMovie.backdropUrl ?? localVersion.backdropUrl;
+          localVersion.rating = tmdbApiMovie.rating ?? localVersion.rating;
+          localVersion.year = tmdbApiMovie.year ?? localVersion.year;
+          // tmdbId is already matched. streamUrl is preserved from localVersion.
+
+          moviesToFeature.add(localVersion);
+        }
+      }
+
+      // Determine the primary featured movie (e.g., the first from the feature list)
+      Movie? featuredMovieToShow;
+      if (moviesToFeature.isNotEmpty) {
+        featuredMovieToShow = moviesToFeature.first;
+      } else if (allLocalMovies.isNotEmpty) {
+        // Fallback to any local movie if no popular local movies are found
+        featuredMovieToShow = allLocalMovies.firstWhere(
           (movie) => movie.tmdbId != null && movie.tmdbId!.isNotEmpty,
-          orElse: () => allMovies.first, // Fallback to the first movie
+          orElse:
+              () =>
+                  allLocalMovies
+                      .first, // Fallback to the very first local movie
         );
       }
 
       if (mounted) {
         setState(() {
+          _popularTmdbMovies =
+              moviesToFeature; // This list now contains local Movie objects with updated TMDB info
           _categories = movieCategories;
           _categoryMovies = categoryMoviesMap;
-          _featuredMovie = featuredMovie;
+          _featuredMovie = featuredMovieToShow;
           _isLoading = false;
         });
       }
@@ -105,7 +153,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error loading movies: $e')));
+        ).showSnackBar(SnackBar(content: Text('Error loading data: $e')));
         setState(() {
           _isLoading = false;
         });
@@ -217,38 +265,33 @@ class _MoviesScreenState extends State<MoviesScreen> {
     List<Function()> featuredPlayActions = [];
     List<Function()> featuredDetailsActions = [];
 
-    if (_featuredMovie != null) {
-      featuredImageUrls.add(
-        _featuredMovie!.coverUrl ??
-            '', // Use coverUrl, fallback to empty string
-      );
-      featuredPlayActions.add(
-        () => _navigateToMovie(_featuredMovie!),
-      ); // Or play action
-      featuredDetailsActions.add(() => _navigateToMovie(_featuredMovie!));
+    // Use popular TMDB movies for featured content
+    if (_popularTmdbMovies.isNotEmpty) {
+      // Take up to 4 popular movies for the featured section
+      final moviesToShowInFeatured = _popularTmdbMovies.take(4).toList();
 
-      // Add additional content for PageView from other movies
-      final allOtherMovies =
-          _categoryMovies.values
-              .expand((movies) => movies)
-              .where(
-                (movie) =>
-                    movie.id != _featuredMovie!.id &&
-                    (movie.coverUrl != null &&
-                        movie
-                            .coverUrl!
-                            .isNotEmpty), // Ensure coverUrl is not null or empty
-              )
-              .take(5) // Limit to 5 additional items for the featured section
-              .toList();
-
-      for (var movie in allOtherMovies) {
-        featuredImageUrls.add(
-          movie.coverUrl ?? '',
-        ); // Use coverUrl, fallback to empty string
+      for (var movie in moviesToShowInFeatured) {
+        // Prefer poster for featured content, then coverUrl. Avoid backdrop here.
+        String imageUrl =
+            movie.posterUrl ??
+            movie.coverUrl ??
+            ''; // Use poster, then cover, then empty
+        if (imageUrl.isNotEmpty && !imageUrl.startsWith('http')) {
+          // Assuming TmdbService provides a method to get full image URL
+          // or TmdbImageProvider.getFullImageUrl exists and is static/accessible
+          // For now, let's assume the URL is already complete or TmdbImage widget handles it.
+          // If not, this needs adjustment: e.g., imageUrl = _tmdbService.getFullBackdropPath(movie.backdropPath);
+        }
+        featuredImageUrls.add(imageUrl);
         featuredPlayActions.add(() => _navigateToMovie(movie));
         featuredDetailsActions.add(() => _navigateToMovie(movie));
       }
+    }
+    // Fallback if TMDB movies are not available but a _featuredMovie (from playlist) exists
+    else if (_featuredMovie != null) {
+      featuredImageUrls.add(_featuredMovie!.coverUrl ?? '');
+      featuredPlayActions.add(() => _navigateToMovie(_featuredMovie!));
+      featuredDetailsActions.add(() => _navigateToMovie(_featuredMovie!));
     }
 
     return Scaffold(
@@ -260,15 +303,21 @@ class _MoviesScreenState extends State<MoviesScreen> {
             _scrollController, // Keep controller for opacity calculation
         slivers: <Widget>[
           // Remove top padding, content should go behind the parent AppBar
-          // Featured Content - to be replaced with a new/modified FeaturedContent widget
           if (featuredImageUrls.isNotEmpty)
             SliverToBoxAdapter(
               child: FeaturedContent(
-                // This will be the new/modified FeaturedContent
                 key: ValueKey(
-                  _featuredMovie?.id ?? 'featured',
-                ), // Ensure widget rebuilds if featured movie changes
+                  _popularTmdbMovies.isNotEmpty
+                      ? _popularTmdbMovies
+                          .map((m) => m.tmdbId ?? m.id)
+                          .join(',')
+                      : _featuredMovie?.id ?? 'featured',
+                ), // More robust key
                 imageUrls: featuredImageUrls,
+                // Pass movie titles if FeaturedContent supports displaying them
+                // titles: _popularTmdbMovies.take(6).map((m) => m.title).toList(),
+                // Pass movie objects if FeaturedContent can use them directly
+                // movies: _popularTmdbMovies.take(6).toList(),
                 onPlayTapped: (index) {
                   if (index < featuredPlayActions.length) {
                     featuredPlayActions[index]();
@@ -279,12 +328,12 @@ class _MoviesScreenState extends State<MoviesScreen> {
                     featuredDetailsActions[index]();
                   }
                 },
-                // We'll need to pass movie details for the "Details" button if it's generic
-                // For now, the actions above handle navigation.
               ),
             ),
+          // else if (_isLoading) // Avoid showing "No movies" during initial load if featured is also loading
+          //   SliverToBoxAdapter(child: Center(child: CircularProgressIndicator())),
 
-          // Category Carousels
+          // Category Carousels (from playlist)
           ..._categories.expand((category) {
             final movies = _categoryMovies[category.id] ?? [];
             if (movies.isEmpty) {

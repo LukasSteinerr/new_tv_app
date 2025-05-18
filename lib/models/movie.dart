@@ -16,6 +16,8 @@ class Movie {
   String? rating;
   String? streamId;
   String? tmdbId;
+  String? posterUrl; // Added for TMDB poster
+  String? backdropUrl; // Added for TMDB backdrop
   String? trailer;
   String? added;
   double? rating_5based;
@@ -33,6 +35,8 @@ class Movie {
     this.rating,
     this.streamId,
     this.tmdbId,
+    this.posterUrl, // Added to constructor
+    this.backdropUrl, // Added to constructor
     this.trailer,
     this.added,
     this.rating_5based,
