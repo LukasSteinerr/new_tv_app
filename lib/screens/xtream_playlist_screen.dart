@@ -6,6 +6,7 @@ import 'live_tv_screen.dart';
 import 'movies_screen.dart';
 import 'tv_series_screen.dart';
 import 'settings_screen.dart';
+import 'download_screen.dart'; // Added import for DownloadScreen
 
 class XtreamPlaylistScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -162,10 +163,10 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
               size: 28, // As per reference UI
             ),
             onPressed: () {
-              // TODO: Implement Download functionality
-              ScaffoldMessenger.of(
+              Navigator.push(
                 context,
-              ).showSnackBar(const SnackBar(content: Text('Download tapped!')));
+                MaterialPageRoute(builder: (context) => const DownloadScreen()),
+              );
             },
             tooltip: 'Download',
           ),
