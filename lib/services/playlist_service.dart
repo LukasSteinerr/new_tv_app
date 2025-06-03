@@ -4,6 +4,7 @@ import '../models/category.dart';
 import '../models/movie.dart';
 import '../models/tv_series.dart';
 import '../models/tv_episode.dart';
+import '../models/tv_program.dart'; // Added for TvProgram
 import 'objectbox_service.dart';
 import 'm3u_service.dart';
 import 'xtream_service.dart';
@@ -176,5 +177,30 @@ class PlaylistService {
     }
 
     return episodes;
+  }
+
+  // EPG (TvProgram) operations
+  Future<List<TvProgram>> getTvProgramsForChannel(String channelEpgId) async {
+    // Ensure channelEpgId is not empty, as ObjectBoxService might not check
+    if (channelEpgId.isEmpty) {
+      return [];
+    }
+    return _objectBoxService.getTvProgramsForChannel(channelEpgId);
+  }
+
+  Future<List<TvProgram>> getTvProgramsForChannelInTimeRange(
+    String channelEpgId,
+    DateTime startTime,
+    DateTime endTime,
+  ) async {
+    // Ensure channelEpgId is not empty
+    if (channelEpgId.isEmpty) {
+      return [];
+    }
+    return _objectBoxService.getTvProgramsForChannelInTimeRange(
+      channelEpgId,
+      startTime,
+      endTime,
+    );
   }
 }

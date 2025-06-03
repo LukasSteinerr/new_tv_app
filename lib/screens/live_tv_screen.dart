@@ -3,6 +3,7 @@ import 'package:flutter/services.dart'; // Added for SystemChrome
 import '../models/playlist.dart';
 import '../models/category.dart';
 import '../models/channel.dart';
+import '../models/tv_program.dart'; // Added for EPG data
 import '../services/playlist_service.dart';
 // Will likely remove or change usage
 import '../widgets/time_slider_widget.dart';
@@ -31,6 +32,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   List<Channel> _allLiveChannels = [];
   List<Channel> _displayedChannels = [];
   Category? _selectedCategoryInDrawer;
+  Map<String, List<TvProgram>> _epgData = {}; // To store EPG data for channels
 
   bool _isLoading = true;
   TimeOfDay _selectedTime = TimeOfDay.now();
@@ -102,8 +104,10 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
           _allLiveChannels = tempAllChannels;
           _displayedChannels = List.from(tempAllChannels); // Initially show all
           _categoryLogos = tempCategoryLogos;
-          _isLoading = false;
+          _isLoading = false; // Initial data load done
         });
+        // Now load EPG data
+        await _loadEpgForDisplayedChannels();
       }
     } catch (e) {
       if (mounted) {
@@ -202,6 +206,216 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _loadEpgForDisplayedChannels() async {
+    if (!mounted) return;
+
+    final now = DateTime.now();
+    DateTime selectedDateTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      _selectedTime.hour,
+      _selectedTime.minute,
+    );
+
+    final DateTime startTime = selectedDateTime.subtract(
+      const Duration(hours: 1),
+    );
+    final DateTime endTime = selectedDateTime.add(const Duration(hours: 3));
+
+    Map<String, List<TvProgram>> newEpgData = Map.from(
+      _epgData,
+    ); // Preserve existing data not being updated
+
+    for (final channel in _displayedChannels) {
+      if (channel.epgId != null && channel.epgId!.isNotEmpty) {
+        try {
+          final programs = await widget.playlistService
+              .getTvProgramsForChannelInTimeRange(
+                channel.epgId!,
+                startTime,
+                endTime,
+              );
+          newEpgData[channel.epgId!] = programs;
+        } catch (e) {
+          if (mounted) {
+            // Optionally, show a less intrusive error or log it
+            // print('Error loading EPG for ${channel.name}: $e');
+          }
+          newEpgData[channel.epgId!] = [];
+        }
+      } else {
+        // If a channel has no epgId, ensure it has an empty list in the map
+        newEpgData[channel.epgId ?? 'unknown_${channel.id}'] = [];
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _epgData = newEpgData;
+      });
+    }
+  }
+
+  Widget _buildEpgProgramList(
+    List<TvProgram>? programs,
+    TimeOfDay currentTime,
+    String channelName,
+  ) {
+    if (programs == null || programs.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Center(
+          child: Text(
+            'No EPG data', // Shorter message
+            style: TextStyle(fontSize: 11, color: Colors.grey),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    final now = DateTime.now();
+    final DateTime currentDateTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      currentTime.hour,
+      currentTime.minute,
+    );
+
+    TvProgram? currentProgram;
+    List<TvProgram> upcomingPrograms = [];
+
+    for (var prog in programs) {
+      // Ensure times are in local for comparison if they came as UTC from DB
+      final progStartTimeLocal = prog.startTime.toLocal();
+      final progStopTimeLocal = prog.stopTime.toLocal();
+
+      if (currentDateTime.isAfter(
+            progStartTimeLocal.subtract(const Duration(seconds: 1)),
+          ) &&
+          currentDateTime.isBefore(progStopTimeLocal)) {
+        currentProgram = prog;
+      } else if (progStartTimeLocal.isAfter(currentDateTime)) {
+        upcomingPrograms.add(prog);
+      }
+    }
+
+    // Sort upcoming programs by start time, just in case they aren't already
+    upcomingPrograms.sort((a, b) => a.startTime.compareTo(b.startTime));
+
+    // Limit upcoming programs to display, e.g., next 2
+    if (upcomingPrograms.length > 2) {
+      upcomingPrograms = upcomingPrograms.sublist(0, 2);
+    }
+
+    List<Widget> epgItems = [];
+
+    if (currentProgram != null) {
+      epgItems.add(_buildProgramEntry(currentProgram, isCurrent: true));
+    } else {
+      // If no current program, find the next immediate program to show as "Up next"
+      TvProgram? nextProgram;
+      DateTime closestStartTime = DateTime.now().add(
+        const Duration(days: 365),
+      ); // Far future
+      for (var prog in programs) {
+        if (prog.startTime.toLocal().isAfter(currentDateTime) &&
+            prog.startTime.toLocal().isBefore(closestStartTime)) {
+          nextProgram = prog;
+          closestStartTime = prog.startTime.toLocal();
+        }
+      }
+      if (nextProgram != null) {
+        epgItems.add(
+          _buildProgramEntry(nextProgram, isCurrent: false, isNext: true),
+        );
+      }
+    }
+
+    for (var prog in upcomingPrograms) {
+      // Avoid adding the one already potentially added as 'nextProgram' if it was also in the general upcoming list
+      if (currentProgram != null && prog.id != currentProgram.id) {
+        // Only add if it's different from current and not already added as the immediate next one if current is null
+        if (epgItems.where((item) => item.key == ValueKey(prog.id)).isEmpty) {
+          epgItems.add(_buildProgramEntry(prog, isCurrent: false));
+        }
+      } else if (currentProgram == null &&
+          epgItems.where((item) => item.key == ValueKey(prog.id)).isEmpty) {
+        // If no current program, add upcoming ones, ensuring no duplicates if one was already picked as 'next'
+        epgItems.add(_buildProgramEntry(prog, isCurrent: false));
+      }
+    }
+
+    if (epgItems.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Center(
+          child: Text(
+            'No programs for this time',
+            style: TextStyle(fontSize: 11, color: Colors.grey),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+        children: epgItems,
+      ),
+    );
+  }
+
+  Widget _buildProgramEntry(
+    TvProgram program, {
+    bool isCurrent = false,
+    bool isNext = false,
+  }) {
+    final startTimeStr = _formatTime(program.startTime.toLocal());
+    final stopTimeStr = _formatTime(program.stopTime.toLocal());
+    String displayTitle = program.title;
+
+    if (isCurrent) {
+      displayTitle = 'Now: $displayTitle';
+    } else if (isNext) {
+      displayTitle = 'Next: $displayTitle';
+    }
+
+    return Padding(
+      key: ValueKey(program.id), // For efficient updates
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            displayTitle,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight:
+                  isCurrent || isNext ? FontWeight.bold : FontWeight.normal,
+              color: isCurrent ? Colors.amberAccent : Colors.white,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(
+            '$startTimeStr - $stopTimeStr',
+            style: TextStyle(fontSize: 10, color: Colors.grey[400]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatTime(DateTime dateTime) {
+    return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -316,8 +530,12 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                               ],
                             ),
                           ),
-                          const Expanded(
-                            child: SizedBox(), // Empty column on the right
+                          Expanded(
+                            child: _buildEpgProgramList(
+                              _epgData[channel.epgId],
+                              _selectedTime,
+                              channel.name,
+                            ),
                           ),
                         ],
                       ),
@@ -349,6 +567,8 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                   setState(() {
                     _isTimeSliderInteracting = false;
                   });
+                  // Refresh EPG data when interaction ends
+                  _loadEpgForDisplayedChannels();
                 },
               ),
             ),

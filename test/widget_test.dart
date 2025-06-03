@@ -17,6 +17,7 @@ import 'package:tv/models/category.dart';
 import 'package:tv/models/movie.dart';
 import 'package:tv/models/tv_series.dart';
 import 'package:tv/models/tv_episode.dart';
+import 'package:tv/models/tv_program.dart'; // Import TvProgram
 
 // Create a simple mock class for PlaylistService
 class MockPlaylistService implements PlaylistService {
@@ -55,6 +56,17 @@ class MockPlaylistService implements PlaylistService {
 
   @override
   Future<List<TvEpisode>> getTvSeriesEpisodes(TvSeries series) async => [];
+
+  @override
+  Future<List<TvProgram>> getTvProgramsForChannel(String channelEpgId) async =>
+      [];
+
+  @override
+  Future<List<TvProgram>> getTvProgramsForChannelInTimeRange(
+    String channelEpgId,
+    DateTime startTime,
+    DateTime endTime,
+  ) async => [];
 }
 
 void main() {
