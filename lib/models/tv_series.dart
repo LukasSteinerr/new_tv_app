@@ -15,6 +15,7 @@ class TvSeries {
   String? rating;
   String? seriesId;
   String? tmdbId;
+  int? myList;
 
   final category = ToOne<Category>();
   final playlist = ToOne<Playlist>();
@@ -30,5 +31,6 @@ class TvSeries {
     this.rating,
     this.seriesId,
     this.tmdbId,
+    this.myList,
   });
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
 import '../models/movie.dart';
+import '../services/objectbox_service.dart';
 import '../services/tmdb_image_provider.dart';
 import '../services/tmdb_service.dart'; // Import TMDBService
 import 'universal_video_player.dart';
@@ -20,6 +21,7 @@ class _NetflixStyleMovieDetailScreenState
     extends State<NetflixStyleMovieDetailScreen> {
   final TMDBImageProvider _imageProvider = TMDBImageProvider();
   final TMDBService _tmdbService = TMDBService(); // Instantiate TMDBService
+  ObjectBoxService? _objectBoxService;
   bool _isLoading = true;
   String? _posterUrl;
   String? _backdropUrl;
@@ -28,7 +30,12 @@ class _NetflixStyleMovieDetailScreenState
   @override
   void initState() {
     super.initState();
+    _initializeServices();
     _setPortraitMode(); // Ensure portrait mode on init
+  }
+
+  Future<void> _initializeServices() async {
+    _objectBoxService = await ObjectBoxService.create();
     _loadTMDBData();
   }
 
@@ -104,6 +111,18 @@ class _NetflixStyleMovieDetailScreenState
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
     );
+  }
+
+  void _toggleMyList() {
+    if (_objectBoxService == null) return;
+    setState(() {
+      if (widget.movie.myList == 1) {
+        widget.movie.myList = 0;
+      } else {
+        widget.movie.myList = 1;
+      }
+      _objectBoxService!.addMovie(widget.movie);
+    });
   }
 
   @override
@@ -209,7 +228,13 @@ class _NetflixStyleMovieDetailScreenState
                         ),
                       ),
                       Spacer(),
-                      Icon(Icons.add, color: Colors.white),
+                      GestureDetector(
+                        onTap: _toggleMyList,
+                        child: Icon(
+                          widget.movie.myList == 1 ? Icons.check : Icons.add,
+                          color: Colors.white,
+                        ),
+                      ),
                       SizedBox(width: 16),
                       Icon(Icons.cloud_download_outlined, color: Colors.white),
                     ],

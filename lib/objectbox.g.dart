@@ -200,7 +200,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(4, 7285596459614028247),
     name: 'Movie',
-    lastPropertyId: const obx_int.IdUid(15, 1692480152779986244),
+    lastPropertyId: const obx_int.IdUid(18, 7838675007446937760),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -297,6 +297,24 @@ final _entities = <obx_int.ModelEntity>[
         type: 8,
         flags: 0,
       ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(16, 567249796450363336),
+        name: 'posterUrl',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(17, 6667078932682744026),
+        name: 'backdropUrl',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(18, 7838675007446937760),
+        name: 'myList',
+        type: 6,
+        flags: 0,
+      ),
     ],
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[],
@@ -376,7 +394,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(6, 4381905975208352576),
     name: 'TvSeries',
-    lastPropertyId: const obx_int.IdUid(10, 2739829902393060728),
+    lastPropertyId: const obx_int.IdUid(11, 7294473990937461405),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -441,6 +459,12 @@ final _entities = <obx_int.ModelEntity>[
         id: const obx_int.IdUid(10, 2739829902393060728),
         name: 'tmdbId',
         type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(11, 7294473990937461405),
+        name: 'myList',
+        type: 6,
         flags: 0,
       ),
     ],
@@ -866,7 +890,15 @@ obx_int.ModelDefinition getObjectBoxModel() {
             object.trailer == null ? null : fbb.writeString(object.trailer!);
         final addedOffset =
             object.added == null ? null : fbb.writeString(object.added!);
-        fbb.startTable(16);
+        final posterUrlOffset =
+            object.posterUrl == null
+                ? null
+                : fbb.writeString(object.posterUrl!);
+        final backdropUrlOffset =
+            object.backdropUrl == null
+                ? null
+                : fbb.writeString(object.backdropUrl!);
+        fbb.startTable(19);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, nameOffset);
         fbb.addOffset(2, streamUrlOffset);
@@ -882,6 +914,9 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addOffset(12, trailerOffset);
         fbb.addOffset(13, addedOffset);
         fbb.addFloat64(14, object.rating_5based);
+        fbb.addOffset(15, posterUrlOffset);
+        fbb.addOffset(16, backdropUrlOffset);
+        fbb.addInt64(17, object.myList);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -915,6 +950,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final tmdbIdParam = const fb.StringReader(
           asciiOptimization: true,
         ).vTableGetNullable(buffer, rootOffset, 26);
+        final posterUrlParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGetNullable(buffer, rootOffset, 34);
+        final backdropUrlParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGetNullable(buffer, rootOffset, 36);
         final trailerParam = const fb.StringReader(
           asciiOptimization: true,
         ).vTableGetNullable(buffer, rootOffset, 28);
@@ -926,6 +967,11 @@ obx_int.ModelDefinition getObjectBoxModel() {
           rootOffset,
           32,
         );
+        final myListParam = const fb.Int64Reader().vTableGetNullable(
+          buffer,
+          rootOffset,
+          38,
+        );
         final object = Movie(
           name: nameParam,
           streamUrl: streamUrlParam,
@@ -936,9 +982,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
           rating: ratingParam,
           streamId: streamIdParam,
           tmdbId: tmdbIdParam,
+          posterUrl: posterUrlParam,
+          backdropUrl: backdropUrlParam,
           trailer: trailerParam,
           added: addedParam,
           rating_5based: rating_5basedParam,
+          myList: myListParam,
         )..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
         object.category.targetId = const fb.Int64Reader().vTableGet(
           buffer,
@@ -1077,7 +1126,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
             object.seriesId == null ? null : fbb.writeString(object.seriesId!);
         final tmdbIdOffset =
             object.tmdbId == null ? null : fbb.writeString(object.tmdbId!);
-        fbb.startTable(11);
+        fbb.startTable(12);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, nameOffset);
         fbb.addOffset(2, coverUrlOffset);
@@ -1088,6 +1137,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addInt64(7, object.category.targetId);
         fbb.addInt64(8, object.playlist.targetId);
         fbb.addOffset(9, tmdbIdOffset);
+        fbb.addInt64(10, object.myList);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -1115,6 +1165,11 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final tmdbIdParam = const fb.StringReader(
           asciiOptimization: true,
         ).vTableGetNullable(buffer, rootOffset, 22);
+        final myListParam = const fb.Int64Reader().vTableGetNullable(
+          buffer,
+          rootOffset,
+          24,
+        );
         final object = TvSeries(
           name: nameParam,
           coverUrl: coverUrlParam,
@@ -1123,6 +1178,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
           rating: ratingParam,
           seriesId: seriesIdParam,
           tmdbId: tmdbIdParam,
+          myList: myListParam,
         )..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
         object.category.targetId = const fb.Int64Reader().vTableGet(
           buffer,
@@ -1463,6 +1519,21 @@ class Movie_ {
   static final rating_5based = obx.QueryDoubleProperty<Movie>(
     _entities[3].properties[14],
   );
+
+  /// See [Movie.posterUrl].
+  static final posterUrl = obx.QueryStringProperty<Movie>(
+    _entities[3].properties[15],
+  );
+
+  /// See [Movie.backdropUrl].
+  static final backdropUrl = obx.QueryStringProperty<Movie>(
+    _entities[3].properties[16],
+  );
+
+  /// See [Movie.myList].
+  static final myList = obx.QueryIntegerProperty<Movie>(
+    _entities[3].properties[17],
+  );
 }
 
 /// [TvEpisode] entity fields to define ObjectBox queries.
@@ -1568,6 +1639,11 @@ class TvSeries_ {
   /// See [TvSeries.tmdbId].
   static final tmdbId = obx.QueryStringProperty<TvSeries>(
     _entities[5].properties[9],
+  );
+
+  /// See [TvSeries.myList].
+  static final myList = obx.QueryIntegerProperty<TvSeries>(
+    _entities[5].properties[10],
   );
 
   /// see [TvSeries.episodes]

@@ -21,6 +21,7 @@ class Movie {
   String? trailer;
   String? added;
   double? rating_5based;
+  int? myList;
 
   final category = ToOne<Category>();
   final playlist = ToOne<Playlist>();
@@ -40,5 +41,6 @@ class Movie {
     this.trailer,
     this.added,
     this.rating_5based,
+    this.myList,
   });
 }

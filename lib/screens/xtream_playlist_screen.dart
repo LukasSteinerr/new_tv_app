@@ -7,6 +7,9 @@ import 'movies_screen.dart';
 import 'tv_series_screen.dart';
 import 'settings_screen.dart';
 import 'download_screen.dart'; // Added import for DownloadScreen
+import 'my_list_screen.dart';
+import 'search_screen.dart';
+import '../services/objectbox_service.dart';
 
 class XtreamPlaylistScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -26,6 +29,7 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
   int _currentIndex = 0;
   late List<Widget> _screens;
   bool _isLoading = true;
+  ObjectBoxService? _objectBoxService;
 
   // For AppBar opacity based on scroll
   double _appBarOpacity = 0.0; // Keep opacity state
@@ -33,6 +37,11 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
   @override
   void initState() {
     super.initState();
+    _initializeServices();
+  }
+
+  Future<void> _initializeServices() async {
+    _objectBoxService = await ObjectBoxService.create();
     _initScreens();
   }
 
@@ -63,10 +72,6 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
   }
 
   Future<void> _initScreens() async {
-    setState(() {
-      _isLoading = true;
-    });
-
     try {
       _screens = [
         MoviesScreen(
@@ -90,10 +95,11 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
           onScrollUpdate: _updateAppBarOpacity, // Pass the callback
         ),
       ];
-
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -144,17 +150,21 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
           // Actions (Cast, Download, Search)
           IconButton(
             icon: const Icon(
-              Icons.cast,
+              Icons.list,
               color: Colors.white,
               size: 28,
             ), // As per reference UI
             onPressed: () {
-              // TODO: Implement Cast functionality
-              ScaffoldMessenger.of(
+              Navigator.push(
                 context,
-              ).showSnackBar(const SnackBar(content: Text('Cast tapped!')));
+                MaterialPageRoute(
+                  builder:
+                      (context) =>
+                          MyListScreen(playlistService: widget.playlistService),
+                ),
+              );
             },
-            tooltip: 'Cast',
+            tooltip: 'My List',
           ),
           IconButton(
             icon: const Icon(
@@ -177,10 +187,15 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
               size: 30,
             ), // As per reference UI
             onPressed: () {
-              // TODO: Implement Search functionality
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Search tapped!')));
+              if (_objectBoxService != null) {
+                showSearch(
+                  context: context,
+                  delegate: SearchScreen(
+                    objectBoxService: _objectBoxService!,
+                    playlistService: widget.playlistService,
+                  ),
+                );
+              }
             },
             tooltip: 'Search',
           ),

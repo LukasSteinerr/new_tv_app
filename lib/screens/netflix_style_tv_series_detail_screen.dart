@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
 import '../models/tv_series.dart';
 import '../models/tv_episode.dart';
+import '../services/objectbox_service.dart';
 import '../services/playlist_service.dart';
 import '../services/tmdb_image_provider.dart';
 import 'universal_video_player.dart';
@@ -25,6 +26,7 @@ class NetflixStyleTvSeriesDetailScreen extends StatefulWidget {
 class _NetflixStyleTvSeriesDetailScreenState
     extends State<NetflixStyleTvSeriesDetailScreen> {
   final TMDBImageProvider _imageProvider = TMDBImageProvider();
+  ObjectBoxService? _objectBoxService;
   List<TvEpisode> _episodes = [];
   Map<int, List<TvEpisode>> _seasonEpisodes = {};
   List<int> _seasons = [];
@@ -36,7 +38,12 @@ class _NetflixStyleTvSeriesDetailScreenState
   @override
   void initState() {
     super.initState();
+    _initializeServices();
     _setPortraitMode(); // Ensure portrait mode on init
+  }
+
+  Future<void> _initializeServices() async {
+    _objectBoxService = await ObjectBoxService.create();
     _loadEpisodes();
     _loadTMDBData();
   }
@@ -205,6 +212,18 @@ class _NetflixStyleTvSeriesDetailScreenState
   }
 
   // Play the first episode of the selected season
+  void _toggleMyList() {
+    if (_objectBoxService == null) return;
+    setState(() {
+      if (widget.series.myList == 1) {
+        widget.series.myList = 0;
+      } else {
+        widget.series.myList = 1;
+      }
+      _objectBoxService!.addTvSeries(widget.series);
+    });
+  }
+
   void _playFirstEpisode() async {
     // Made async
     if (_selectedSeason != null &&
@@ -368,6 +387,14 @@ class _NetflixStyleTvSeriesDetailScreenState
               ),
             ),
           const Spacer(),
+          GestureDetector(
+            onTap: _toggleMyList,
+            child: Icon(
+              widget.series.myList == 1 ? Icons.check : Icons.add,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(width: 16),
           // HD tag if available
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
