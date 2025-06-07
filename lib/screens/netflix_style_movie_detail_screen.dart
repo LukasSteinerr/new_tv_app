@@ -6,6 +6,7 @@ import '../services/objectbox_service.dart';
 import '../services/tmdb_image_provider.dart';
 import '../services/tmdb_service.dart'; // Import TMDBService
 import 'universal_video_player.dart';
+import '../services/download_service.dart';
 
 class NetflixStyleMovieDetailScreen extends StatefulWidget {
   final Movie movie;
@@ -125,6 +126,16 @@ class _NetflixStyleMovieDetailScreenState
     });
   }
 
+  void _downloadMovie() {
+    DownloadService().startDownload(widget.movie);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Starting download...'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -236,7 +247,13 @@ class _NetflixStyleMovieDetailScreenState
                         ),
                       ),
                       SizedBox(width: 16),
-                      Icon(Icons.cloud_download_outlined, color: Colors.white),
+                      GestureDetector(
+                        onTap: _downloadMovie,
+                        child: const Icon(
+                          Icons.cloud_download_outlined,
+                          color: Colors.white,
+                        ),
+                      ),
                     ],
                   ),
                   SizedBox(height: 8),
