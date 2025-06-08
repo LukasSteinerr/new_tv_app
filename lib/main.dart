@@ -32,14 +32,14 @@ void main() async {
   );
 
   // Register the background download callback
-  await FileDownloader().registerCallbacks(
+  FileDownloader().registerCallbacks(
     taskNotificationTapCallback: myNotificationTapCallback,
     // You can also register other callbacks here, e.g., for progress updates
     // or when a task completes.
   );
 
   // Configure notifications for the default group
-  await FileDownloader().configureNotificationForGroup(
+  FileDownloader().configureNotificationForGroup(
     FileDownloader.defaultGroup,
     running: const TaskNotification(
       'Download {filename}',

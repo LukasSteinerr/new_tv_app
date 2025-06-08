@@ -201,8 +201,7 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
           ),
           const SizedBox(width: 8), // Spacing as per reference UI
         ],
-      ),
-      body:
+      ),      body:
           _isLoading
               ? Center(
                 child: LoadingAnimationWidget.dotsTriangle(
@@ -210,7 +209,7 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
                   size: 50,
                 ),
               )
-              : IndexedStack(index: _currentIndex, children: _screens),
+              : _screens[_currentIndex],
       bottomNavigationBar: Theme(
         // Wrap with Theme to remove splash/highlight
         data: Theme.of(context).copyWith(

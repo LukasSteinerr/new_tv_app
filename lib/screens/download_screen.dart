@@ -11,7 +11,7 @@ class DownloadScreen extends StatefulWidget {
 
 class _DownloadScreenState extends State<DownloadScreen> {
   final DownloadService _downloadService = DownloadService();
-  List<Map<String, dynamic>> _downloadingMovies = [];
+  final List<Map<String, dynamic>> _downloadingMovies = [];
   StreamSubscription? _downloadProgressSubscription;
 
   @override
