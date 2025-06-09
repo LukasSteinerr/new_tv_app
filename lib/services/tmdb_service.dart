@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../models/cast.dart';
 import '../models/movie.dart'; // Import the Movie model
 
 class TMDBService {
@@ -53,6 +54,25 @@ class TMDBService {
     } catch (e) {
       print('Error fetching TV series details: $e');
       return null;
+    }
+  }
+
+  // Fetch movie credits by TMDB ID
+  Future<List<Cast>> getMovieCredits(String tmdbId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_apiBaseUrl/movie/$tmdbId/credits?api_key=$_apiKey'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic> castData = data['cast'];
+        return castData.map((json) => Cast.fromJson(json)).toList();
+      }
+      return [];
+    } catch (e) {
+      print('Error fetching movie credits: $e');
+      return [];
     }
   }
 

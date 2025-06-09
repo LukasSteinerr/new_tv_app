@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
+import '../models/cast.dart';
 import '../models/movie.dart';
 import '../services/objectbox_service.dart';
 import '../services/tmdb_image_provider.dart';
 import '../services/tmdb_service.dart'; // Import TMDBService
 import 'universal_video_player.dart';
 import '../services/download_service.dart';
+import 'all_actors_screen.dart'; // Import the new screen
 
 class NetflixStyleMovieDetailScreen extends StatefulWidget {
   final Movie movie;
@@ -61,11 +63,15 @@ class _NetflixStyleMovieDetailScreenState
         final movieDetailsFuture = _tmdbService.getMovieDetails(
           widget.movie.tmdbId!,
         ); // Fetch movie details
+        final creditsFuture = _tmdbService.getMovieCredits(
+          widget.movie.tmdbId!,
+        );
 
         final results = await Future.wait([
           posterFuture,
           backdropFuture,
           movieDetailsFuture,
+          creditsFuture,
         ]);
 
         if (mounted) {
@@ -76,6 +82,7 @@ class _NetflixStyleMovieDetailScreenState
                 results[2] as Map<String, dynamic>?; // Movie details
             _overview =
                 movieDetails?['overview'] as String?; // Extract overview
+            widget.movie.cast = results[3] as List<Cast>;
             _isLoading = false;
           });
         }
@@ -343,47 +350,114 @@ class _NetflixStyleMovieDetailScreenState
                     ),
                   ),
                   SizedBox(height: 12),
-                  // Assuming you have a list of actors in your Movie model
-                  // Container(
-                  //   height: 150, // Adjust height as needed
-                  //   child: ListView.builder(
-                  //     scrollDirection: Axis.horizontal,
-                  //     itemCount: movie.cast.length,
-                  //     itemBuilder: (context, index) {
-                  //       final actor = movie.cast[index];
-                  //       return Padding(
-                  //         padding: const EdgeInsets.only(right: 16.0),
-                  //         child: Column(
-                  //           children: [
-                  //             CircleAvatar(
-                  //               radius: 40,
-                  //               backgroundImage: NetworkImage(actor.imageUrl),
-                  //               onBackgroundImageError:
-                  //                   (exception, stackTrace) =>
-                  //                       Icon(Icons.person, size: 40),
-                  //               backgroundColor: Colors.grey[800],
-                  //             ),
-                  //             SizedBox(height: 8),
-                  //             Text(
-                  //               actor.name,
-                  //               style: TextStyle(
-                  //                 color: Colors.white,
-                  //                 fontSize: 12,
-                  //               ),
-                  //             ),
-                  //             Text(
-                  //               actor.characterName,
-                  //               style: TextStyle(
-                  //                 color: Colors.grey[500],
-                  //                 fontSize: 10,
-                  //               ),
-                  //             ),
-                  //           ],
-                  //         ),
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
+                  SizedBox(
+                    height: 160,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount:
+                          (widget.movie.cast?.length ?? 0) > 10
+                              ? 11
+                              : (widget.movie.cast?.length ?? 0),
+                      itemBuilder: (context, index) {
+                        if (index == 10) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          AllActorsScreen(movie: widget.movie),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              width: 80,
+                              margin: const EdgeInsets.only(right: 16.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 40,
+                                    backgroundColor: Colors.grey[800],
+                                    child: const Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: Colors.white,
+                                      size: 30,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'See All',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+
+                        final actor = widget.movie.cast![index];
+                        final profileUrl =
+                            actor.profilePath != null
+                                ? TMDBService.getPosterUrl(actor.profilePath!)
+                                : null;
+
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 16.0),
+                          child: SizedBox(
+                            width: 80,
+                            child: Column(
+                              children: [
+                                CircleAvatar(
+                                  radius: 40,
+                                  backgroundImage:
+                                      profileUrl != null
+                                          ? NetworkImage(profileUrl)
+                                          : null,
+                                  onBackgroundImageError:
+                                      profileUrl != null
+                                          ? (exception, stackTrace) =>
+                                              const Icon(Icons.person, size: 40)
+                                          : null,
+                                  backgroundColor: Colors.grey[800],
+                                  child:
+                                      profileUrl == null
+                                          ? const Icon(Icons.person, size: 40)
+                                          : null,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  actor.name,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  actor.character,
+                                  style: TextStyle(
+                                    color: Colors.grey[500],
+                                    fontSize: 10,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),

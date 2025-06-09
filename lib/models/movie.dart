@@ -1,6 +1,7 @@
 import 'package:objectbox/objectbox.dart';
 import 'playlist.dart';
 import 'category.dart';
+import 'cast.dart';
 
 @Entity()
 class Movie {
@@ -23,6 +24,9 @@ class Movie {
   double? rating_5based;
   int? myList;
 
+  @Transient()
+  List<Cast>? cast;
+
   final category = ToOne<Category>();
   final playlist = ToOne<Playlist>();
 
@@ -42,5 +46,6 @@ class Movie {
     this.added,
     this.rating_5based,
     this.myList,
+    this.cast,
   });
 }
