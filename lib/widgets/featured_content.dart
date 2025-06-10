@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 // Assuming Movie model might be needed if we pass full details later,
 // but for now, callbacks are index-based.
 // import '../models/movie.dart';
@@ -22,9 +23,13 @@ class FeaturedContent extends StatefulWidget {
   State<FeaturedContent> createState() => _FeaturedContentState();
 }
 
-class _FeaturedContentState extends State<FeaturedContent> {
+class _FeaturedContentState extends State<FeaturedContent>
+    with AutomaticKeepAliveClientMixin {
   late PageController _pageController;
   int _currentPage = 0;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -62,10 +67,34 @@ class _FeaturedContentState extends State<FeaturedContent> {
     );
   }
 
+  Widget _buildPlaceholder() {
+    return Container(
+      color: Colors.grey[900],
+      child: const Center(
+        child: Icon(
+          Icons.movie_creation_outlined,
+          color: Colors.white24,
+          size: 100,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorWidget() {
+    return Container(
+      color: Colors.grey[900],
+      child: const Center(
+        child: Icon(Icons.broken_image, color: Colors.white24, size: 100),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+
     if (widget.imageUrls.isEmpty) {
-      return const SizedBox.shrink(); // Don't build if there are no images
+      return const SizedBox.shrink();
     }
 
     return Container(
@@ -85,50 +114,27 @@ class _FeaturedContentState extends State<FeaturedContent> {
               }
             },
             itemBuilder: (context, index) {
-              // Ensure URL is not empty before trying to load
               if (widget.imageUrls[index].isEmpty) {
-                return Container(
-                  color: Colors.grey[900],
-                  child: const Center(
-                    child: Icon(
-                      Icons.broken_image,
-                      color: Colors.white24,
-                      size: 100,
-                    ),
-                  ),
-                );
+                return _buildPlaceholder();
               }
-              return Image.network(
-                widget.imageUrls[index],
+
+              return CachedNetworkImage(
+                imageUrl: widget.imageUrls[index],
                 fit: BoxFit.cover,
                 alignment: Alignment.topCenter,
-                loadingBuilder: (
-                  BuildContext context,
-                  Widget child,
-                  ImageChunkEvent? loadingProgress,
-                ) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value:
-                          loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
-                    ),
-                  );
-                },
-                errorBuilder:
-                    (context, error, stackTrace) => Container(
-                      color: Colors.grey[900],
-                      child: const Center(
-                        child: Icon(
-                          Icons.movie_creation_outlined, // Or Icons.error
-                          color: Colors.white24,
-                          size: 100,
-                        ),
-                      ),
-                    ),
+                memCacheWidth:
+                    (MediaQuery.of(context).size.width *
+                            MediaQuery.of(context).devicePixelRatio)
+                        .round(),
+                memCacheHeight:
+                    (MediaQuery.of(context).size.height *
+                            0.65 *
+                            MediaQuery.of(context).devicePixelRatio)
+                        .round(),
+                placeholder: (context, url) => _buildPlaceholder(),
+                errorWidget: (context, url, error) => _buildErrorWidget(),
+                fadeInDuration: const Duration(milliseconds: 300),
+                fadeInCurve: Curves.easeInOut,
               );
             },
           ),
@@ -155,11 +161,10 @@ class _FeaturedContentState extends State<FeaturedContent> {
             child: _buildPageIndicator(),
           ),
           Positioned(
-            bottom: 30, // As per reference UI
+            bottom: 30,
             left: 20,
             right: 20,
             child: Column(
-              // Column to ensure buttons are centered if they wrap (though unlikely here)
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -167,7 +172,7 @@ class _FeaturedContentState extends State<FeaturedContent> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      width: 120.0, // As per reference UI
+                      width: 120.0,
                       child: ElevatedButton.icon(
                         onPressed: () {
                           widget.onPlayTapped(_currentPage);
@@ -178,13 +183,11 @@ class _FeaturedContentState extends State<FeaturedContent> {
                           foregroundColor: Colors.white,
                           backgroundColor: Colors.white.withOpacity(0.25),
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 20, // Adjusted to match reference
-                            vertical: 8, // Adjusted to match reference
+                            horizontal: 20,
+                            vertical: 8,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              20,
-                            ), // As per reference
+                            borderRadius: BorderRadius.circular(20),
                             side: BorderSide(
                               color: Colors.white.withOpacity(0.3),
                               width: 1,
@@ -198,9 +201,9 @@ class _FeaturedContentState extends State<FeaturedContent> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 15), // As per reference UI
+                    const SizedBox(width: 15),
                     SizedBox(
-                      width: 120.0, // As per reference UI
+                      width: 120.0,
                       child: ElevatedButton(
                         onPressed: () {
                           widget.onDetailsTapped(_currentPage);
@@ -209,19 +212,17 @@ class _FeaturedContentState extends State<FeaturedContent> {
                           foregroundColor: Colors.white,
                           backgroundColor: Colors.black.withOpacity(0.7),
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 20, // Adjusted to match reference
-                            vertical: 8, // Adjusted to match reference
+                            horizontal: 20,
+                            vertical: 8,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              20,
-                            ), // As per reference
+                            borderRadius: BorderRadius.circular(20),
                             side: BorderSide(
                               color: Colors.white.withOpacity(0.4),
                               width: 1,
                             ),
                           ),
-                          elevation: 2, // As per reference
+                          elevation: 2,
                           textStyle: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,

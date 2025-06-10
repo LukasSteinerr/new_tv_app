@@ -1,7 +1,8 @@
 import 'dart:collection';
+import 'dart:async';
 import 'tmdb_service.dart';
 
-/// A service that provides TMDB images with caching
+/// A service that provides TMDB images with enhanced caching and performance optimization
 class TMDBImageProvider {
   static final TMDBImageProvider _instance = TMDBImageProvider._internal();
   factory TMDBImageProvider() => _instance;
@@ -10,140 +11,182 @@ class TMDBImageProvider {
 
   final TMDBService _tmdbService = TMDBService();
 
-  // Cache for poster URLs - use distinct keys for movies and TV shows
-  final Map<String, String?> _posterCache = HashMap<String, String?>();
+  // Enhanced cache with LRU eviction
+  static const int _maxCacheSize = 500;
+  final LinkedHashMap<String, String?> _posterCache = LinkedHashMap();
+  final LinkedHashMap<String, String?> _backdropCache = LinkedHashMap();
 
-  // Cache for backdrop URLs - use distinct keys for movies and TV shows
-  final Map<String, String?> _backdropCache = HashMap<String, String?>();
+  // Track ongoing requests to prevent duplicate API calls
+  final Map<String, Completer<String?>> _ongoingRequests = {};
 
-  // Helper method to create distinct cache keys
   String _createCacheKey(String type, String id, bool isBackdrop) {
     return "${type}_${isBackdrop ? 'backdrop' : 'poster'}_$id";
   }
 
-  /// Get a poster URL for a movie
-  /// Returns the fallback URL if TMDB ID is null or empty
-  /// or if the image is not yet loaded
+  void _addToCache(
+    LinkedHashMap<String, String?> cache,
+    String key,
+    String? value,
+  ) {
+    // Remove if already exists to update position
+    cache.remove(key);
+
+    // Add to end (most recently used)
+    cache[key] = value;
+
+    // Evict oldest if cache is too large
+    while (cache.length > _maxCacheSize) {
+      cache.remove(cache.keys.first);
+    }
+  }
+
+  String? _getFromCache(LinkedHashMap<String, String?> cache, String key) {
+    final value = cache.remove(key);
+    if (value != null) {
+      // Move to end (mark as recently used)
+      cache[key] = value;
+    }
+    return value;
+  }
+
+  Future<String?> _getCachedOrFetch(
+    String cacheKey,
+    LinkedHashMap<String, String?> cache,
+    Future<String?> Function() fetcher,
+    String? fallbackUrl,
+  ) async {
+    // Check cache first
+    final cachedValue = _getFromCache(cache, cacheKey);
+    if (cachedValue != null) {
+      return cachedValue;
+    }
+
+    // Check if request is already ongoing
+    if (_ongoingRequests.containsKey(cacheKey)) {
+      return await _ongoingRequests[cacheKey]!.future;
+    }
+
+    // Start new request
+    final completer = Completer<String?>();
+    _ongoingRequests[cacheKey] = completer;
+
+    try {
+      final result = await fetcher();
+      final finalResult = result ?? fallbackUrl;
+
+      // Cache the result
+      _addToCache(cache, cacheKey, finalResult);
+
+      completer.complete(finalResult);
+      return finalResult;
+    } catch (e) {
+      completer.complete(fallbackUrl);
+      return fallbackUrl;
+    } finally {
+      _ongoingRequests.remove(cacheKey);
+    }
+  }
+
+  /// Get a poster URL for a movie with enhanced caching
   Future<String?> getPosterUrl(String? tmdbId, String? fallbackUrl) async {
-    // If no TMDB ID, return fallback
     if (tmdbId == null || tmdbId.isEmpty) {
       return fallbackUrl;
     }
 
-    // Create a distinct cache key for movie posters
     final cacheKey = _createCacheKey('movie', tmdbId, false);
 
-    // Check cache first
-    if (_posterCache.containsKey(cacheKey)) {
-      return _posterCache[cacheKey] ?? fallbackUrl;
-    }
-
-    // Not in cache, load it
-    try {
+    return await _getCachedOrFetch(cacheKey, _posterCache, () async {
       final images = await _tmdbService.getMovieImages(tmdbId);
-      final posterUrl = images['poster'];
-
-      // Cache the result (even if null)
-      _posterCache[cacheKey] = posterUrl;
-
-      return posterUrl ?? fallbackUrl;
-    } catch (e) {
-      // On error, return fallback
-      return fallbackUrl;
-    }
+      return images['poster'];
+    }, fallbackUrl);
   }
 
-  /// Get a backdrop URL for a movie
+  /// Get a backdrop URL for a movie with enhanced caching
   Future<String?> getBackdropUrl(String? tmdbId) async {
-    // If no TMDB ID, return null
     if (tmdbId == null || tmdbId.isEmpty) {
       return null;
     }
 
-    // Create a distinct cache key for movie backdrops
     final cacheKey = _createCacheKey('movie', tmdbId, true);
 
-    // Check cache first
-    if (_backdropCache.containsKey(cacheKey)) {
-      return _backdropCache[cacheKey];
-    }
-
-    // Not in cache, load it
-    try {
+    return await _getCachedOrFetch(cacheKey, _backdropCache, () async {
       final images = await _tmdbService.getMovieImages(tmdbId);
-      final backdropUrl = images['backdrop'];
-
-      // Cache the result (even if null)
-      _backdropCache[cacheKey] = backdropUrl;
-
-      return backdropUrl;
-    } catch (e) {
-      return null;
-    }
+      return images['backdrop'];
+    }, null);
   }
 
-  /// Get a TV series poster URL
+  /// Get a TV series poster URL with enhanced caching
   Future<String?> getTvPosterUrl(String? tmdbId, String? fallbackUrl) async {
-    // If no TMDB ID, return fallback
     if (tmdbId == null || tmdbId.isEmpty) {
       return fallbackUrl;
     }
 
-    // Create a distinct cache key for TV posters
     final cacheKey = _createCacheKey('tv', tmdbId, false);
 
-    // Check cache first
-    if (_posterCache.containsKey(cacheKey)) {
-      return _posterCache[cacheKey] ?? fallbackUrl;
-    }
-
-    // Not in cache, load it
-    try {
+    return await _getCachedOrFetch(cacheKey, _posterCache, () async {
       final images = await _tmdbService.getTvSeriesImages(tmdbId);
-      final posterUrl = images['poster'];
-
-      // Cache the result (even if null)
-      _posterCache[cacheKey] = posterUrl;
-
-      return posterUrl ?? fallbackUrl;
-    } catch (e) {
-      // On error, return fallback
-      return fallbackUrl;
-    }
+      return images['poster'];
+    }, fallbackUrl);
   }
 
-  /// Get a TV series backdrop URL
+  /// Get a TV series backdrop URL with enhanced caching
   Future<String?> getTvBackdropUrl(String? tmdbId) async {
-    // If no TMDB ID, return null
     if (tmdbId == null || tmdbId.isEmpty) {
       return null;
     }
 
-    // Create a distinct cache key for TV backdrops
     final cacheKey = _createCacheKey('tv', tmdbId, true);
 
-    // Check cache first
-    if (_backdropCache.containsKey(cacheKey)) {
-      return _backdropCache[cacheKey];
-    }
-
-    // Not in cache, load it
-    try {
+    return await _getCachedOrFetch(cacheKey, _backdropCache, () async {
       final images = await _tmdbService.getTvSeriesImages(tmdbId);
-      final backdropUrl = images['backdrop'];
-
-      // Cache the result (even if null)
-      _backdropCache[cacheKey] = backdropUrl;
-
-      return backdropUrl;
-    } catch (e) {
-      return null;
-    }
+      return images['backdrop'];
+    }, null);
   }
 
-  /// Clear all caches
+  /// Preload images for a list of IDs to improve performance
+  Future<void> preloadImages(
+    List<String> tmdbIds, {
+    bool isMovie = true,
+  }) async {
+    final futures = tmdbIds
+        .take(10)
+        .map(
+          (id) => isMovie ? getPosterUrl(id, null) : getTvPosterUrl(id, null),
+        );
+
+    await Future.wait(futures);
+  }
+
+  /// Get cache statistics for debugging
+  Map<String, int> getCacheStats() {
+    return {
+      'posterCacheSize': _posterCache.length,
+      'backdropCacheSize': _backdropCache.length,
+      'ongoingRequests': _ongoingRequests.length,
+    };
+  }
+
+  /// Clear all caches and ongoing requests
   void clearCache() {
     _posterCache.clear();
     _backdropCache.clear();
+
+    // Cancel ongoing requests
+    for (final completer in _ongoingRequests.values) {
+      if (!completer.isCompleted) {
+        completer.complete(null);
+      }
+    }
+    _ongoingRequests.clear();
+  }
+
+  /// Clear old cache entries (keep only recent ones)
+  void clearOldCache({int keepRecentCount = 100}) {
+    while (_posterCache.length > keepRecentCount) {
+      _posterCache.remove(_posterCache.keys.first);
+    }
+    while (_backdropCache.length > keepRecentCount) {
+      _backdropCache.remove(_backdropCache.keys.first);
+    }
   }
 }

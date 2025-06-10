@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ContentCarousel<T> extends StatelessWidget {
+class ContentCarousel<T> extends StatefulWidget {
   final List<T> items;
   final Widget Function(T item) itemBuilder;
 
@@ -11,32 +11,60 @@ class ContentCarousel<T> extends StatelessWidget {
   });
 
   @override
+  State<ContentCarousel<T>> createState() => _ContentCarouselState<T>();
+}
+
+class _ContentCarouselState<T> extends State<ContentCarousel<T>>
+    with AutomaticKeepAliveClientMixin {
+  late ScrollController _scrollController;
+  final Map<int, Widget> _cachedWidgets = {};
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _cachedWidgets.clear();
+    super.dispose();
+  }
+
+  Widget _buildItem(int index) {
+    // Cache built widgets to avoid rebuilding
+    if (!_cachedWidgets.containsKey(index)) {
+      _cachedWidgets[index] = Padding(
+        padding: const EdgeInsets.only(right: 12.0),
+        child: widget.itemBuilder(widget.items[index]),
+      );
+    }
+    return _cachedWidgets[index]!;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (items.isEmpty) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+
+    if (widget.items.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    // The Column is removed as the header is now external.
-    // This widget is now just the horizontal list.
     return SizedBox(
-      height: 230, // Height from reference UI's _buildMovieList
+      height: 230,
       child: ListView.builder(
+        controller: _scrollController,
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(
-          left: 16.0,
-          right: 4.0,
-        ), // Padding from reference
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          // The direct child of ListView.builder in the reference is a Padding.
-          // The MovieCard (result of itemBuilder) will handle its own width (130).
-          return Padding(
-            padding: const EdgeInsets.only(
-              right: 12.0,
-            ), // Padding between items from reference
-            child: itemBuilder(items[index]),
-          );
-        },
+        padding: const EdgeInsets.only(left: 16.0, right: 4.0),
+        itemCount: widget.items.length,
+        cacheExtent: 800, // Cache 800 pixels worth of items
+        addAutomaticKeepAlives: true,
+        addRepaintBoundaries: true,
+        itemBuilder: (context, index) => _buildItem(index),
       ),
     );
   }

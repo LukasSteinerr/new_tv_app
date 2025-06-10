@@ -27,7 +27,8 @@ class MoviesScreen extends StatefulWidget {
   State<MoviesScreen> createState() => _MoviesScreenState();
 }
 
-class _MoviesScreenState extends State<MoviesScreen> {
+class _MoviesScreenState extends State<MoviesScreen>
+    with AutomaticKeepAliveClientMixin {
   List<Category> _categories = [];
   Map<int, List<Movie>> _categoryMovies = {};
   List<Movie> _popularTmdbMovies = []; // Added for TMDB popular movies
@@ -37,8 +38,11 @@ class _MoviesScreenState extends State<MoviesScreen> {
   late ScrollController _scrollController;
   late TMDBService _tmdbService; // Corrected class name TMDBService
 
-  // _appBarOpacity is now managed by the parent, remove from here
-  // double _appBarOpacity = 0.0;
+  // Cache for widgets to prevent rebuilds
+  final Map<String, Widget> _widgetCache = {};
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -55,6 +59,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
   void dispose() {
     _scrollController.removeListener(_notifyScrollUpdate); // Remove listener
     _scrollController.dispose();
+    _widgetCache.clear();
     super.dispose();
   }
 
@@ -65,84 +70,70 @@ class _MoviesScreenState extends State<MoviesScreen> {
   }
 
   Future<void> _loadData() async {
+    if (!mounted) return;
+
     setState(() {
       _isLoading = true;
     });
 
     try {
-      // Fetch popular TMDB movies (these are Movie objects from TMDB API)
-      final popularTmdbApiMovies = await _tmdbService.getPopularMovies();
+      // Load data in parallel for better performance
+      final futures = await Future.wait([
+        _tmdbService.getPopularMovies(),
+        widget.playlistService.getPlaylistCategories(widget.playlist.id),
+      ]);
 
-      // Get only movie categories from the playlist
-      final allCategories = await widget.playlistService.getPlaylistCategories(
-        widget.playlist.id,
-      );
+      final popularTmdbApiMovies = futures[0] as List<Movie>;
+      final allCategories = futures[1] as List<Category>;
+
       final movieCategories =
           allCategories.where((category) => category.isMovie).toList();
 
-      // Get all movies from the local playlist and their TMDB IDs
+      // Load category movies in parallel
+      final categoryFutures = movieCategories.map(
+        (category) => widget.playlistService.getCategoryMovies(category.id),
+      );
+      final categoryMoviesLists = await Future.wait(categoryFutures);
+
       final categoryMoviesMap = <int, List<Movie>>{};
       List<Movie> allLocalMovies = [];
-      for (final category in movieCategories) {
-        final movies = await widget.playlistService.getCategoryMovies(
-          category.id,
-        );
-        categoryMoviesMap[category.id] = movies;
+
+      for (int i = 0; i < movieCategories.length; i++) {
+        final movies = categoryMoviesLists[i];
+        categoryMoviesMap[movieCategories[i].id] = movies;
         allLocalMovies.addAll(movies);
       }
 
-      // Create a map of local movies by their TMDB ID for easy lookup
+      // Create lookup map for optimization
       Map<String, Movie> localMoviesByTmdbId = {
         for (var movie in allLocalMovies)
           if (movie.tmdbId != null && movie.tmdbId!.isNotEmpty)
             movie.tmdbId!: movie,
       };
 
-      // Iterate through popular TMDB movies. If a popular movie's TMDB ID is in our local map,
-      // add the *local* movie object (which has the correct streamUrl) to the list of movies to feature.
-      // Update the local movie's details (like image URLs, description, rating) with fresh data from TMDB.
+      // Process popular movies efficiently
       List<Movie> moviesToFeature = [];
       for (var tmdbApiMovie in popularTmdbApiMovies) {
         if (localMoviesByTmdbId.containsKey(tmdbApiMovie.tmdbId)) {
           Movie localVersion = localMoviesByTmdbId[tmdbApiMovie.tmdbId]!;
-
-          // Update localVersion with fresh TMDB data for display purposes,
-          // while retaining its core identity and streamUrl.
-          localVersion.name =
-              tmdbApiMovie.name; // TMDB 'title' is mapped to 'name'
-          localVersion.description =
-              tmdbApiMovie.description ?? localVersion.description;
-          localVersion.posterUrl =
-              tmdbApiMovie.posterUrl ?? localVersion.posterUrl;
-          localVersion.backdropUrl =
-              tmdbApiMovie.backdropUrl ?? localVersion.backdropUrl;
-          localVersion.rating = tmdbApiMovie.rating ?? localVersion.rating;
-          localVersion.year = tmdbApiMovie.year ?? localVersion.year;
-          // tmdbId is already matched. streamUrl is preserved from localVersion.
-
+          _updateMovieWithTmdbData(localVersion, tmdbApiMovie);
           moviesToFeature.add(localVersion);
         }
       }
 
-      // Determine the primary featured movie (e.g., the first from the feature list)
       Movie? featuredMovieToShow;
       if (moviesToFeature.isNotEmpty) {
         featuredMovieToShow = moviesToFeature.first;
       } else if (allLocalMovies.isNotEmpty) {
-        // Fallback to any local movie if no popular local movies are found
         featuredMovieToShow = allLocalMovies.firstWhere(
           (movie) => movie.tmdbId != null && movie.tmdbId!.isNotEmpty,
-          orElse:
-              () =>
-                  allLocalMovies
-                      .first, // Fallback to the very first local movie
+          orElse: () => allLocalMovies.first,
         );
       }
 
       if (mounted) {
         setState(() {
-          _popularTmdbMovies =
-              moviesToFeature; // This list now contains local Movie objects with updated TMDB info
+          _popularTmdbMovies = moviesToFeature;
           _categories = movieCategories;
           _categoryMovies = categoryMoviesMap;
           _featuredMovie = featuredMovieToShow;
@@ -159,6 +150,15 @@ class _MoviesScreenState extends State<MoviesScreen> {
         });
       }
     }
+  }
+
+  void _updateMovieWithTmdbData(Movie localMovie, Movie tmdbMovie) {
+    localMovie.name = tmdbMovie.name;
+    localMovie.description = tmdbMovie.description ?? localMovie.description;
+    localMovie.posterUrl = tmdbMovie.posterUrl ?? localMovie.posterUrl;
+    localMovie.backdropUrl = tmdbMovie.backdropUrl ?? localMovie.backdropUrl;
+    localMovie.rating = tmdbMovie.rating ?? localMovie.rating;
+    localMovie.year = tmdbMovie.year ?? localMovie.year;
   }
 
   void _navigateToMovie(Movie movie) {
@@ -190,49 +190,70 @@ class _MoviesScreenState extends State<MoviesScreen> {
     String title,
     VoidCallback onSeeAllTapped,
   ) {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.only(
-          top: 24.0,
-          left: 16.0,
-          right: 16.0,
-          bottom: 12.0,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            TextButton(
-              onPressed: onSeeAllTapped,
-              child: const Text(
-                'See all',
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.white70,
-                  fontWeight: FontWeight.w500,
+    final cacheKey = 'header_$title';
+    if (!_widgetCache.containsKey(cacheKey)) {
+      _widgetCache[cacheKey] = SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.only(
+            top: 24.0,
+            left: 16.0,
+            right: 16.0,
+            bottom: 12.0,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-            ),
-          ],
+              TextButton(
+                onPressed: onSeeAllTapped,
+                child: const Text(
+                  'See all',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
+    return _widgetCache[cacheKey]!;
+  }
+
+  Widget _buildCategoryCarousel(Category category, List<Movie> movies) {
+    final cacheKey = 'carousel_${category.id}';
+    if (!_widgetCache.containsKey(cacheKey)) {
+      _widgetCache[cacheKey] = SliverToBoxAdapter(
+        child: ContentCarousel<Movie>(
+          items: movies,
+          itemBuilder:
+              (movie) =>
+                  MovieCard(movie: movie, onTap: () => _navigateToMovie(movie)),
+        ),
+      );
+    }
+    return _widgetCache[cacheKey]!;
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+
     if (_isLoading) {
       return Scaffold(
         backgroundColor: Colors.black,
@@ -301,6 +322,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
       body: CustomScrollView(
         controller:
             _scrollController, // Keep controller for opacity calculation
+        cacheExtent: 1000, // Cache more content
         slivers: <Widget>[
           // Remove top padding, content should go behind the parent AppBar
           if (featuredImageUrls.isNotEmpty)
@@ -333,33 +355,23 @@ class _MoviesScreenState extends State<MoviesScreen> {
           // else if (_isLoading) // Avoid showing "No movies" during initial load if featured is also loading
           //   SliverToBoxAdapter(child: Center(child: CircularProgressIndicator())),
 
-          // Category Carousels (from playlist)
-          ..._categories.expand((category) {
-            final movies = _categoryMovies[category.id] ?? [];
-            if (movies.isEmpty) {
-              return [const SliverToBoxAdapter(child: SizedBox.shrink())];
-            }
-
-            return [
-              _buildSectionHeader(
-                context,
-                category.name,
-                () => _navigateToSeeAll(category, movies),
-              ),
-              SliverToBoxAdapter(
-                child: ContentCarousel<Movie>(
-                  // This will be the modified ContentCarousel
-                  items: movies,
-                  itemBuilder:
-                      (movie) => MovieCard(
-                        // This will be the modified MovieCard
-                        movie: movie,
-                        onTap: () => _navigateToMovie(movie),
-                      ),
-                ),
-              ),
-            ];
-          }),
+          // Category Carousels with lazy loading
+          ..._categories
+              .where((category) {
+                final movies = _categoryMovies[category.id] ?? [];
+                return movies.isNotEmpty;
+              })
+              .expand((category) {
+                final movies = _categoryMovies[category.id]!;
+                return [
+                  _buildSectionHeader(
+                    context,
+                    category.name,
+                    () => _navigateToSeeAll(category, movies),
+                  ),
+                  _buildCategoryCarousel(category, movies),
+                ];
+              }),
 
           const SliverToBoxAdapter(
             child: SizedBox(height: 20),
