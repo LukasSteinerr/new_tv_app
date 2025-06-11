@@ -200,7 +200,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(4, 7285596459614028247),
     name: 'Movie',
-    lastPropertyId: const obx_int.IdUid(18, 7838675007446937760),
+    lastPropertyId: const obx_int.IdUid(19, 878464207708610030),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -313,6 +313,12 @@ final _entities = <obx_int.ModelEntity>[
         id: const obx_int.IdUid(18, 7838675007446937760),
         name: 'myList',
         type: 6,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(19, 878464207708610030),
+        name: 'isFeatured',
+        type: 1,
         flags: 0,
       ),
     ],
@@ -898,7 +904,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
             object.backdropUrl == null
                 ? null
                 : fbb.writeString(object.backdropUrl!);
-        fbb.startTable(19);
+        fbb.startTable(20);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, nameOffset);
         fbb.addOffset(2, streamUrlOffset);
@@ -917,6 +923,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addOffset(15, posterUrlOffset);
         fbb.addOffset(16, backdropUrlOffset);
         fbb.addInt64(17, object.myList);
+        fbb.addBool(18, object.isFeatured);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -972,6 +979,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
           rootOffset,
           38,
         );
+        final isFeaturedParam = const fb.BoolReader().vTableGet(
+          buffer,
+          rootOffset,
+          40,
+          false,
+        );
         final object = Movie(
           name: nameParam,
           streamUrl: streamUrlParam,
@@ -988,6 +1001,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
           added: addedParam,
           rating_5based: rating_5basedParam,
           myList: myListParam,
+          isFeatured: isFeaturedParam,
         )..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
         object.category.targetId = const fb.Int64Reader().vTableGet(
           buffer,
@@ -1533,6 +1547,11 @@ class Movie_ {
   /// See [Movie.myList].
   static final myList = obx.QueryIntegerProperty<Movie>(
     _entities[3].properties[17],
+  );
+
+  /// See [Movie.isFeatured].
+  static final isFeatured = obx.QueryBooleanProperty<Movie>(
+    _entities[3].properties[18],
   );
 }
 

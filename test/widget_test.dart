@@ -67,6 +67,12 @@ class MockPlaylistService implements PlaylistService {
     DateTime startTime,
     DateTime endTime,
   ) async => [];
+
+  @override
+  Future<List<Movie>> getFeaturedMovies(int playlistId) async => [];
+
+  @override
+  Future<void> refreshFeaturedMovies(int playlistId) async {}
 }
 
 void main() {

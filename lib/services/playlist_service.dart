@@ -8,11 +8,13 @@ import '../models/tv_program.dart'; // Added for TvProgram
 import 'objectbox_service.dart';
 import 'm3u_service.dart';
 import 'xtream_service.dart';
+import 'tmdb_service.dart'; // Added TMDB service
 
 class PlaylistService {
   final ObjectBoxService _objectBoxService;
   final M3uService _m3uService = M3uService();
   final XtreamService _xtreamService;
+  final TMDBService _tmdbService = TMDBService(); // Added TMDB service
 
   PlaylistService(this._objectBoxService)
     : _xtreamService = XtreamService(_objectBoxService);
@@ -98,6 +100,9 @@ class PlaylistService {
 
         final movies = result['movies'] as List<Movie>;
         _objectBoxService.addMovies(movies);
+
+        // Match TMDB popular movies with local movies after movies are saved
+        await _matchTmdbPopularMovies(playlist.id);
       }
 
       // Save series categories and series
@@ -202,5 +207,64 @@ class PlaylistService {
       startTime,
       endTime,
     );
+  }
+
+  // Featured movies operations
+  Future<List<Movie>> getFeaturedMovies(int playlistId) async {
+    return _objectBoxService.getFeaturedMoviesByPlaylist(playlistId);
+  }
+
+  // Match TMDB popular movies with local movies and update featured status
+  Future<void> _matchTmdbPopularMovies(int playlistId) async {
+    try {
+      // Clear existing featured status for this playlist
+      _objectBoxService.clearFeaturedMoviesForPlaylist(playlistId);
+
+      // Fetch popular TMDB movies
+      final popularTmdbMovies = await _tmdbService.getPopularMovies();
+
+      // Get all movies from the local playlist
+      final localMovies = await getPlaylistMovies(playlistId);
+
+      // Create a map of local movies by their TMDB ID for easy lookup
+      Map<String, Movie> localMoviesByTmdbId = {
+        for (var movie in localMovies)
+          if (movie.tmdbId != null && movie.tmdbId!.isNotEmpty)
+            movie.tmdbId!: movie,
+      };
+
+      // Find matching movies and update them with TMDB data
+      List<Movie> featuredMovies = [];
+      for (var tmdbMovie in popularTmdbMovies) {
+        if (localMoviesByTmdbId.containsKey(tmdbMovie.tmdbId)) {
+          Movie localMovie = localMoviesByTmdbId[tmdbMovie.tmdbId]!;
+
+          // Update local movie with fresh TMDB data while preserving core identity
+          localMovie.name = tmdbMovie.name;
+          localMovie.description =
+              tmdbMovie.description ?? localMovie.description;
+          localMovie.posterUrl = tmdbMovie.posterUrl ?? localMovie.posterUrl;
+          localMovie.backdropUrl =
+              tmdbMovie.backdropUrl ?? localMovie.backdropUrl;
+          localMovie.rating = tmdbMovie.rating ?? localMovie.rating;
+          localMovie.year = tmdbMovie.year ?? localMovie.year;
+          localMovie.isFeatured = true; // Mark as featured
+
+          featuredMovies.add(localMovie);
+        }
+      }
+
+      // Save the updated featured movies
+      if (featuredMovies.isNotEmpty) {
+        _objectBoxService.addMovies(featuredMovies);
+      }
+    } catch (e) {
+      print('Error matching TMDB popular movies: $e');
+    }
+  }
+
+  // Manually refresh featured movies for a playlist
+  Future<void> refreshFeaturedMovies(int playlistId) async {
+    await _matchTmdbPopularMovies(playlistId);
   }
 }

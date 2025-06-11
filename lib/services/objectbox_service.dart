@@ -135,6 +135,39 @@ class ObjectBoxService {
   void addMovies(List<Movie> movies) => _movieBox.putMany(movies);
   bool deleteMovie(int id) => _movieBox.remove(id);
 
+  // Get featured movies by playlist
+  List<Movie> getFeaturedMoviesByPlaylist(int playlistId) {
+    final query =
+        _movieBox
+            .query(
+              Movie_.playlist.equals(playlistId) &
+                  Movie_.isFeatured.equals(true),
+            )
+            .build();
+    final results = query.find();
+    query.close();
+    return results;
+  }
+
+  // Clear featured status for all movies in a playlist
+  void clearFeaturedMoviesForPlaylist(int playlistId) {
+    final movies = getMoviesByPlaylist(playlistId);
+    for (final movie in movies) {
+      if (movie.isFeatured) {
+        movie.isFeatured = false;
+        _movieBox.put(movie);
+      }
+    }
+  }
+
+  // Update featured status for multiple movies
+  void updateMoviesFeaturedStatus(List<Movie> movies, bool isFeatured) {
+    for (final movie in movies) {
+      movie.isFeatured = isFeatured;
+    }
+    _movieBox.putMany(movies);
+  }
+
   // TV Series operations
   List<TvSeries> getAllTvSeries() => _tvSeriesBox.getAll();
   List<TvSeries> getTvSeriesByPlaylist(int playlistId) {

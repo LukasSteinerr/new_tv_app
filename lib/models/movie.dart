@@ -23,6 +23,7 @@ class Movie {
   String? added;
   double? rating_5based;
   int? myList;
+  bool isFeatured; // Added to track featured/popular movies
 
   @Transient()
   List<Cast>? cast;
@@ -46,6 +47,7 @@ class Movie {
     this.added,
     this.rating_5based,
     this.myList,
+    this.isFeatured = false, // Default to false
     this.cast,
   });
 }
