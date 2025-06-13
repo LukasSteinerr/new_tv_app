@@ -200,7 +200,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(4, 7285596459614028247),
     name: 'Movie',
-    lastPropertyId: const obx_int.IdUid(19, 878464207708610030),
+    lastPropertyId: const obx_int.IdUid(20, 7558253799388110153),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -321,6 +321,12 @@ final _entities = <obx_int.ModelEntity>[
         type: 1,
         flags: 0,
       ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(20, 7558253799388110153),
+        name: 'featuredPosterUrl',
+        type: 9,
+        flags: 0,
+      ),
     ],
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[],
@@ -400,7 +406,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(6, 4381905975208352576),
     name: 'TvSeries',
-    lastPropertyId: const obx_int.IdUid(11, 7294473990937461405),
+    lastPropertyId: const obx_int.IdUid(13, 450788826881780348),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -471,6 +477,18 @@ final _entities = <obx_int.ModelEntity>[
         id: const obx_int.IdUid(11, 7294473990937461405),
         name: 'myList',
         type: 6,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(12, 7984307903677311933),
+        name: 'isFeatured',
+        type: 1,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(13, 450788826881780348),
+        name: 'featuredPosterUrl',
+        type: 9,
         flags: 0,
       ),
     ],
@@ -904,7 +922,11 @@ obx_int.ModelDefinition getObjectBoxModel() {
             object.backdropUrl == null
                 ? null
                 : fbb.writeString(object.backdropUrl!);
-        fbb.startTable(20);
+        final featuredPosterUrlOffset =
+            object.featuredPosterUrl == null
+                ? null
+                : fbb.writeString(object.featuredPosterUrl!);
+        fbb.startTable(21);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, nameOffset);
         fbb.addOffset(2, streamUrlOffset);
@@ -924,6 +946,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addOffset(16, backdropUrlOffset);
         fbb.addInt64(17, object.myList);
         fbb.addBool(18, object.isFeatured);
+        fbb.addOffset(19, featuredPosterUrlOffset);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -963,6 +986,9 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final backdropUrlParam = const fb.StringReader(
           asciiOptimization: true,
         ).vTableGetNullable(buffer, rootOffset, 36);
+        final featuredPosterUrlParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGetNullable(buffer, rootOffset, 42);
         final trailerParam = const fb.StringReader(
           asciiOptimization: true,
         ).vTableGetNullable(buffer, rootOffset, 28);
@@ -997,6 +1023,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
           tmdbId: tmdbIdParam,
           posterUrl: posterUrlParam,
           backdropUrl: backdropUrlParam,
+          featuredPosterUrl: featuredPosterUrlParam,
           trailer: trailerParam,
           added: addedParam,
           rating_5based: rating_5basedParam,
@@ -1140,7 +1167,11 @@ obx_int.ModelDefinition getObjectBoxModel() {
             object.seriesId == null ? null : fbb.writeString(object.seriesId!);
         final tmdbIdOffset =
             object.tmdbId == null ? null : fbb.writeString(object.tmdbId!);
-        fbb.startTable(12);
+        final featuredPosterUrlOffset =
+            object.featuredPosterUrl == null
+                ? null
+                : fbb.writeString(object.featuredPosterUrl!);
+        fbb.startTable(14);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, nameOffset);
         fbb.addOffset(2, coverUrlOffset);
@@ -1152,6 +1183,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addInt64(8, object.playlist.targetId);
         fbb.addOffset(9, tmdbIdOffset);
         fbb.addInt64(10, object.myList);
+        fbb.addBool(11, object.isFeatured);
+        fbb.addOffset(12, featuredPosterUrlOffset);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -1184,6 +1217,15 @@ obx_int.ModelDefinition getObjectBoxModel() {
           rootOffset,
           24,
         );
+        final isFeaturedParam = const fb.BoolReader().vTableGet(
+          buffer,
+          rootOffset,
+          26,
+          false,
+        );
+        final featuredPosterUrlParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGetNullable(buffer, rootOffset, 28);
         final object = TvSeries(
           name: nameParam,
           coverUrl: coverUrlParam,
@@ -1193,6 +1235,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
           seriesId: seriesIdParam,
           tmdbId: tmdbIdParam,
           myList: myListParam,
+          isFeatured: isFeaturedParam,
+          featuredPosterUrl: featuredPosterUrlParam,
         )..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
         object.category.targetId = const fb.Int64Reader().vTableGet(
           buffer,
@@ -1553,6 +1597,11 @@ class Movie_ {
   static final isFeatured = obx.QueryBooleanProperty<Movie>(
     _entities[3].properties[18],
   );
+
+  /// See [Movie.featuredPosterUrl].
+  static final featuredPosterUrl = obx.QueryStringProperty<Movie>(
+    _entities[3].properties[19],
+  );
 }
 
 /// [TvEpisode] entity fields to define ObjectBox queries.
@@ -1663,6 +1712,16 @@ class TvSeries_ {
   /// See [TvSeries.myList].
   static final myList = obx.QueryIntegerProperty<TvSeries>(
     _entities[5].properties[10],
+  );
+
+  /// See [TvSeries.isFeatured].
+  static final isFeatured = obx.QueryBooleanProperty<TvSeries>(
+    _entities[5].properties[11],
+  );
+
+  /// See [TvSeries.featuredPosterUrl].
+  static final featuredPosterUrl = obx.QueryStringProperty<TvSeries>(
+    _entities[5].properties[12],
   );
 
   /// see [TvSeries.episodes]

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/cast.dart';
 import '../models/movie.dart'; // Import the Movie model
+import '../models/tv_series.dart'; // Import the TvSeries model
 
 class TMDBService {
   // TMDB API base URLs
@@ -13,11 +14,16 @@ class TMDBService {
   static const String _apiKey = '9e92699e050cb40728b59728c3115455';
 
   // Image sizes
-  static const String _posterSize = 'w500';
+  static const String _posterSize =
+      'w500'; // Default resolution for content carousel posters
+  static const String _featuredPosterSize =
+      'w780'; // Higher resolution for featured content posters
   static const String _backdropSize = 'w1280';
 
   // Get full image URLs
   static String getPosterUrl(String path) => '$_imageBaseUrl/$_posterSize$path';
+  static String getFeaturedPosterUrl(String path) =>
+      '$_imageBaseUrl/$_featuredPosterSize$path';
   static String getBackdropUrl(String path) =>
       '$_imageBaseUrl/$_backdropSize$path';
 
@@ -157,15 +163,61 @@ class TMDBService {
                 movieData['backdrop_path'] != null
                     ? getBackdropUrl(movieData['backdrop_path'])
                     : null,
+            featuredPosterUrl:
+                movieData['poster_path'] != null
+                    ? getFeaturedPosterUrl(movieData['poster_path'])
+                    : null,
             // Other fields like duration, trailer, added, rating_5based might need
             // more detailed fetching or might not be directly available from popular list
             streamId: streamId, // Assigning TMDB id as streamId for now
+            isFeatured: true, // Mark as featured
           );
         }).toList();
       }
       return [];
     } catch (e) {
       print('Error fetching popular movies: $e');
+      return [];
+    }
+  }
+
+  // Fetch popular TV series
+  Future<List<TvSeries>> getPopularTvSeries() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_apiBaseUrl/tv/popular?api_key=$_apiKey'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic> results = data['results'];
+
+        return results.map((tvSeriesData) {
+          return TvSeries(
+            name: tvSeriesData['name'] ?? 'No Title',
+            description: tvSeriesData['overview'] ?? '',
+            year:
+                tvSeriesData['first_air_date'] != null &&
+                        tvSeriesData['first_air_date'].length >= 4
+                    ? tvSeriesData['first_air_date'].substring(0, 4)
+                    : null,
+            rating: tvSeriesData['vote_average']?.toString() ?? '0.0',
+            tmdbId: tvSeriesData['id']?.toString(),
+            coverUrl:
+                tvSeriesData['poster_path'] != null
+                    ? getPosterUrl(tvSeriesData['poster_path'])
+                    : null,
+            featuredPosterUrl:
+                tvSeriesData['poster_path'] != null
+                    ? getFeaturedPosterUrl(tvSeriesData['poster_path'])
+                    : null,
+            isFeatured: true, // Mark as featured
+          );
+        }).toList();
+      }
+      return [];
+    } catch (e) {
+      print('Error fetching popular TV series: $e');
       return [];
     }
   }

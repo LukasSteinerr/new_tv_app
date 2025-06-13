@@ -16,6 +16,8 @@ class TvSeries {
   String? seriesId;
   String? tmdbId;
   int? myList;
+  bool isFeatured; // Added to track featured/popular tv series
+  String? featuredPosterUrl; // Added for higher resolution featured content
 
   final category = ToOne<Category>();
   final playlist = ToOne<Playlist>();
@@ -32,5 +34,7 @@ class TvSeries {
     this.seriesId,
     this.tmdbId,
     this.myList,
+    this.isFeatured = false, // Default to false
+    this.featuredPosterUrl, // Added to constructor
   });
 }

@@ -114,7 +114,8 @@ class PlaylistService {
         final seriesList = result['series'] as List<TvSeries>;
         _objectBoxService.addTvSeriesList(seriesList);
 
-        // We'll fetch episodes for each series when needed to avoid too many API calls at once
+        // Match TMDB popular TV series with local series after series are saved
+        await _matchTmdbPopularTvSeries(playlist.id);
       }
     }
 
@@ -246,6 +247,8 @@ class PlaylistService {
           localMovie.posterUrl = tmdbMovie.posterUrl ?? localMovie.posterUrl;
           localMovie.backdropUrl =
               tmdbMovie.backdropUrl ?? localMovie.backdropUrl;
+          localMovie.featuredPosterUrl =
+              tmdbMovie.featuredPosterUrl ?? localMovie.featuredPosterUrl;
           localMovie.rating = tmdbMovie.rating ?? localMovie.rating;
           localMovie.year = tmdbMovie.year ?? localMovie.year;
           localMovie.isFeatured = true; // Mark as featured
@@ -266,5 +269,64 @@ class PlaylistService {
   // Manually refresh featured movies for a playlist
   Future<void> refreshFeaturedMovies(int playlistId) async {
     await _matchTmdbPopularMovies(playlistId);
+  }
+
+  // Featured TV series operations
+  Future<List<TvSeries>> getFeaturedTvSeries(int playlistId) async {
+    return _objectBoxService.getFeaturedTvSeriesByPlaylist(playlistId);
+  }
+
+  // Match TMDB popular TV series with local series and update featured status
+  Future<void> _matchTmdbPopularTvSeries(int playlistId) async {
+    try {
+      // Clear existing featured status for this playlist
+      _objectBoxService.clearFeaturedTvSeriesForPlaylist(playlistId);
+
+      // Fetch popular TMDB TV series
+      final popularTmdbTvSeries = await _tmdbService.getPopularTvSeries();
+
+      // Get all TV series from the local playlist
+      final localTvSeries = await getPlaylistTvSeries(playlistId);
+
+      // Create a map of local TV series by their TMDB ID for easy lookup
+      Map<String, TvSeries> localTvSeriesByTmdbId = {
+        for (var series in localTvSeries)
+          if (series.tmdbId != null && series.tmdbId!.isNotEmpty)
+            series.tmdbId!: series,
+      };
+
+      // Find matching TV series and update them with TMDB data
+      List<TvSeries> featuredTvSeries = [];
+      for (var tmdbSeries in popularTmdbTvSeries) {
+        if (localTvSeriesByTmdbId.containsKey(tmdbSeries.tmdbId)) {
+          TvSeries localSeries = localTvSeriesByTmdbId[tmdbSeries.tmdbId]!;
+
+          // Update local series with fresh TMDB data while preserving core identity
+          localSeries.name = tmdbSeries.name;
+          localSeries.description =
+              tmdbSeries.description ?? localSeries.description;
+          localSeries.coverUrl = tmdbSeries.coverUrl ?? localSeries.coverUrl;
+          localSeries.featuredPosterUrl =
+              tmdbSeries.featuredPosterUrl ?? localSeries.featuredPosterUrl;
+          localSeries.rating = tmdbSeries.rating ?? localSeries.rating;
+          localSeries.year = tmdbSeries.year ?? localSeries.year;
+          localSeries.isFeatured = true; // Mark as featured
+
+          featuredTvSeries.add(localSeries);
+        }
+      }
+
+      // Save the updated featured TV series
+      if (featuredTvSeries.isNotEmpty) {
+        _objectBoxService.addTvSeriesList(featuredTvSeries);
+      }
+    } catch (e) {
+      print('Error matching TMDB popular TV series: $e');
+    }
+  }
+
+  // Manually refresh featured TV series for a playlist
+  Future<void> refreshFeaturedTvSeries(int playlistId) async {
+    await _matchTmdbPopularTvSeries(playlistId);
   }
 }

@@ -19,6 +19,7 @@ class Movie {
   String? tmdbId;
   String? posterUrl; // Added for TMDB poster
   String? backdropUrl; // Added for TMDB backdrop
+  String? featuredPosterUrl; // Added for higher resolution featured content
   String? trailer;
   String? added;
   double? rating_5based;
@@ -43,6 +44,7 @@ class Movie {
     this.tmdbId,
     this.posterUrl, // Added to constructor
     this.backdropUrl, // Added to constructor
+    this.featuredPosterUrl, // Added to constructor
     this.trailer,
     this.added,
     this.rating_5based,

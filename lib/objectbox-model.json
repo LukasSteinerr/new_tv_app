@@ -131,7 +131,7 @@
     },
     {
       "id": "4:7285596459614028247",
-      "lastPropertyId": "19:878464207708610030",
+      "lastPropertyId": "20:7558253799388110153",
       "name": "Movie",
       "properties": [
         {
@@ -235,6 +235,11 @@
           "id": "19:878464207708610030",
           "name": "isFeatured",
           "type": 1
+        },
+        {
+          "id": "20:7558253799388110153",
+          "name": "featuredPosterUrl",
+          "type": 9
         }
       ],
       "relations": []
@@ -303,7 +308,7 @@
     },
     {
       "id": "6:4381905975208352576",
-      "lastPropertyId": "11:7294473990937461405",
+      "lastPropertyId": "13:450788826881780348",
       "name": "TvSeries",
       "properties": [
         {
@@ -367,6 +372,16 @@
           "id": "11:7294473990937461405",
           "name": "myList",
           "type": 6
+        },
+        {
+          "id": "12:7984307903677311933",
+          "name": "isFeatured",
+          "type": 1
+        },
+        {
+          "id": "13:450788826881780348",
+          "name": "featuredPosterUrl",
+          "type": 9
         }
       ],
       "relations": []

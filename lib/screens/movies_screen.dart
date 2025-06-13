@@ -235,17 +235,9 @@ class _MoviesScreenState extends State<MoviesScreen> {
       final moviesToShowInFeatured = _featuredMovies.take(4).toList();
 
       for (var movie in moviesToShowInFeatured) {
-        // Prefer poster for featured content, then coverUrl. Avoid backdrop here.
+        // Prefer featuredPosterUrl for featured content, then posterUrl, then coverUrl.
         String imageUrl =
-            movie.posterUrl ??
-            movie.coverUrl ??
-            ''; // Use poster, then cover, then empty
-        if (imageUrl.isNotEmpty && !imageUrl.startsWith('http')) {
-          // Assuming TmdbService provides a method to get full image URL
-          // or TmdbImageProvider.getFullImageUrl exists and is static/accessible
-          // For now, let's assume the URL is already complete or TmdbImage widget handles it.
-          // If not, this needs adjustment: e.g., imageUrl = _tmdbService.getFullBackdropPath(movie.backdropPath);
-        }
+            movie.featuredPosterUrl ?? movie.posterUrl ?? movie.coverUrl ?? '';
         featuredImageUrls.add(imageUrl);
         featuredPlayActions.add(() => _navigateToMovie(movie));
         featuredDetailsActions.add(() => _navigateToMovie(movie));

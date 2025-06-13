@@ -28,8 +28,9 @@ class TvSeriesScreen extends StatefulWidget {
 class _TvSeriesScreenState extends State<TvSeriesScreen> {
   List<Category> _categories = [];
   Map<int, List<TvSeries>> _categorySeries = {};
+  List<TvSeries> _featuredTvSeries = []; // Added for popular TMDB TV series
   bool _isLoading = true;
-  TvSeries? _featuredSeries;
+  TvSeries? _featuredSeriesToShow; // Renamed for clarity
   late ScrollController _scrollController;
   // _appBarOpacity is now managed by the parent, remove from here
   // double _appBarOpacity = 0.0;
@@ -82,21 +83,31 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
         allSeries.addAll(series);
       }
 
-      // Select a featured series (one with a TMDB ID if possible)
-      TvSeries? featuredSeries;
-      if (allSeries.isNotEmpty) {
-        // First try to find a series with a TMDB ID
-        featuredSeries = allSeries.firstWhere(
-          (s) => s.tmdbId != null && s.tmdbId!.isNotEmpty,
-          orElse: () => allSeries.first,
-        );
+      // Get featured TV series from the database
+      final featuredTvSeries = await widget.playlistService.getFeaturedTvSeries(
+        widget.playlist.id,
+      );
+
+      // Determine the primary featured series (e.g., the first from the featured list)
+      TvSeries? featuredSeriesToShow;
+      if (featuredTvSeries.isNotEmpty) {
+        featuredSeriesToShow = featuredTvSeries.first;
+      } else {
+        // Fallback to any local series if no featured series are found
+        if (allSeries.isNotEmpty) {
+          featuredSeriesToShow = allSeries.firstWhere(
+            (s) => s.tmdbId != null && s.tmdbId!.isNotEmpty,
+            orElse: () => allSeries.first,
+          );
+        }
       }
 
       if (mounted) {
         setState(() {
           _categories = seriesCategories;
           _categorySeries = categorySeriesMap;
-          _featuredSeries = featuredSeries;
+          _featuredTvSeries = featuredTvSeries; // Store fetched featured series
+          _featuredSeriesToShow = featuredSeriesToShow;
           _isLoading = false;
         });
       }
@@ -195,7 +206,7 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
       );
     }
 
-    if (_categories.isEmpty && _featuredSeries == null) {
+    if (_categories.isEmpty && _featuredSeriesToShow == null) {
       return Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
@@ -224,27 +235,26 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
     List<Function()> featuredPlayActions = [];
     List<Function()> featuredDetailsActions = [];
 
-    if (_featuredSeries != null) {
-      featuredImageUrls.add(_featuredSeries!.coverUrl ?? '');
-      featuredPlayActions.add(() => _navigateToSeries(_featuredSeries!));
-      featuredDetailsActions.add(() => _navigateToSeries(_featuredSeries!));
+    // Use popular TMDB TV series for featured content
+    if (_featuredTvSeries.isNotEmpty) {
+      // Take up to 4 popular TV series for the featured section
+      final seriesToShowInFeatured = _featuredTvSeries.take(4).toList();
 
-      final allOtherSeries =
-          _categorySeries.values
-              .expand((seriesList) => seriesList)
-              .where(
-                (s) =>
-                    s.id != _featuredSeries!.id &&
-                    (s.coverUrl != null && s.coverUrl!.isNotEmpty),
-              )
-              .take(5)
-              .toList();
-
-      for (var seriesItem in allOtherSeries) {
-        featuredImageUrls.add(seriesItem.coverUrl ?? '');
-        featuredPlayActions.add(() => _navigateToSeries(seriesItem));
-        featuredDetailsActions.add(() => _navigateToSeries(seriesItem));
+      for (var series in seriesToShowInFeatured) {
+        // Prefer featuredPosterUrl for featured content, then coverUrl.
+        String imageUrl = series.featuredPosterUrl ?? series.coverUrl ?? '';
+        featuredImageUrls.add(imageUrl);
+        featuredPlayActions.add(() => _navigateToSeries(series));
+        featuredDetailsActions.add(() => _navigateToSeries(series));
       }
+    }
+    // Fallback if TMDB series are not available but a _featuredSeriesToShow (from playlist) exists
+    else if (_featuredSeriesToShow != null) {
+      featuredImageUrls.add(_featuredSeriesToShow!.coverUrl ?? '');
+      featuredPlayActions.add(() => _navigateToSeries(_featuredSeriesToShow!));
+      featuredDetailsActions.add(
+        () => _navigateToSeries(_featuredSeriesToShow!),
+      );
     }
 
     return Scaffold(
@@ -259,7 +269,11 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
           if (featuredImageUrls.isNotEmpty)
             SliverToBoxAdapter(
               child: FeaturedContent(
-                key: ValueKey(_featuredSeries?.id ?? 'featured_series'),
+                key: ValueKey(
+                  _featuredTvSeries.isNotEmpty
+                      ? _featuredTvSeries.map((s) => s.tmdbId ?? s.id).join(',')
+                      : _featuredSeriesToShow?.id ?? 'featured_series',
+                ), // More robust key
                 imageUrls: featuredImageUrls,
                 onPlayTapped: (index) {
                   if (index < featuredPlayActions.length) {
