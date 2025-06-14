@@ -73,6 +73,12 @@ class MockPlaylistService implements PlaylistService {
 
   @override
   Future<void> refreshFeaturedMovies(int playlistId) async {}
+
+  @override
+  Future<List<TvSeries>> getFeaturedTvSeries(int playlistId) async => [];
+
+  @override
+  Future<void> refreshFeaturedTvSeries(int playlistId) async {}
 }
 
 void main() {

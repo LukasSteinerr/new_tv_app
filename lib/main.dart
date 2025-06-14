@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:background_downloader/background_downloader.dart';
-// Import your isolate.dart
+import 'package:logging/logging.dart'; // Import logging
 import 'services/objectbox_service.dart';
 import 'services/playlist_service.dart';
 import 'screens/home_screen.dart';
 
+final _log = Logger('MainApp'); // Add logger
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  Logger.root.onRecord.listen((LogRecord rec) {
+    debugPrint(
+      '${rec.loggerName}>${rec.level.name}: ${rec.time}: ${rec.message}',
+    );
+  });
 
   // Initialize ObjectBox
   final objectBoxService = await ObjectBoxService.create();
@@ -60,6 +68,7 @@ void main() async {
 
   // Start the FileDownloader
   await FileDownloader().start();
+  _log.info('FileDownloader started in main'); // Log FileDownloader start
 
   runApp(MyApp(playlistService: playlistService));
 }
@@ -67,6 +76,9 @@ void main() async {
 /// Process the user tapping on a notification by printing a message
 @pragma('vm:entry-point')
 void myNotificationTapCallback(Task task, NotificationType notificationType) {
+  _log.info(
+    'Tapped notification $notificationType for taskId ${task.taskId}',
+  ); // Log notification taps
   debugPrint('Tapped notification $notificationType for taskId ${task.taskId}');
 }
 
