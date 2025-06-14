@@ -12,67 +12,52 @@ class DownloadService {
   Stream<Map<String, dynamic>> get downloadProgressStream =>
       _downloadProgressController.stream;
 
-  final Map<String, Movie> _tasks = {};
   final _log = Logger('DownloadService'); // Add logger
 
   DownloadService._internal() {
     _log.info('DownloadService initialized'); // Log initialization
-    FileDownloader()
-        .registerCallbacks(
-          taskNotificationTapCallback: myNotificationTapCallback,
-        )
-        .configureNotificationForGroup(
-          FileDownloader.defaultGroup,
-          running: const TaskNotification(
-            'Download {filename}',
-            'File: {filename} - {progress} - speed {networkSpeed} and {timeRemaining} remaining',
-          ),
-          complete: const TaskNotification(
-            '{displayName} download {filename}',
-            'Download complete',
-          ),
-          error: const TaskNotification(
-            'Download {filename}',
-            'Download failed',
-          ),
-          paused: const TaskNotification(
-            'Download {filename}',
-            'Paused with metadata {metadata}',
-          ),
-          canceled: const TaskNotification('Download {filename}', 'Canceled'),
-          progressBar: true,
-        );
+    FileDownloader().registerCallbacks(
+      taskNotificationTapCallback: myNotificationTapCallback,
+    );
 
-    FileDownloader().updates.listen((update) {
+    FileDownloader().updates.listen((update) async {
       _log.info(
         'Download update: ${update.runtimeType} for task ${update.task.taskId}',
       ); // Log all updates
+
+      if (update.task.metaData == null || update.task.metaData!.isEmpty) {
+        _log.info(
+          'Ignoring update for task with no metaData: ${update.task.taskId}',
+        );
+        return;
+      }
+      final movieId = update.task.metaData!;
+      final movieName = update.task.displayName;
+
       if (update is TaskStatusUpdate) {
-        final movie = _tasks[update.task.taskId];
-        if (movie != null) {
-          _log.info(
-            'Task status update for ${movie.name}: ${update.status}',
-          ); // Log status updates
-          _downloadProgressController.add({
-            'id': movie.id,
-            'name': movie.name,
-            'progress': 0.0,
-            'status': update.status.toString(),
-          });
-        }
+        final record = await FileDownloader().database.recordForId(
+          update.task.taskId,
+        );
+        final progress = record?.progress ?? 0.0;
+        _log.info(
+          'Task status update for $movieName: ${update.status}',
+        ); // Log status updates
+        _downloadProgressController.add({
+          'id': movieId,
+          'name': movieName,
+          'progress': progress,
+          'status': update.status.toString(),
+        });
       } else if (update is TaskProgressUpdate) {
-        final movie = _tasks[update.task.taskId];
-        if (movie != null) {
-          _log.info(
-            'Task progress update for ${movie.name}: ${update.progress}',
-          ); // Log progress updates
-          _downloadProgressController.add({
-            'id': movie.id,
-            'name': movie.name,
-            'progress': update.progress,
-            'status': 'Downloading',
-          });
-        }
+        _log.info(
+          'Task progress update for $movieName: ${update.progress}',
+        ); // Log progress updates
+        _downloadProgressController.add({
+          'id': movieId,
+          'name': movieName,
+          'progress': update.progress,
+          'status': 'Downloading',
+        });
       }
     });
     _log.info('FileDownloader started'); // Log FileDownloader start
@@ -97,9 +82,9 @@ class DownloadService {
       updates: Updates.statusAndProgress,
       allowPause: true,
       displayName: movie.name,
+      metaData: movie.id.toString(),
     );
     await FileDownloader().enqueue(task);
-    _tasks[task.taskId] = movie;
     _log.info(
       'Download task enqueued for ${movie.name} with taskId: ${task.taskId}',
     ); // Log task enqueued

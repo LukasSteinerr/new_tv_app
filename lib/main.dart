@@ -1,49 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:background_downloader/background_downloader.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logging/logging.dart'; // Import logging
 import 'services/objectbox_service.dart';
 import 'services/playlist_service.dart';
 import 'screens/home_screen.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:background_downloader/background_downloader.dart';
 
 final _log = Logger('MainApp'); // Add logger
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
 
-  Logger.root.onRecord.listen((LogRecord rec) {
-    debugPrint(
-      '${rec.loggerName}>${rec.level.name}: ${rec.time}: ${rec.message}',
-    );
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    debugPrint('${record.level.name}: ${record.time}: ${record.message}');
   });
-
-  // Initialize ObjectBox
-  final objectBoxService = await ObjectBoxService.create();
-  final playlistService = PlaylistService(objectBoxService);
-
-  // Set preferred orientations
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
-  ]);
 
   // Configure and start background_downloader
   await FileDownloader().configure(
-    // This is a good place to set up global configurations
-    // For example, requestTimeout, useCacheDir, localize, etc.
-    // See CONFIG.md in the background_downloader package for more options.
-    // Example:
-    // globalConfig: [(Config.requestTimeout, const Duration(seconds: 100))],
-    // androidConfig: [(Config.useCacheDir, Config.whenAble)],
-    // iOSConfig: [(Config.localize, {'Cancel': 'StopIt'})],
-  );
-
-  // Register the background download callback
-  FileDownloader().registerCallbacks(
-    taskNotificationTapCallback: myNotificationTapCallback,
-    // You can also register other callbacks here, e.g., for progress updates
-    // or when a task completes.
+    androidConfig: (Config.runInForeground, true),
   );
 
   // Configure notifications for the default group
@@ -64,6 +42,24 @@ void main() async {
     ),
     canceled: const TaskNotification('Download {filename}', 'Canceled'),
     progressBar: true,
+  );
+
+  // Initialize ObjectBox
+  final objectBoxService = await ObjectBoxService.create();
+  final playlistService = PlaylistService(objectBoxService);
+
+  // Set preferred orientations
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+
+  // Register the background download callback
+  FileDownloader().registerCallbacks(
+    taskNotificationTapCallback: myNotificationTapCallback,
+    // You can also register other callbacks here, e.g., for progress updates
+    // or when a task completes.
   );
 
   // Start the FileDownloader
