@@ -25,7 +25,6 @@ class _ChannelEpgGuideScreenState extends State<ChannelEpgGuideScreen> {
   final ItemScrollController _itemScrollController = ItemScrollController();
   final ItemPositionsListener _itemPositionsListener =
       ItemPositionsListener.create();
-  bool _scrolled = false;
 
   @override
   void initState() {
@@ -106,24 +105,11 @@ class _ChannelEpgGuideScreenState extends State<ChannelEpgGuideScreen> {
                 now.isBefore(p.stopTime.toLocal()),
           );
 
-          // Scroll to the current program after the list is built
-          if (currentIndex != -1 && !_scrolled) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                _itemScrollController.jumpTo(
-                  index: currentIndex,
-                  alignment: 0.5, // Center the item
-                );
-                setState(() {
-                  _scrolled = true;
-                });
-              }
-            });
-          }
-
           return ScrollablePositionedList.builder(
             itemScrollController: _itemScrollController,
             itemPositionsListener: _itemPositionsListener,
+            initialScrollIndex: currentIndex != -1 ? currentIndex : 0,
+            initialAlignment: 0.5,
             itemCount: programs.length,
             padding: const EdgeInsets.only(top: 8.0), // Add some padding
             itemBuilder: (context, index) {
