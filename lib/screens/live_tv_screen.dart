@@ -8,6 +8,7 @@ import '../services/playlist_service.dart';
 // Will likely remove or change usage
 import '../widgets/time_slider_widget.dart';
 import 'universal_video_player.dart'; // Assuming a player screen
+import 'channel_epg_guide_screen.dart';
 
 class LiveTvScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -138,26 +139,44 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   }
 
   void _playChannel(Channel channel) async {
-    // Made async
-    // Navigate to a video player screen
-    // For example, using UniversalVideoPlayer if it's suitable
-    if (channel.streamUrl.isNotEmpty) {
+    final hasEpg =
+        channel.epgId != null &&
+        channel.epgId!.isNotEmpty &&
+        _epgData.containsKey(channel.epgId) &&
+        _epgData[channel.epgId]!.isNotEmpty;
+
+    if (hasEpg) {
+      // Navigate to the EPG guide screen
       await Navigator.push(
-        // await
         context,
         MaterialPageRoute(
-          builder: (context) => UniversalVideoPlayer(channel: channel),
+          builder:
+              (context) => ChannelEpgGuideScreen(
+                channel: channel,
+                playlistService: widget.playlistService,
+              ),
         ),
       );
-      _setPortraitMode(); // Restore portrait mode
-      SystemChrome.setEnabledSystemUIMode(
-        SystemUiMode.manual,
-        overlays: SystemUiOverlay.values,
-      ); // Restore UI
+      _setPortraitMode(); // Restore portrait mode if needed after returning
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Channel stream URL is not available.')),
-      );
+      // Original behavior: play channel directly
+      if (channel.streamUrl.isNotEmpty) {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UniversalVideoPlayer(channel: channel),
+          ),
+        );
+        _setPortraitMode(); // Restore portrait mode
+        SystemChrome.setEnabledSystemUIMode(
+          SystemUiMode.manual,
+          overlays: SystemUiOverlay.values,
+        ); // Restore UI
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Channel stream URL is not available.')),
+        );
+      }
     }
   }
 
