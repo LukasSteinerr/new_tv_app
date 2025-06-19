@@ -157,7 +157,7 @@ class _NetflixStyleMovieDetailScreenState
     return Scaffold(
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
+        physics: const ClampingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -293,7 +293,7 @@ class _NetflixStyleMovieDetailScreenState
                   foregroundColor: Colors.white,
                   minimumSize: Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(25),
                   ),
                 ),
                 icon: Icon(Icons.play_arrow),

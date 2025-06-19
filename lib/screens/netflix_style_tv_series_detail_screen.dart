@@ -164,7 +164,7 @@ class _NetflixStyleTvSeriesDetailScreenState
     return Scaffold(
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
+        physics: const ClampingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
