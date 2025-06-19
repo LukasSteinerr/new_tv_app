@@ -3,12 +3,11 @@ import '../models/category.dart';
 import '../models/movie.dart';
 import '../models/tv_series.dart';
 import '../services/playlist_service.dart';
-import '../widgets/movie_card.dart';
-import '../widgets/tv_series_card.dart';
 import 'netflix_style_movie_detail_screen.dart';
 import 'netflix_style_tv_series_detail_screen.dart';
+import '../widgets/tmdb_image.dart';
 
-class CategoryContentScreen extends StatelessWidget {
+class CategoryContentScreen extends StatefulWidget {
   final Category category;
   final List<dynamic> items;
   final PlaylistService playlistService;
@@ -21,37 +20,57 @@ class CategoryContentScreen extends StatelessWidget {
   });
 
   @override
+  _CategoryContentScreenState createState() => _CategoryContentScreenState();
+}
+
+class _CategoryContentScreenState extends State<CategoryContentScreen> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(category.name)),
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: Text(widget.category.name),
+        backgroundColor: Colors.black,
+      ),
       body:
-          items.isEmpty
-              ? const Center(child: Text('No content in this category'))
+          widget.items.isEmpty
+              ? const Center(
+                child: Text(
+                  'No content in this category',
+                  style: TextStyle(color: Colors.white),
+                ),
+              )
               : GridView.builder(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(8.0),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
-                  childAspectRatio: 0.7,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 8.0,
+                  mainAxisSpacing: 8.0,
+                  childAspectRatio: 2 / 3,
                 ),
-                itemCount: items.length,
+                itemCount: widget.items.length,
                 itemBuilder: (context, index) {
-                  final item = items[index];
+                  final item = widget.items[index];
 
-                  if (item is Movie) {
-                    return MovieCard(
-                      movie: item,
-                      onTap: () => _navigateToMovie(context, item),
-                    );
-                  } else if (item is TvSeries) {
-                    return TvSeriesCard(
-                      series: item,
-                      onTap: () => _navigateToSeries(context, item),
-                    );
-                  }
-
-                  return const SizedBox.shrink();
+                  return GestureDetector(
+                    onTap: () {
+                      if (item is Movie) {
+                        _navigateToMovie(context, item);
+                      } else if (item is TvSeries) {
+                        _navigateToSeries(context, item);
+                      }
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: TMDBImage(
+                        tmdbId: item.tmdbId,
+                        fallbackUrl: item.coverUrl,
+                        width: 130,
+                        height: 190,
+                        isMovie: item is Movie,
+                      ),
+                    ),
+                  );
                 },
               ),
     );
@@ -73,7 +92,7 @@ class CategoryContentScreen extends StatelessWidget {
         builder:
             (context) => NetflixStyleTvSeriesDetailScreen(
               series: series,
-              playlistService: playlistService,
+              playlistService: widget.playlistService,
             ),
       ),
     );
