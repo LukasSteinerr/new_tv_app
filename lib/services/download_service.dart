@@ -25,13 +25,13 @@ class DownloadService {
         'Download update: ${update.runtimeType} for task ${update.task.taskId}',
       ); // Log all updates
 
-      if (update.task.metaData == null || update.task.metaData!.isEmpty) {
+      if (update.task.metaData.isEmpty) {
         _log.info(
           'Ignoring update for task with no metaData: ${update.task.taskId}',
         );
         return;
       }
-      final movieId = update.task.metaData!;
+      final movieId = update.task.metaData;
       final movieName = update.task.displayName;
 
       if (update is TaskStatusUpdate) {

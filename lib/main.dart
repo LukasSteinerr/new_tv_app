@@ -5,7 +5,6 @@ import 'package:logging/logging.dart'; // Import logging
 import 'services/objectbox_service.dart';
 import 'services/playlist_service.dart';
 import 'screens/home_screen.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:background_downloader/background_downloader.dart';
 
 final _log = Logger('MainApp'); // Add logger

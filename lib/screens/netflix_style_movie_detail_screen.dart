@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
+import 'package:flutter_rating/flutter_rating.dart';
 import '../models/cast.dart';
 import '../models/movie.dart';
 import '../services/objectbox_service.dart';
@@ -253,15 +254,24 @@ class _NetflixStyleMovieDetailScreenState
                       if (widget.movie.duration != null &&
                           widget.movie.duration!.isNotEmpty)
                         SizedBox(width: 8),
+                      // Star Rating
                       if (widget.movie.rating != null &&
                           widget.movie.rating!.isNotEmpty)
-                        Text(
-                          widget.movie.rating!,
-                          style: TextStyle(color: Colors.grey[400]),
+                        Row(
+                          children: [
+                            StarRating(
+                              rating:
+                                  (double.tryParse(widget.movie.rating!) ??
+                                      0.0) /
+                                  2,
+                              starCount: 5,
+                              size: 20.0,
+                              color: Colors.orange,
+                              borderColor: Colors.grey,
+                              allowHalfRating: true,
+                            ),
+                          ],
                         ),
-                      if (widget.movie.rating != null &&
-                          widget.movie.rating!.isNotEmpty)
-                        SizedBox(width: 8),
                       Container(
                         padding: EdgeInsets.symmetric(
                           horizontal: 4,
@@ -293,21 +303,6 @@ class _NetflixStyleMovieDetailScreenState
                         child: const Icon(
                           Icons.cloud_download_outlined,
                           color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  // Most Liked row
-                  Row(
-                    children: [
-                      Icon(Icons.thumb_up_alt, color: Colors.orange, size: 18),
-                      SizedBox(width: 4),
-                      Text(
-                        'Most Liked',
-                        style: TextStyle(
-                          color: Colors.orange,
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],

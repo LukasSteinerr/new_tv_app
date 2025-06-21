@@ -241,8 +241,8 @@ class _ChannelEpgGuideScreenState extends State<ChannelEpgGuideScreen> {
             }
           });
         },
-        child: const Icon(Icons.my_location),
         mini: true,
+        child: const Icon(Icons.my_location),
       ),
     );
   }
