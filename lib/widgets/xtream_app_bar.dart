@@ -26,24 +26,7 @@ class XtreamAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.black.withOpacity(appBarOpacity),
       elevation: 0,
       surfaceTintColor: Colors.transparent,
-      leadingWidth: 60,
-      leading: GestureDetector(
-        onTap: () {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Profile tapped!')));
-        },
-        child: Padding(
-          padding: const EdgeInsets.only(left: 16.0, top: 8.0, bottom: 8.0),
-          child: CircleAvatar(
-            radius: 22,
-            backgroundImage: const NetworkImage(
-              'https://xsgames.co/randomusers/assets/avatars/male/74.jpg',
-            ),
-            backgroundColor: Colors.grey[800],
-          ),
-        ),
-      ),
+      leading: const BackButton(color: Colors.white),
       titleSpacing: 0,
       title: const SizedBox.shrink(),
       actions: [
