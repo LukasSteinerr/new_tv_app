@@ -231,22 +231,12 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
     if (!mounted) return;
 
     final now = DateTime.now();
-    DateTime selectedDateTime = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      _selectedTime.hour,
-      _selectedTime.minute,
-    );
+    // Load for the entire current day to cache it
+    final DateTime startTime = DateTime(now.year, now.month, now.day, 0, 0, 0);
+    final DateTime endTime = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
-    final DateTime startTime = selectedDateTime.subtract(
-      const Duration(hours: 1),
-    );
-    final DateTime endTime = selectedDateTime.add(const Duration(hours: 3));
-
-    Map<String, List<TvProgram>> newEpgData = Map.from(
-      _epgData,
-    ); // Preserve existing data not being updated
+    // Since we're loading a large, fresh batch, start with an empty map
+    Map<String, List<TvProgram>> newEpgData = {};
 
     for (final channel in _displayedChannels) {
       if (channel.epgId != null && channel.epgId!.isNotEmpty) {
@@ -606,7 +596,6 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                     _isTimeSliderInteracting = false;
                   });
                   // Refresh EPG data when interaction ends
-                  _loadEpgForDisplayedChannels();
                 },
               ),
             ),
