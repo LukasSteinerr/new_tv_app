@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
+import 'package:flutter_rating/flutter_rating.dart';
 import '../models/tv_series.dart';
 import '../models/tv_episode.dart';
 import '../services/objectbox_service.dart';
@@ -314,19 +315,6 @@ class _NetflixStyleTvSeriesDetailScreenState
                   child: const Icon(Icons.close, color: Colors.white),
                 ),
               ),
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: () {
-                  // Cast functionality would go here
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Cast button pressed')),
-                  );
-                },
-                child: CircleAvatar(
-                  backgroundColor: Colors.black54,
-                  child: const Icon(Icons.cast, color: Colors.white),
-                ),
-              ),
             ],
           ),
         ),
@@ -375,16 +363,13 @@ class _NetflixStyleTvSeriesDetailScreenState
           if (widget.series.year != null && widget.series.year!.isNotEmpty)
             const SizedBox(width: 12),
           if (widget.series.rating != null && widget.series.rating!.isNotEmpty)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white30),
-                borderRadius: BorderRadius.circular(3),
-              ),
-              child: Text(
-                widget.series.rating!,
-                style: const TextStyle(color: Colors.white70, fontSize: 12),
-              ),
+            StarRating(
+              rating: (double.tryParse(widget.series.rating!) ?? 0.0) / 2,
+              starCount: 5,
+              size: 20.0,
+              color: Colors.orange,
+              borderColor: Colors.grey,
+              allowHalfRating: true,
             ),
           const Spacer(),
           GestureDetector(
