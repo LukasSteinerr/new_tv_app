@@ -263,7 +263,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
             // Optionally, show a less intrusive error or log it
             // print('Error loading EPG for ${channel.name}: $e');
           }
-          newEpgData[channel.epgId!] = [];
+          newEpgData[channel.epgId ?? 'unknown_${channel.id}'] = [];
         }
       } else {
         // If a channel has no epgId, ensure it has an empty list in the map
@@ -326,15 +326,31 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
     // Sort upcoming programs by start time, just in case they aren't already
     upcomingPrograms.sort((a, b) => a.startTime.compareTo(b.startTime));
 
-    // Limit upcoming programs to display, e.g., next 2
-    if (upcomingPrograms.length > 2) {
-      upcomingPrograms = upcomingPrograms.sublist(0, 2);
+    // Dynamically limit upcoming programs
+    final int limit = currentProgram != null ? 1 : 2;
+    if (upcomingPrograms.length > limit) {
+      upcomingPrograms = upcomingPrograms.sublist(0, limit);
     }
 
     List<Widget> epgItems = [];
 
     if (currentProgram != null) {
-      epgItems.add(_buildProgramEntry(currentProgram, isCurrent: true));
+      final progStartTimeLocal = currentProgram.startTime.toLocal();
+      final progStopTimeLocal = currentProgram.stopTime.toLocal();
+
+      final bool isActuallyNow =
+          now.isAfter(
+            progStartTimeLocal.subtract(const Duration(seconds: 1)),
+          ) &&
+          now.isBefore(progStopTimeLocal);
+
+      epgItems.add(
+        _buildProgramEntry(
+          currentProgram,
+          isCurrent: isActuallyNow,
+          isSelected: true,
+        ),
+      );
     } else {
       // If no current program, find the next immediate program to show as "Up next"
       TvProgram? nextProgram;
@@ -396,6 +412,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
     TvProgram program, {
     bool isCurrent = false,
     bool isNext = false,
+    bool isSelected = false,
   }) {
     final startTimeStr = _formatTime(program.startTime.toLocal());
     final stopTimeStr = _formatTime(program.stopTime.toLocal());
@@ -418,7 +435,9 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
             style: TextStyle(
               fontSize: 12,
               fontWeight:
-                  isCurrent || isNext ? FontWeight.bold : FontWeight.normal,
+                  isCurrent || isNext || isSelected
+                      ? FontWeight.bold
+                      : FontWeight.normal,
               color: isCurrent ? Colors.amberAccent : Colors.white,
             ),
             maxLines: 1,
