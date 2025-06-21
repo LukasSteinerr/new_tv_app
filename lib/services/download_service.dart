@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:background_downloader/background_downloader.dart';
 import 'package:logging/logging.dart';
 import '../models/movie.dart';
+import '../models/tv_episode.dart';
 
 class DownloadService {
   static final DownloadService _instance = DownloadService._internal();
@@ -70,24 +71,44 @@ class DownloadService {
     // Handle notification tap
   }
 
-  Future<void> startDownload(Movie movie) async {
-    _log.info(
-      'Attempting to start download for movie: ${movie.name}',
-    ); // Log download attempt
-    final task = DownloadTask(
-      url: movie.streamUrl,
-      filename: '${movie.name}.mp4',
-      directory: 'movies',
-      baseDirectory: BaseDirectory.applicationDocuments,
-      updates: Updates.statusAndProgress,
-      allowPause: true,
-      displayName: movie.name,
-      metaData: movie.id.toString(),
-    );
-    await FileDownloader().enqueue(task);
-    _log.info(
-      'Download task enqueued for ${movie.name} with taskId: ${task.taskId}',
-    ); // Log task enqueued
+  Future<void> startDownload(dynamic content) async {
+    if (content is Movie) {
+      _log.info(
+        'Attempting to start download for movie: ${content.name}',
+      ); // Log download attempt
+      final task = DownloadTask(
+        url: content.streamUrl,
+        filename: '${content.name}.mp4',
+        directory: 'movies',
+        baseDirectory: BaseDirectory.applicationDocuments,
+        updates: Updates.statusAndProgress,
+        allowPause: true,
+        displayName: content.name,
+        metaData: content.id.toString(),
+      );
+      await FileDownloader().enqueue(task);
+      _log.info(
+        'Download task enqueued for ${content.name} with taskId: ${task.taskId}',
+      ); // Log task enqueued
+    } else if (content is TvEpisode) {
+      _log.info(
+        'Attempting to start download for TV episode: ${content.title}',
+      );
+      final task = DownloadTask(
+        url: content.streamUrl,
+        filename: '${content.title}.mp4',
+        directory: 'episodes',
+        baseDirectory: BaseDirectory.applicationDocuments,
+        updates: Updates.statusAndProgress,
+        allowPause: true,
+        displayName: content.title,
+        metaData: content.id.toString(),
+      );
+      await FileDownloader().enqueue(task);
+      _log.info(
+        'Download task enqueued for ${content.title} with taskId: ${task.taskId}',
+      );
+    }
   }
 
   void dispose() {
