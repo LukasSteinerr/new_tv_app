@@ -9,6 +9,7 @@ import '../services/playlist_service.dart';
 import '../widgets/time_slider_widget.dart';
 import 'universal_video_player.dart'; // Assuming a player screen
 import 'channel_epg_guide_screen.dart';
+import 'dart:async';
 
 class LiveTvScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -38,6 +39,8 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   bool _isLoading = true;
   TimeOfDay _selectedTime = TimeOfDay.now();
   bool _isTimeSliderInteracting = false;
+  TimeOfDay _now = TimeOfDay.now();
+  Timer? _minuteTimer;
 
   // Add ScrollController for the ListView
   late ScrollController _scrollController;
@@ -49,6 +52,13 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
     _scrollController = ScrollController(); // Initialize ScrollController
     _scrollController.addListener(_notifyScrollUpdate); // Add listener
     _loadData();
+    _minuteTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      if (mounted) {
+        setState(() {
+          _now = TimeOfDay.now();
+        });
+      }
+    });
   }
 
   void _setPortraitMode() {
@@ -60,6 +70,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
 
   @override
   void dispose() {
+    _minuteTimer?.cancel();
     _scrollController.removeListener(_notifyScrollUpdate); // Remove listener
     _scrollController.dispose(); // Dispose ScrollController
     super.dispose();
@@ -580,6 +591,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
               color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
               child: TimeSlider(
                 selectedTime: _selectedTime,
+                currentTime: _now,
                 showBumpOut: true,
                 onTimeChange: (TimeOfDay newTime) {
                   setState(() {

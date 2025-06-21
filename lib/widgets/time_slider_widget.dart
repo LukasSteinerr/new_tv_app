@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 // Import for kDebugMode if needed later
 
 class TimeSlider extends StatefulWidget {
   final TimeOfDay selectedTime;
+  final TimeOfDay currentTime;
   final bool showBumpOut;
   // final double availableHeight; // Removed
   final ValueChanged<TimeOfDay> onTimeChange;
@@ -13,6 +16,7 @@ class TimeSlider extends StatefulWidget {
   const TimeSlider({
     super.key,
     required this.selectedTime,
+    required this.currentTime,
     required this.showBumpOut,
     // required this.availableHeight, // Removed
     required this.onTimeChange,
@@ -164,11 +168,16 @@ class _TimeSliderState extends State<TimeSlider> {
                                 hourValue.toString().padLeft(2, '0'),
                                 style: TextStyle(
                                   color:
-                                      (hourValue == widget.selectedTime.hour)
+                                      (hourValue == widget.currentTime.hour)
+                                          ? Colors.blueAccent
+                                          : (hourValue ==
+                                              widget.selectedTime.hour)
                                           ? Colors.white
                                           : Colors.white70,
                                   fontWeight:
-                                      (hourValue == widget.selectedTime.hour)
+                                      (hourValue == widget.selectedTime.hour ||
+                                              hourValue ==
+                                                  widget.currentTime.hour)
                                           ? FontWeight.bold
                                           : FontWeight.normal,
                                   fontSize: 16,
