@@ -6,10 +6,9 @@ import 'live_tv_screen.dart';
 import 'movies_screen.dart';
 import 'tv_series_screen.dart';
 import 'settings_screen.dart';
-import 'download_screen.dart'; // Added import for DownloadScreen
-import 'my_list_screen.dart';
-import 'search_screen.dart';
 import '../services/objectbox_service.dart';
+import '../widgets/xtream_app_bar.dart';
+import '../widgets/xtream_bottom_nav_bar.dart';
 
 class XtreamPlaylistScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -117,91 +116,13 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
     return Scaffold(
       backgroundColor: Colors.black, // Set background color
       extendBodyBehindAppBar: true, // Allow body to extend behind AppBar
-      appBar: AppBar(
-        // Implement the styled AppBar
-        backgroundColor: Colors.black.withOpacity(
-          _appBarOpacity,
-        ), // Dynamic opacity
-        elevation: 0,
-        surfaceTintColor: Colors.transparent, // Prevent M3 surface tint
-        leadingWidth: 60, // As per reference UI
-        leading: GestureDetector(
-          // Leading profile avatar
-          onTap: () {
-            // TODO: Navigate to Profile Screen (if exists)
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('Profile tapped!')));
-          },
-          child: Padding(
-            padding: const EdgeInsets.only(left: 16.0, top: 8.0, bottom: 8.0),
-            child: CircleAvatar(
-              radius: 22, // As per reference UI
-              backgroundImage: const NetworkImage(
-                'https://xsgames.co/randomusers/assets/avatars/male/74.jpg', // Placeholder image
-              ),
-              backgroundColor: Colors.grey[800],
-            ),
-          ),
-        ),
-        titleSpacing: 0, // As per reference UI
-        title: const SizedBox.shrink(), // Empty title as per reference UI
-        actions: [
-          // Actions (Cast, Download, Search)
-          IconButton(
-            icon: const Icon(
-              Icons.list,
-              color: Colors.white,
-              size: 28,
-            ), // As per reference UI
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) =>
-                          MyListScreen(playlistService: widget.playlistService),
-                ),
-              );
-            },
-            tooltip: 'My List',
-          ),
-          IconButton(
-            icon: const Icon(
-              Icons.download_outlined,
-              color: Colors.white,
-              size: 28, // As per reference UI
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const DownloadScreen()),
-              );
-            },
-            tooltip: 'Download',
-          ),
-          IconButton(
-            icon: const Icon(
-              Icons.search,
-              color: Colors.white,
-              size: 30,
-            ), // As per reference UI
-            onPressed: () {
-              if (_objectBoxService != null) {
-                showSearch(
-                  context: context,
-                  delegate: SearchScreen(
-                    objectBoxService: _objectBoxService!,
-                    playlistService: widget.playlistService,
-                  ),
-                );
-              }
-            },
-            tooltip: 'Search',
-          ),
-          const SizedBox(width: 8), // Spacing as per reference UI
-        ],
-      ),      body:
+      appBar: XtreamAppBar(
+        appBarOpacity: _appBarOpacity,
+        playlistService: widget.playlistService,
+        objectBoxService: _objectBoxService,
+        playlist: widget.playlist,
+      ),
+      body:
           _isLoading
               ? Center(
                 child: LoadingAnimationWidget.dotsTriangle(
@@ -210,40 +131,14 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
                 ),
               )
               : _screens[_currentIndex],
-      bottomNavigationBar: Theme(
-        // Wrap with Theme to remove splash/highlight
-        data: Theme.of(context).copyWith(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-        ),
-        child: BottomNavigationBar(
-          backgroundColor: Colors.black, // Styled as per reference UI
-          selectedItemColor: Colors.white, // Styled as per reference UI
-          unselectedItemColor: Colors.grey[700], // Styled as per reference UI
-          type: BottomNavigationBarType.fixed, // Already fixed
-          showSelectedLabels: false, // Hide labels as per reference UI
-          showUnselectedLabels: false, // Hide labels as per reference UI
-          iconSize: 26, // Styled as per reference UI
-          currentIndex: _currentIndex,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.movie), label: 'Movies'),
-            BottomNavigationBarItem(icon: Icon(Icons.tv), label: 'TV Shows'),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.live_tv),
-              label: 'Live TV',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-          ],
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-              _appBarOpacity = 0.0; // Reset AppBar opacity to fully transparent
-            });
-          },
-        ),
+      bottomNavigationBar: XtreamBottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+            _appBarOpacity = 0.0; // Reset AppBar opacity to fully transparent
+          });
+        },
       ),
     );
   }
