@@ -29,6 +29,8 @@ class _NetflixStyleMovieDetailScreenState
   String? _posterUrl;
   String? _backdropUrl;
   String? _overview; // Add a field for overview
+  List<String> _genres = [];
+  List<Movie> _similarMovies = [];
 
   @override
   void initState() {
@@ -66,12 +68,16 @@ class _NetflixStyleMovieDetailScreenState
         final creditsFuture = _tmdbService.getMovieCredits(
           widget.movie.tmdbId!,
         );
+        final similarMoviesFuture = _tmdbService.getSimilarMovies(
+          widget.movie.tmdbId!,
+        );
 
         final results = await Future.wait([
           posterFuture,
           backdropFuture,
           movieDetailsFuture,
           creditsFuture,
+          similarMoviesFuture,
         ]);
 
         if (mounted) {
@@ -80,9 +86,16 @@ class _NetflixStyleMovieDetailScreenState
             _backdropUrl = results[1] as String?; // Backdrop URL
             final movieDetails =
                 results[2] as Map<String, dynamic>?; // Movie details
+            if (movieDetails != null && movieDetails['genres'] != null) {
+              _genres =
+                  (movieDetails['genres'] as List)
+                      .map((genre) => genre['name'] as String)
+                      .toList();
+            }
             _overview =
                 movieDetails?['overview'] as String?; // Extract overview
             widget.movie.cast = results[3] as List<Cast>;
+            _similarMovies = results[4] as List<Movie>;
             _isLoading = false;
           });
         }
@@ -189,6 +202,27 @@ class _NetflixStyleMovieDetailScreenState
                     ),
                   ),
                   SizedBox(height: 8),
+                  // Genres
+                  if (_genres.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Wrap(
+                        spacing: 8.0,
+                        runSpacing: 4.0,
+                        children:
+                            _genres
+                                .map(
+                                  (genre) => Chip(
+                                    label: Text(genre),
+                                    backgroundColor: Colors.grey[800],
+                                    labelStyle: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                      ),
+                    ),
                   // Metadata row (match percentage, year, duration, rating, HD)
                   Row(
                     children: [
@@ -463,9 +497,109 @@ class _NetflixStyleMovieDetailScreenState
             ),
 
             const SizedBox(height: 24),
+            _buildSimilarMovies(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSimilarMovies() {
+    if (_similarMovies.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            'Similar Movies',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 200, // Adjust height as needed
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: _similarMovies.length,
+            itemBuilder: (context, index) {
+              final movie = _similarMovies[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) =>
+                              NetflixStyleMovieDetailScreen(movie: movie),
+                    ),
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: SizedBox(
+                    width: 120, // Adjust width as needed
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child:
+                              movie.posterUrl != null
+                                  ? Image.network(
+                                    movie.posterUrl!,
+                                    height: 160,
+                                    width: 110,
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Container(
+                                              height: 160,
+                                              width: 110,
+                                              color: Colors.grey[800],
+                                              child: const Icon(
+                                                Icons.movie,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                  )
+                                  : Container(
+                                    height: 160,
+                                    width: 110,
+                                    color: Colors.grey[800],
+                                    child: const Icon(
+                                      Icons.movie,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          movie.name,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 24),
+      ],
     );
   }
 

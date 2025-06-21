@@ -221,4 +221,53 @@ class TMDBService {
       return [];
     }
   }
+
+  // Fetch similar movies by TMDB ID
+  Future<List<Movie>> getSimilarMovies(String tmdbId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_apiBaseUrl/movie/$tmdbId/similar?api_key=$_apiKey'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic> results = data['results'];
+
+        return results.map((movieData) {
+          String streamUrl = ''; // Placeholder
+          String? streamId = movieData['id']?.toString();
+
+          return Movie(
+            name: movieData['title'] ?? 'No Title',
+            streamUrl: streamUrl,
+            description: movieData['overview'] ?? '',
+            year:
+                movieData['release_date'] != null &&
+                        movieData['release_date'].length >= 4
+                    ? movieData['release_date'].substring(0, 4)
+                    : null,
+            rating: movieData['vote_average']?.toString() ?? '0.0',
+            tmdbId: movieData['id']?.toString(),
+            posterUrl:
+                movieData['poster_path'] != null
+                    ? getPosterUrl(movieData['poster_path'])
+                    : null,
+            backdropUrl:
+                movieData['backdrop_path'] != null
+                    ? getBackdropUrl(movieData['backdrop_path'])
+                    : null,
+            featuredPosterUrl:
+                movieData['poster_path'] != null
+                    ? getFeaturedPosterUrl(movieData['poster_path'])
+                    : null,
+            streamId: streamId,
+          );
+        }).toList();
+      }
+      return [];
+    } catch (e) {
+      print('Error fetching similar movies: $e');
+      return [];
+    }
+  }
 }
