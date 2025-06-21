@@ -666,19 +666,6 @@ class _NetflixStyleMovieDetailScreenState
                   child: const Icon(Icons.close, color: Colors.white),
                 ),
               ),
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: () {
-                  // Cast functionality would go here
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Cast button pressed')),
-                  );
-                },
-                child: CircleAvatar(
-                  backgroundColor: Colors.black54,
-                  child: const Icon(Icons.cast, color: Colors.white),
-                ),
-              ),
             ],
           ),
         ),
