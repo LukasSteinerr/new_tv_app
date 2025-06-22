@@ -99,6 +99,7 @@ class _NetflixStyleMovieDetailScreenState
             _similarMovies = results[4] as List<Movie>;
             _isLoading = false;
           });
+          _crossReferenceSimilarMovies();
         }
       } catch (e) {
         print('Error loading TMDB data: $e'); // Print error for debugging
@@ -155,6 +156,31 @@ class _NetflixStyleMovieDetailScreenState
         backgroundColor: Colors.green,
       ),
     );
+  }
+
+  Future<void> _crossReferenceSimilarMovies() async {
+    if (_objectBoxService == null || _similarMovies.isEmpty) return;
+
+    final List<Movie> syncedSimilarMovies = [];
+    for (final tmdbMovie in _similarMovies) {
+      if (tmdbMovie.tmdbId != null) {
+        final localMovie = _objectBoxService!.getMovieByTmdbId(
+          tmdbMovie.tmdbId!,
+        );
+        if (localMovie != null) {
+          localMovie.posterUrl = tmdbMovie.posterUrl;
+          localMovie.backdropUrl = tmdbMovie.backdropUrl;
+          localMovie.featuredPosterUrl = tmdbMovie.featuredPosterUrl;
+          syncedSimilarMovies.add(localMovie);
+        }
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _similarMovies = syncedSimilarMovies;
+      });
+    }
   }
 
   @override

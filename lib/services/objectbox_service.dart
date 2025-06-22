@@ -135,6 +135,13 @@ class ObjectBoxService {
   void addMovies(List<Movie> movies) => _movieBox.putMany(movies);
   bool deleteMovie(int id) => _movieBox.remove(id);
 
+  Movie? getMovieByTmdbId(String tmdbId) {
+    final query = _movieBox.query(Movie_.tmdbId.equals(tmdbId)).build();
+    final result = query.findFirst();
+    query.close();
+    return result;
+  }
+
   // Get featured movies by playlist
   List<Movie> getFeaturedMoviesByPlaylist(int playlistId) {
     final query =
