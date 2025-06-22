@@ -65,18 +65,18 @@ class _DownloadScreenState extends State<DownloadScreen> {
     }
   }
 
-  Future<void> _cancelDownload(String contentId) async {
+  Future<void> _deleteDownload(String contentId) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder:
           (context) => AlertDialog(
             backgroundColor: Colors.grey[900],
             title: const Text(
-              'Cancel Download',
+              'Delete Download',
               style: TextStyle(color: Colors.white),
             ),
             content: const Text(
-              'Are you sure you want to cancel this download?',
+              'Are you sure you want to delete this download record?',
               style: TextStyle(color: Colors.white70),
             ),
             actions: [
@@ -93,18 +93,88 @@ class _DownloadScreenState extends State<DownloadScreen> {
     );
 
     if (confirmed == true) {
-      final success = await _downloadService.cancelDownload(contentId);
-      if (success) {
-        setState(() {
-          _downloadingMovies.removeWhere((movie) => movie['id'] == contentId);
-        });
-      } else if (mounted) {
+      // First cancel the task (if it is still running) so we don't leave a dangling download
+      await _downloadService.cancelDownload(contentId);
+
+      // Locate the corresponding database record by matching the metaData (which we use to
+      // store the contentId). We then delete the record using the *taskId* which is what
+      // `deleteRecordWithId` expects.
+      final records = await FileDownloader().database.allRecords();
+      for (final record in records) {
+        if (record.task.metaData == contentId) {
+          await FileDownloader().database.deleteRecordWithId(
+            record.task.taskId,
+          );
+          break;
+        }
+      }
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to cancel download'),
-            backgroundColor: Colors.red,
+            content: Text('Download record deleted successfully.'),
+            backgroundColor: Colors.green,
           ),
         );
+        _loadExistingDownloads();
+      }
+    }
+  }
+
+  Future<void> _deleteAllDownloads() async {
+    final count = (await _downloadService.getAllDownloads()).length;
+    if (count == 0) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No download history to delete.'),
+            backgroundColor: Colors.blue,
+          ),
+        );
+      }
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: Colors.grey[900],
+            title: const Text(
+              'Delete All Downloads',
+              style: TextStyle(color: Colors.white),
+            ),
+            content: Text(
+              'Are you sure you want to delete all $count download records? This action cannot be undone.',
+              style: const TextStyle(color: Colors.white70),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('No', style: TextStyle(color: Colors.grey)),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+    );
+
+    if (confirmed == true) {
+      final records = await FileDownloader().database.allRecords();
+      final numDeleted = records.length;
+      await FileDownloader().database.deleteAllRecords();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$numDeleted download records deleted successfully.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        _loadExistingDownloads();
       }
     }
   }
@@ -163,6 +233,11 @@ class _DownloadScreenState extends State<DownloadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.delete_forever),
+          tooltip: 'Delete all download history',
+          onPressed: _deleteAllDownloads,
+        ),
         title: const Text('Downloads'),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
@@ -273,21 +348,13 @@ class _DownloadScreenState extends State<DownloadScreen> {
                                   ),
                                 ),
 
-                                // Cancel button
-                                ElevatedButton.icon(
-                                  onPressed:
-                                      (status != TaskStatus.complete &&
-                                              status != TaskStatus.failed &&
-                                              status != TaskStatus.canceled)
-                                          ? () => _cancelDownload(contentId)
-                                          : null,
-                                  icon: const Icon(Icons.close, size: 18),
-                                  label: const Text('Cancel'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                    foregroundColor: Colors.white,
-                                    disabledBackgroundColor: Colors.grey[700],
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.white,
                                   ),
+                                  tooltip: 'Delete this download',
+                                  onPressed: () => _deleteDownload(contentId),
                                 ),
                               ],
                             ),
