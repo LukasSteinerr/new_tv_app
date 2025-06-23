@@ -124,6 +124,15 @@ class PlaylistService {
     _objectBoxService.addPlaylist(playlist);
   }
 
+  Future<void> refreshEpgData(Playlist playlist) async {
+    if (!playlist.isM3u) {
+      final uri = Uri.parse(playlist.url);
+      final baseUrl = '${uri.scheme}://${uri.host}:${uri.port}';
+      await _xtreamService.fetchAndStoreEpgData(baseUrl, playlist);
+    }
+    // M3U playlists might have EPG from a separate URL, this could be extended
+  }
+
   Future<List<Category>> getPlaylistCategories(int playlistId) async {
     return _objectBoxService.getCategoriesByPlaylist(playlistId);
   }

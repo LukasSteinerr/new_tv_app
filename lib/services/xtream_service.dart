@@ -41,7 +41,7 @@ class XtreamService {
 
       // Fetch and store EPG data
       try {
-        await _fetchAndStoreEpgData(baseUrl, playlist);
+        await fetchAndStoreEpgData(baseUrl, playlist);
       } catch (e) {
         // Log EPG fetching error but don't let it break the whole process
         print('Error fetching or storing EPG data: $e');
@@ -377,7 +377,7 @@ class XtreamService {
     return episodes;
   }
 
-  Future<void> _fetchAndStoreEpgData(String baseUrl, Playlist playlist) async {
+  Future<void> fetchAndStoreEpgData(String baseUrl, Playlist playlist) async {
     if (playlist.username == null || playlist.password == null) {
       print('Username or password missing, skipping EPG fetch.');
       return;

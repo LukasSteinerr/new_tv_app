@@ -134,6 +134,53 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
     }
   }
 
+  Future<void> _refreshEpg() async {
+    if (!mounted) return;
+
+    // Show a loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Dialog(
+          child: Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 20),
+                Text("Refreshing EPG..."),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    try {
+      await widget.playlistService.refreshEpgData(widget.playlist);
+      // Once data is fetched and stored, reload it for the UI
+      await _loadEpgForDisplayedChannels();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error refreshing EPG: $e')));
+      }
+    } finally {
+      if (mounted) {
+        Navigator.of(context).pop(); // Close the loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('EPG data has been refreshed.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    }
+  }
+
   void _onCategorySelectedInDrawer(Category? category) {
     setState(() {
       _selectedCategoryInDrawer = category;
@@ -250,35 +297,22 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
     final DateTime startTime = DateTime(now.year, now.month, now.day, 0, 0, 0);
     final DateTime endTime = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
-    // Since we're loading a large, fresh batch, start with an empty map
-    Map<String, List<TvProgram>> newEpgData = {};
-
+    final Map<String, List<TvProgram>> epgData = {};
     for (final channel in _displayedChannels) {
       if (channel.epgId != null && channel.epgId!.isNotEmpty) {
-        try {
-          final programs = await widget.playlistService
-              .getTvProgramsForChannelInTimeRange(
-                channel.epgId!,
-                startTime,
-                endTime,
-              );
-          newEpgData[channel.epgId!] = programs;
-        } catch (e) {
-          if (mounted) {
-            // Optionally, show a less intrusive error or log it
-            // print('Error loading EPG for ${channel.name}: $e');
-          }
-          newEpgData[channel.epgId ?? 'unknown_${channel.id}'] = [];
-        }
-      } else {
-        // If a channel has no epgId, ensure it has an empty list in the map
-        newEpgData[channel.epgId ?? 'unknown_${channel.id}'] = [];
+        final programs = await widget.playlistService
+            .getTvProgramsForChannelInTimeRange(
+              channel.epgId!,
+              startTime,
+              endTime,
+            );
+        epgData[channel.epgId!] = programs;
       }
     }
 
     if (mounted) {
       setState(() {
-        _epgData = newEpgData;
+        _epgData = epgData;
       });
     }
   }
@@ -467,9 +501,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
       key: _scaffoldKey,
       extendBodyBehindAppBar: true,
       drawer: _buildDrawer(),
-      // AppBar is removed from here and will be in the parent XtreamPlaylistScreen
       body: Stack(
-        // Keep Stack for TimeSlider and Drawer Edge Indicator
         children: [
           _isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -484,7 +516,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
               : ListView.builder(
                 controller: _scrollController, // Attach ScrollController
                 padding: const EdgeInsets.only(
-                  top: kToolbarHeight + 24, // Add back top padding
+                  top: kToolbarHeight + 24, // Account for app bar shadow effect
                   bottom: 10,
                   left: 10,
                   right: 55,
@@ -602,7 +634,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                 },
               ),
           Positioned(
-            top: kToolbarHeight + 24, // Adjust top position for parent AppBar
+            top: kToolbarHeight + 24, // Account for app bar shadow effect
             right: 0,
             bottom: 0,
             width: 45,
@@ -628,6 +660,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                   });
                   // Refresh EPG data when interaction ends
                 },
+                onRefresh: _refreshEpg,
               ),
             ),
           ),
