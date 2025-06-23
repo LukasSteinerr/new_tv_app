@@ -38,13 +38,10 @@ class _TimeSliderState extends State<TimeSlider> {
     return Column(
       children: [
         if (widget.onRefresh != null)
-          Container(
-            color: Colors.green,
-            child: IconButton(
-              icon: const Icon(Icons.refresh, color: Colors.white),
-              onPressed: widget.onRefresh,
-              tooltip: 'Refresh EPG',
-            ),
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            onPressed: widget.onRefresh,
+            tooltip: 'Refresh EPG',
           ),
         Expanded(
           child: LayoutBuilder(

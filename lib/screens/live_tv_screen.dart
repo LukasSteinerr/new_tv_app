@@ -137,6 +137,30 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   Future<void> _refreshEpg() async {
     if (!mounted) return;
 
+    final bool? shouldRefresh = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Refresh'),
+          content: const Text('Are you sure you want to refresh the EPG data?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Refresh'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldRefresh != true) {
+      return;
+    }
+
     // Show a loading dialog
     showDialog(
       context: context,
