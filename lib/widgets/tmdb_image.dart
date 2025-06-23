@@ -34,76 +34,49 @@ class TMDBImage extends StatefulWidget {
 
 class _TMDBImageState extends State<TMDBImage> {
   final TMDBImageProvider _imageProvider = TMDBImageProvider();
-  String? _imageUrl;
-  bool _isLoading = true;
-  SharedPreferences? _prefs;
+  Future<String?>? _imageUrlFuture;
 
   @override
   void initState() {
     super.initState();
-    _initialize();
-  }
-
-  Future<void> _initialize() async {
-    _prefs = await SharedPreferences.getInstance();
-    if (!mounted) return;
-    // Set loading to false immediately if we have no TMDB ID and no fallback URL
-    // This ensures we show a placeholder right away
-    if ((widget.tmdbId == null || widget.tmdbId!.isEmpty) &&
-        (widget.fallbackUrl == null || widget.fallbackUrl!.isEmpty)) {
-      setState(() {
-        _isLoading = false;
-      });
-    } else {
-      _loadImage();
-    }
+    // Initialize the future that will fetch the image URL
+    _imageUrlFuture = _getImageUrl();
   }
 
   @override
   void didUpdateWidget(TMDBImage oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // If the TMDB ID or fallback URL changes, create a new future
     if (oldWidget.tmdbId != widget.tmdbId ||
         oldWidget.fallbackUrl != widget.fallbackUrl) {
-      // Set loading to false immediately if we have no TMDB ID and no fallback URL
-      // This ensures we show a placeholder right away
-      if ((widget.tmdbId == null || widget.tmdbId!.isEmpty) &&
-          (widget.fallbackUrl == null || widget.fallbackUrl!.isEmpty)) {
-        setState(() {
-          _isLoading = false;
-          _imageUrl = null;
-        });
-      } else {
-        _loadImage();
-      }
+      setState(() {
+        _imageUrlFuture = _getImageUrl();
+      });
     }
   }
 
-  Future<void> _loadImage() async {
-    setState(() {
-      _isLoading = true;
-    });
+  Future<String?> _getImageUrl() async {
+    // Guard against cases where there's no ID and no fallback
+    if ((widget.tmdbId == null || widget.tmdbId!.isEmpty) &&
+        (widget.fallbackUrl == null || widget.fallbackUrl!.isEmpty)) {
+      return null;
+    }
 
-    String? cachedUrl;
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return null;
+
+    // First, check for a cached URL in SharedPreferences
     if (widget.tmdbId != null && widget.tmdbId!.isNotEmpty) {
-      cachedUrl = _prefs?.getString(widget.tmdbId!);
-    }
-
-    if (cachedUrl != null) {
-      if (mounted) {
-        setState(() {
-          _imageUrl = cachedUrl;
-          _isLoading = false;
-        });
+      final cachedUrl = prefs.getString(widget.tmdbId!);
+      if (cachedUrl != null) {
+        return cachedUrl;
       }
-      return;
     }
 
+    // If no cached URL, fetch from the TMDB service
     try {
-      // First try to get the TMDB image
       String? url;
       if (widget.tmdbId != null && widget.tmdbId!.isNotEmpty) {
-        // Pass the fallback URL directly to the TMDB provider
-        // This ensures it will return the fallback if TMDB has no image
         url =
             widget.isMovie
                 ? await _imageProvider.getPosterUrl(
@@ -115,112 +88,74 @@ class _TMDBImageState extends State<TMDBImage> {
                   widget.fallbackUrl,
                 );
 
+        // Cache the newly fetched URL
         if (url != null && url.isNotEmpty) {
-          await _prefs?.setString(widget.tmdbId!, url);
+          await prefs.setString(widget.tmdbId!, url);
         }
       } else if (widget.fallbackUrl != null && widget.fallbackUrl!.isNotEmpty) {
         // If no TMDB ID but we have a fallback, use it
         url = widget.fallbackUrl;
       }
-
-      if (mounted) {
-        setState(() {
-          _imageUrl = url;
-          _isLoading = false;
-        });
-      }
+      return url;
     } catch (e) {
-      // On error, try to use the fallback URL
-      if (mounted) {
-        setState(() {
-          _imageUrl = widget.fallbackUrl;
-          _isLoading = false;
-        });
-      }
+      // On error, return the fallback URL as a last resort
+      return widget.fallbackUrl;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Always use a SizedBox with the specified dimensions as the base
-    // This ensures the widget always has a proper size for hit testing
+    // Use a SizedBox with the specified dimensions as the base
     return SizedBox(
       width: widget.width,
       height: widget.height,
-      child: Material(
-        color: Colors.transparent,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return _buildContent();
-          },
-        ),
-      ),
-    );
-  }
+      child: FutureBuilder<String?>(
+        future: _imageUrlFuture,
+        builder: (context, snapshot) {
+          // Case 1: The future is still running
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const NetflixStyleLoading(
+              width: double.infinity,
+              height: double.infinity,
+            );
+          }
 
-  Widget _buildContent() {
-    // Show loading state
-    if (_isLoading) {
-      return const NetflixStyleLoading(
-        width: double.infinity,
-        height: double.infinity,
-      );
-    }
+          // Case 2: The future completed, but with no data or an error
+          if (snapshot.hasError ||
+              !snapshot.hasData ||
+              snapshot.data == null ||
+              snapshot.data!.isEmpty) {
+            return _buildPlaceholder();
+          }
 
-    // Show placeholder if no image URL is available
-    if (_imageUrl == null || _imageUrl!.isEmpty) {
-      return _buildPlaceholder();
-    }
-
-    // Image available - use CachedNetworkImage
-    return CachedNetworkImage(
-      imageUrl: _imageUrl!,
-      width: double.infinity,
-      height: double.infinity,
-      fit: widget.fit,
-      placeholder:
-          (context, url) => const NetflixStyleLoading(
-            width: double.infinity,
-            height: double.infinity,
-          ),
-      errorWidget: (context, url, error) {
-        // If the image fails to load, try the fallback URL if it's different
-        if (widget.fallbackUrl != null &&
-            widget.fallbackUrl!.isNotEmpty &&
-            _imageUrl != widget.fallbackUrl) {
-          // Schedule a microtask to update the image URL to the fallback
-          Future.microtask(() {
-            if (mounted) {
-              setState(() {
-                _imageUrl = widget.fallbackUrl;
-              });
-            }
-          });
-          // Show loading while we switch to fallback
-          return const NetflixStyleLoading(
-            width: double.infinity,
-            height: double.infinity,
+          // Case 3: The future completed successfully with an image URL
+          final imageUrl = snapshot.data!;
+          return CachedNetworkImage(
+            imageUrl: imageUrl,
+            // Use imageBuilder for custom display logic
+            imageBuilder:
+                (context, imageProvider) => Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(
+                      8.0,
+                    ), // Your custom decoration
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: widget.fit,
+                    ),
+                  ),
+                ),
+            // Placeholder for when CachedNetworkImage is downloading
+            placeholder:
+                (context, url) => const NetflixStyleLoading(
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
+            // Error widget for when the URL fails to load
+            errorWidget: (context, url, error) => _buildPlaceholder(),
           );
-        }
-        // If fallback also fails or there is no fallback, show placeholder
-        return Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.grey[900],
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: const Center(
-            child: Icon(
-              Icons.broken_image,
-              color: Colors.white54,
-              size: 40, // Fixed size icon
-            ),
-          ),
-        );
-      },
-      fadeInDuration: const Duration(milliseconds: 300),
-      fadeOutDuration: const Duration(milliseconds: 300),
+        },
+      ),
     );
   }
 
