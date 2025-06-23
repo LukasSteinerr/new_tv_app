@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 // Assuming Movie model might be needed if we pass full details later,
 // but for now, callbacks are index-based.
@@ -98,28 +99,15 @@ class _FeaturedContentState extends State<FeaturedContent> {
                   ),
                 );
               }
-              return Image.network(
-                widget.imageUrls[index],
+              return CachedNetworkImage(
+                imageUrl: widget.imageUrls[index],
                 fit: BoxFit.cover,
                 alignment: Alignment.topCenter,
-                loadingBuilder: (
-                  BuildContext context,
-                  Widget child,
-                  ImageChunkEvent? loadingProgress,
-                ) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value:
-                          loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
-                    ),
-                  );
-                },
-                errorBuilder:
-                    (context, error, stackTrace) => Container(
+                placeholder:
+                    (context, url) =>
+                        const Center(child: CircularProgressIndicator()),
+                errorWidget:
+                    (context, url, error) => Container(
                       color: Colors.grey[900],
                       child: const Center(
                         child: Icon(

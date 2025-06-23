@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
 import 'package:flutter_rating/flutter_rating.dart';
@@ -472,12 +473,9 @@ class _NetflixStyleMovieDetailScreenState
                                   radius: 40,
                                   backgroundImage:
                                       profileUrl != null
-                                          ? NetworkImage(profileUrl)
-                                          : null,
-                                  onBackgroundImageError:
-                                      profileUrl != null
-                                          ? (exception, stackTrace) =>
-                                              const Icon(Icons.person, size: 40)
+                                          ? CachedNetworkImageProvider(
+                                            profileUrl,
+                                          )
                                           : null,
                                   backgroundColor: Colors.grey[800],
                                   child:
@@ -574,22 +572,31 @@ class _NetflixStyleMovieDetailScreenState
                           borderRadius: BorderRadius.circular(8.0),
                           child:
                               movie.posterUrl != null
-                                  ? Image.network(
-                                    movie.posterUrl!,
+                                  ? CachedNetworkImage(
+                                    imageUrl: movie.posterUrl!,
                                     height: 160,
                                     width: 110,
                                     fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            Container(
-                                              height: 160,
-                                              width: 110,
-                                              color: Colors.grey[800],
-                                              child: const Icon(
-                                                Icons.movie,
-                                                color: Colors.white,
-                                              ),
-                                            ),
+                                    placeholder:
+                                        (context, url) => Container(
+                                          height: 160,
+                                          width: 110,
+                                          color: Colors.grey[800],
+                                          child: const Icon(
+                                            Icons.movie,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                    errorWidget:
+                                        (context, url, error) => Container(
+                                          height: 160,
+                                          width: 110,
+                                          color: Colors.grey[800],
+                                          child: const Icon(
+                                            Icons.movie,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                   )
                                   : Container(
                                     height: 160,
@@ -633,11 +640,13 @@ class _NetflixStyleMovieDetailScreenState
           width: double.infinity,
           child:
               _backdropUrl != null
-                  ? Image.network(
-                    _backdropUrl!,
+                  ? CachedNetworkImage(
+                    imageUrl: _backdropUrl!,
                     fit: BoxFit.cover,
-                    errorBuilder:
-                        (_, __, ___) => Container(color: Colors.black),
+                    placeholder:
+                        (context, url) => Container(color: Colors.black),
+                    errorWidget:
+                        (context, url, error) => Container(color: Colors.black),
                   )
                   : Container(color: Colors.black),
         ),

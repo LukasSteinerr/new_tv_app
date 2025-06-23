@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
 import 'package:flutter_rating/flutter_rating.dart';
@@ -257,11 +258,13 @@ class _NetflixStyleTvSeriesDetailScreenState
           width: double.infinity,
           child:
               _backdropUrl != null
-                  ? Image.network(
-                    _backdropUrl!,
+                  ? CachedNetworkImage(
+                    imageUrl: _backdropUrl!,
                     fit: BoxFit.cover,
-                    errorBuilder:
-                        (_, __, ___) => Container(color: Colors.black),
+                    placeholder:
+                        (context, url) => Container(color: Colors.black),
+                    errorWidget:
+                        (context, url, error) => Container(color: Colors.black),
                   )
                   : Container(color: Colors.black),
         ),
@@ -549,11 +552,19 @@ class _NetflixStyleTvSeriesDetailScreenState
                               child:
                                   episode.coverUrl != null &&
                                           episode.coverUrl!.isNotEmpty
-                                      ? Image.network(
-                                        episode.coverUrl!,
+                                      ? CachedNetworkImage(
+                                        imageUrl: episode.coverUrl!,
                                         fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (_, __, ___) => Container(
+                                        placeholder:
+                                            (context, url) => Container(
+                                              color: Colors.grey[800],
+                                              child: const Icon(
+                                                Icons.movie,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                        errorWidget:
+                                            (context, url, error) => Container(
                                               color: Colors.grey[800],
                                               child: const Icon(
                                                 Icons.movie,

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
 import '../models/playlist.dart';
@@ -217,13 +218,16 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                   logoUrl != null && logoUrl.isNotEmpty
                       ? ClipRRect(
                         borderRadius: BorderRadius.circular(4),
-                        child: Image.network(
-                          logoUrl,
+                        child: CachedNetworkImage(
+                          imageUrl: logoUrl,
                           width: 30,
                           height: 30,
                           fit: BoxFit.cover,
-                          errorBuilder:
-                              (_, __, ___) =>
+                          placeholder:
+                              (context, url) =>
+                                  const Icon(Icons.live_tv, size: 30),
+                          errorWidget:
+                              (context, url, error) =>
                                   const Icon(Icons.live_tv, size: 30),
                         ),
                       )
@@ -520,13 +524,28 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                                         channel.logoUrl!.isNotEmpty
                                     ? ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
-                                      child: Image.network(
-                                        channel.logoUrl!,
+                                      child: CachedNetworkImage(
+                                        imageUrl: channel.logoUrl!,
                                         width: 40, // Adjusted size
                                         height: 40, // Adjusted size
                                         fit: BoxFit.contain,
-                                        errorBuilder:
-                                            (_, __, ___) => Container(
+                                        placeholder:
+                                            (context, url) => Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey[850],
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: const Icon(
+                                                Icons.tv,
+                                                color: Colors.white,
+                                                size: 24,
+                                              ),
+                                            ),
+                                        errorWidget:
+                                            (context, url, error) => Container(
                                               width: 40,
                                               height: 40,
                                               decoration: BoxDecoration(

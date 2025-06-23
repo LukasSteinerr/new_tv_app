@@ -36,6 +36,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  cached_network_image: ^3.3.1
   # Note: when updating objectbox, check the release notes (https://github.com/objectbox/objectbox-dart/releases)
   # if objectbox-android-objectbrowser in android/app/build.gradle has to be updated.
   objectbox: 4.2.0 # Using concrete version as recommended by ObjectBox docs for admin panel setup

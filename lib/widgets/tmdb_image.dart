@@ -1,5 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:transparent_image/transparent_image.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/tmdb_image_provider.dart';
 import '../widgets/netflix_style_loading.dart';
@@ -35,15 +36,24 @@ class _TMDBImageState extends State<TMDBImage> {
   final TMDBImageProvider _imageProvider = TMDBImageProvider();
   String? _imageUrl;
   bool _isLoading = true;
+  SharedPreferences? _prefs;
 
   @override
   void initState() {
     super.initState();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    _prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
     // Set loading to false immediately if we have no TMDB ID and no fallback URL
     // This ensures we show a placeholder right away
     if ((widget.tmdbId == null || widget.tmdbId!.isEmpty) &&
         (widget.fallbackUrl == null || widget.fallbackUrl!.isEmpty)) {
-      _isLoading = false;
+      setState(() {
+        _isLoading = false;
+      });
     } else {
       _loadImage();
     }
@@ -73,6 +83,21 @@ class _TMDBImageState extends State<TMDBImage> {
       _isLoading = true;
     });
 
+    String? cachedUrl;
+    if (widget.tmdbId != null && widget.tmdbId!.isNotEmpty) {
+      cachedUrl = _prefs?.getString(widget.tmdbId!);
+    }
+
+    if (cachedUrl != null) {
+      if (mounted) {
+        setState(() {
+          _imageUrl = cachedUrl;
+          _isLoading = false;
+        });
+      }
+      return;
+    }
+
     try {
       // First try to get the TMDB image
       String? url;
@@ -89,6 +114,10 @@ class _TMDBImageState extends State<TMDBImage> {
                   widget.tmdbId,
                   widget.fallbackUrl,
                 );
+
+        if (url != null && url.isNotEmpty) {
+          await _prefs?.setString(widget.tmdbId!, url);
+        }
       } else if (widget.fallbackUrl != null && widget.fallbackUrl!.isNotEmpty) {
         // If no TMDB ID but we have a fallback, use it
         url = widget.fallbackUrl;
@@ -143,62 +172,55 @@ class _TMDBImageState extends State<TMDBImage> {
       return _buildPlaceholder();
     }
 
-    // Image available - use Stack with loading background and image on top
-    return Stack(
-      children: [
-        // Base loading layer - always visible until image loads
-        const NetflixStyleLoading(
-          width: double.infinity,
-          height: double.infinity,
-        ),
-
-        // Image layer on top that fades in
-        FadeInImage.memoryNetwork(
-          placeholder: kTransparentImage, // Using transparent placeholder
-          image: _imageUrl!,
-          width: double.infinity,
-          height: double.infinity,
-          fit: widget.fit,
-          fadeInDuration: const Duration(milliseconds: 300),
-          fadeInCurve: Curves.easeIn,
-          imageErrorBuilder: (context, error, stackTrace) {
-            // If the image fails to load, try the fallback URL if it's different
-            if (widget.fallbackUrl != null &&
-                widget.fallbackUrl!.isNotEmpty &&
-                _imageUrl != widget.fallbackUrl) {
-              // Schedule a microtask to update the image URL to the fallback
-              Future.microtask(() {
-                if (mounted) {
-                  setState(() {
-                    _imageUrl = widget.fallbackUrl;
-                  });
-                }
+    // Image available - use CachedNetworkImage
+    return CachedNetworkImage(
+      imageUrl: _imageUrl!,
+      width: double.infinity,
+      height: double.infinity,
+      fit: widget.fit,
+      placeholder:
+          (context, url) => const NetflixStyleLoading(
+            width: double.infinity,
+            height: double.infinity,
+          ),
+      errorWidget: (context, url, error) {
+        // If the image fails to load, try the fallback URL if it's different
+        if (widget.fallbackUrl != null &&
+            widget.fallbackUrl!.isNotEmpty &&
+            _imageUrl != widget.fallbackUrl) {
+          // Schedule a microtask to update the image URL to the fallback
+          Future.microtask(() {
+            if (mounted) {
+              setState(() {
+                _imageUrl = widget.fallbackUrl;
               });
-              // Show loading while we switch to fallback
-              return const NetflixStyleLoading(
-                width: double.infinity,
-                height: double.infinity,
-              );
             }
-            // If fallback also fails or there is no fallback, show placeholder
-            return Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.grey[900],
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.broken_image,
-                  color: Colors.white54,
-                  size: 40, // Fixed size icon
-                ),
-              ),
-            );
-          },
-        ),
-      ],
+          });
+          // Show loading while we switch to fallback
+          return const NetflixStyleLoading(
+            width: double.infinity,
+            height: double.infinity,
+          );
+        }
+        // If fallback also fails or there is no fallback, show placeholder
+        return Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.grey[900],
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: const Center(
+            child: Icon(
+              Icons.broken_image,
+              color: Colors.white54,
+              size: 40, // Fixed size icon
+            ),
+          ),
+        );
+      },
+      fadeInDuration: const Duration(milliseconds: 300),
+      fadeOutDuration: const Duration(milliseconds: 300),
     );
   }
 

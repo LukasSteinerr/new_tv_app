@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../models/movie.dart';
 import '../models/tv_series.dart';
@@ -137,18 +138,25 @@ class _MyListScreenState extends State<MyListScreen> {
                             },
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8.0),
-                              child: Image.network(
-                                item.posterUrl ?? item.coverUrl ?? '',
+                              child: CachedNetworkImage(
+                                imageUrl: item.posterUrl ?? item.coverUrl ?? '',
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    color: Colors.grey[800],
-                                    child: const Icon(
-                                      Icons.movie,
-                                      color: Colors.white,
+                                placeholder:
+                                    (context, url) => Container(
+                                      color: Colors.grey[800],
+                                      child: const Icon(
+                                        Icons.movie,
+                                        color: Colors.white,
+                                      ),
                                     ),
-                                  );
-                                },
+                                errorWidget:
+                                    (context, url, error) => Container(
+                                      color: Colors.grey[800],
+                                      child: const Icon(
+                                        Icons.movie,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                               ),
                             ),
                           );
@@ -170,18 +178,25 @@ class _MyListScreenState extends State<MyListScreen> {
                             },
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8.0),
-                              child: Image.network(
-                                item.coverUrl ?? '',
+                              child: CachedNetworkImage(
+                                imageUrl: item.coverUrl ?? '',
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    color: Colors.grey[800],
-                                    child: const Icon(
-                                      Icons.tv,
-                                      color: Colors.white,
+                                placeholder:
+                                    (context, url) => Container(
+                                      color: Colors.grey[800],
+                                      child: const Icon(
+                                        Icons.tv,
+                                        color: Colors.white,
+                                      ),
                                     ),
-                                  );
-                                },
+                                errorWidget:
+                                    (context, url, error) => Container(
+                                      color: Colors.grey[800],
+                                      child: const Icon(
+                                        Icons.tv,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                               ),
                             ),
                           );

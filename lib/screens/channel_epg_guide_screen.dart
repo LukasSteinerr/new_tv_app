@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import '../models/channel.dart';
@@ -72,12 +73,12 @@ class _ChannelEpgGuideScreenState extends State<ChannelEpgGuideScreen> {
               widget.channel.logoUrl!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(right: 16.0),
-              child: Image.network(
-                widget.channel.logoUrl!,
+              child: CachedNetworkImage(
+                imageUrl: widget.channel.logoUrl!,
                 width: 36,
                 height: 36,
-                errorBuilder:
-                    (context, error, stackTrace) => const Icon(Icons.tv),
+                placeholder: (context, url) => const Icon(Icons.tv),
+                errorWidget: (context, url, error) => const Icon(Icons.tv),
               ),
             ),
         ],
