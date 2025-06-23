@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // Import for kDebugMode if needed later
 
@@ -96,6 +97,7 @@ class _TimeSliderState extends State<TimeSlider> {
                           .clamp(0, 23);
                       int newSelectedHour = displayHoursOrder[touchedIndex];
                       if (newSelectedHour != widget.selectedTime.hour) {
+                        HapticFeedback.lightImpact();
                         widget.onTimeChange(
                           TimeOfDay(
                             hour: newSelectedHour,
@@ -127,6 +129,7 @@ class _TimeSliderState extends State<TimeSlider> {
                           .clamp(0, 23);
                       int newSelectedHour = displayHoursOrder[touchedIndex];
                       if (newSelectedHour != widget.selectedTime.hour) {
+                        HapticFeedback.lightImpact();
                         widget.onTimeChange(
                           TimeOfDay(
                             hour: newSelectedHour,
