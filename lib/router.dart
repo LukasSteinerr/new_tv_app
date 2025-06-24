@@ -170,18 +170,20 @@ class AppRouter {
         GoRoute(
           path: '/category/:categoryId',
           builder: (context, state) {
-            final category = state.extra as Category?;
+            final extra = state.extra as Map<String, dynamic>?;
 
-            if (category == null) {
+            if (extra == null) {
               return const Scaffold(
-                body: Center(child: Text('Category not found')),
+                body: Center(child: Text('Category data not found')),
               );
             }
+            final category = extra['category'] as Category;
+            final items = extra['items'] as List<dynamic>;
 
             // In real implementation, you would fetch items by category ID
             return CategoryContentScreen(
               category: category,
-              items: const [], // This would be populated from the route
+              items: items, // This would be populated from the route
               playlistService: playlistService,
             );
           },

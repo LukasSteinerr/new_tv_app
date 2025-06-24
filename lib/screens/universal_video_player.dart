@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import '../models/movie.dart';
 import '../models/tv_episode.dart';
 import '../models/channel.dart';
-import '../widgets/time_slider_widget.dart';
 
 class UniversalVideoPlayer extends StatefulWidget {
   // Content parameters - only one of these should be provided

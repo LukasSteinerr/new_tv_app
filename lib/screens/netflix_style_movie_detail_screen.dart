@@ -8,9 +8,8 @@ import '../models/movie.dart';
 import '../services/objectbox_service.dart';
 import '../services/tmdb_image_provider.dart';
 import '../services/tmdb_service.dart'; // Import TMDBService
-import 'universal_video_player.dart';
 import '../services/download_service.dart';
-import 'all_actors_screen.dart'; // Import the new screen
+// Import the new screen
 import 'package:go_router/go_router.dart';
 
 class NetflixStyleMovieDetailScreen extends StatefulWidget {
@@ -413,14 +412,7 @@ class _NetflixStyleMovieDetailScreenState
                         if (index == 10) {
                           return GestureDetector(
                             onTap: () {
-                              context.push(
-                                '/actors',
-                                extra:
-                                    widget.movie.cast
-                                        ?.map((c) => c.name)
-                                        .toList() ??
-                                    [],
-                              );
+                              context.push('/actors', extra: widget.movie);
                             },
                             child: Container(
                               width: 80,

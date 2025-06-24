@@ -5,7 +5,6 @@ import '../models/playlist.dart';
 import '../models/channel.dart';
 import '../models/category.dart';
 import '../services/playlist_service.dart';
-import 'universal_video_player.dart';
 import 'xtream_playlist_screen.dart';
 
 class PlaylistDetailScreen extends StatelessWidget {

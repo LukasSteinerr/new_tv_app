@@ -36,7 +36,7 @@ class _CategoryContentScreenState extends State<CategoryContentScreen> {
           widget.items.isEmpty
               ? const Center(
                 child: Text(
-                  'No content in this category',
+                  'No items found for this category.',
                   style: TextStyle(color: Colors.white),
                 ),
               )

@@ -3,9 +3,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:go_router/go_router.dart';
 import '../models/playlist.dart';
 import '../services/playlist_service.dart';
-import 'add_playlist_screen.dart';
 // import 'download_screen.dart'; // Removed import for DownloadScreen
-import 'playlist_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final PlaylistService playlistService;

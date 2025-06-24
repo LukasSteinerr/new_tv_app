@@ -7,8 +7,6 @@ import '../services/playlist_service.dart';
 import '../widgets/content_carousel.dart';
 import '../widgets/tv_series_card.dart';
 import '../widgets/featured_content.dart';
-import 'netflix_style_tv_series_detail_screen.dart';
-import 'category_content_screen.dart';
 
 class TvSeriesScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -129,7 +127,10 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
   }
 
   void _navigateToSeeAll(Category category, List<TvSeries> seriesList) {
-    context.push('/category/${category.id}', extra: category);
+    context.push(
+      '/category/${category.id}',
+      extra: {'category': category, 'items': seriesList},
+    );
   }
 
   // Copied and adapted from UI/lib/home_screen.dart / movies_screen.dart
