@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 // Will be used for BackdropFilter if we keep parts of old FeaturedContent
 import '../models/playlist.dart';
 import '../models/movie.dart';
@@ -126,26 +127,11 @@ class _MoviesScreenState extends State<MoviesScreen> {
   }
 
   void _navigateToMovie(Movie movie) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => NetflixStyleMovieDetailScreen(movie: movie),
-      ),
-    );
+    context.push('/movie/${movie.tmdbId ?? movie.id}', extra: movie);
   }
 
   void _navigateToSeeAll(Category category, List<Movie> movies) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) => CategoryContentScreen(
-              category: category,
-              items: movies,
-              playlistService: widget.playlistService,
-            ),
-      ),
-    );
+    context.push('/category/${category.id}', extra: category);
   }
 
   // Copied and adapted from UI/lib/home_screen.dart
@@ -212,7 +198,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => context.pop(),
           ),
           title: Text(
             widget.playlist.name,

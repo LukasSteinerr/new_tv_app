@@ -1,10 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
-import 'dart:async';
+import 'package:go_router/go_router.dart';
 import '../models/movie.dart';
 import '../models/tv_episode.dart';
 import '../models/channel.dart';
+import '../widgets/time_slider_widget.dart';
 
 class UniversalVideoPlayer extends StatefulWidget {
   // Content parameters - only one of these should be provided
@@ -161,8 +163,7 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
                           : 'Disable',
                     ),
                     onTap: () {
-                      Navigator.pop(
-                        context,
+                      context.pop(
                         index < subtitleTracks.keys.length
                             ? subtitleTracks.keys.elementAt(index)
                             : -1,
@@ -202,7 +203,7 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
                     return ListTile(
                       title: const Text('Play on device'),
                       onTap: () {
-                        Navigator.pop(context, null);
+                        context.pop(null);
                       },
                     );
                   }
@@ -211,7 +212,7 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
                   return ListTile(
                     title: Text(name ?? 'Unknown device'),
                     onTap: () {
-                      Navigator.pop(context, name);
+                      context.pop(name);
                     },
                   );
                 },
@@ -331,7 +332,7 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
                       ),
                       IconButton(
                         icon: const Icon(Icons.close, color: Colors.white),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => context.pop(),
                       ),
                     ],
                   ),

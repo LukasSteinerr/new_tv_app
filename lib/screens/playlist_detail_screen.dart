@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:go_router/go_router.dart';
 import '../models/playlist.dart';
 import '../models/channel.dart';
 import '../models/category.dart';
@@ -140,15 +141,9 @@ class _M3uPlaylistScreenState extends State<_M3uPlaylistScreen>
               category.id,
             );
             if (mounted) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) => CategoryChannelsScreen(
-                        category: category,
-                        channels: channels,
-                      ),
-                ),
+              context.push(
+                '/category-channels/${category.id}',
+                extra: {'category': category, 'channels': channels},
               );
             }
           },
@@ -224,12 +219,7 @@ class ChannelListTile extends StatelessWidget {
               ? Text(channel.category.target!.name)
               : null,
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UniversalVideoPlayer(channel: channel),
-          ),
-        );
+        context.push('/player', extra: channel);
       },
     );
   }

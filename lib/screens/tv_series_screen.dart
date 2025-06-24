@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../models/playlist.dart';
 import '../models/tv_series.dart';
 import '../models/category.dart';
@@ -124,30 +125,11 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
   }
 
   void _navigateToSeries(TvSeries series) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) => NetflixStyleTvSeriesDetailScreen(
-              playlistService: widget.playlistService,
-              series: series,
-            ),
-      ),
-    );
+    context.push('/series/${series.tmdbId ?? series.id}', extra: series);
   }
 
   void _navigateToSeeAll(Category category, List<TvSeries> seriesList) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) => CategoryContentScreen(
-              category: category,
-              items: seriesList,
-              playlistService: widget.playlistService,
-            ),
-      ),
-    );
+    context.push('/category/${category.id}', extra: category);
   }
 
   // Copied and adapted from UI/lib/home_screen.dart / movies_screen.dart
@@ -215,7 +197,7 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => context.pop(),
           ),
           title: Text(
             widget.playlist.name,

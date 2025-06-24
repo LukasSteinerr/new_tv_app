@@ -4,7 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logging/logging.dart'; // Import logging
 import 'services/objectbox_service.dart';
 import 'services/playlist_service.dart';
-import 'screens/home_screen.dart';
+import 'router.dart';
 import 'package:background_downloader/background_downloader.dart';
 
 final _log = Logger('MainApp'); // Add logger
@@ -84,11 +84,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    final router = AppRouter.createRouter(playlistService);
+
+    return MaterialApp.router(
       title: 'IPTV Player',
       theme: ThemeData.dark(),
       darkTheme: ThemeData.dark(),
-      home: HomeScreen(playlistService: playlistService),
+      routerConfig: router,
     );
   }
 }

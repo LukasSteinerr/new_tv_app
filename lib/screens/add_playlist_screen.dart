@@ -3,6 +3,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'dart:ui'; // For ImageFilter
 import '../models/playlist.dart';
 import '../services/playlist_service.dart';
+import 'package:go_router/go_router.dart';
 
 class AddPlaylistScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -105,7 +106,7 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
             ),
           );
 
-          Navigator.pop(context, true);
+          context.pop(true);
         }
       } catch (e) {
         setState(() {
@@ -307,7 +308,7 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
                               Icons.arrow_back,
                               color: Colors.white,
                             ),
-                            onPressed: () => Navigator.of(context).pop(),
+                            onPressed: () => context.pop(),
                           ),
                           const SizedBox(width: 8),
                           // Title

@@ -13,11 +13,13 @@ import '../widgets/xtream_bottom_nav_bar.dart';
 class XtreamPlaylistScreen extends StatefulWidget {
   final PlaylistService playlistService;
   final Playlist playlist;
+  final int initialTabIndex;
 
   const XtreamPlaylistScreen({
     super.key,
     required this.playlistService,
     required this.playlist,
+    this.initialTabIndex = 0,
   });
 
   @override
@@ -25,7 +27,7 @@ class XtreamPlaylistScreen extends StatefulWidget {
 }
 
 class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
-  int _currentIndex = 0;
+  late int _currentIndex;
   late List<Widget> _screens;
   bool _isLoading = true;
   ObjectBoxService? _objectBoxService;
@@ -36,6 +38,7 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
   @override
   void initState() {
     super.initState();
+    _currentIndex = widget.initialTabIndex;
     _initializeServices();
   }
 
