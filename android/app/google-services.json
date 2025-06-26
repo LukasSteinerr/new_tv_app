@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "656694233391",
+    "project_id": "iptv-2ab34",
+    "storage_bucket": "iptv-2ab34.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:656694233391:android:208d6e480e91e1a67c39da",
+        "android_client_info": {
+          "package_name": "com.example.tv"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "656694233391-8urs02t58t3pmk37t7ret1jeef2775n6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9LEsGOn2vtvH8UdSy1Js39jbhCo853sc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "656694233391-8urs02t58t3pmk37t7ret1jeef2775n6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "656694233391-3h0pp8ccmr1kci6smnoe1jr3tusaecd7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.tv"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

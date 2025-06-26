@@ -61,6 +61,8 @@ dependencies:
   flutter_isolate: ^2.1.0
   scrollable_positioned_list: ^0.3.8
   flutter_rating: ^2.0.2
+  firebase_crashlytics: ^4.3.7
+  firebase_analytics: ^11.5.0
 
 dev_dependencies:
   flutter_test:

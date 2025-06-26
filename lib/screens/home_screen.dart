@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import '../models/playlist.dart';
 import '../services/playlist_service.dart';
 import 'add_playlist_screen.dart';
@@ -199,7 +200,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('IPTV Playlists')),
+      appBar: AppBar(
+        title: const Text('IPTV Playlists'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.download),
+            onPressed: () {
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => DownloadScreen()),
+              // );
+            },
+          ),
+        ],
+      ),
       body:
           _isLoading
               ? Center(
