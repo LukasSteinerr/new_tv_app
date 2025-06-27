@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../models/movie.dart';
 import '../models/tv_series.dart';
@@ -6,6 +5,7 @@ import '../services/objectbox_service.dart';
 import 'netflix_style_movie_detail_screen.dart';
 import 'netflix_style_tv_series_detail_screen.dart';
 import '../services/playlist_service.dart';
+import '../widgets/tmdb_image.dart';
 
 class MyListScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -147,22 +147,13 @@ class _MyListScreenState extends State<MyListScreen>
                 ),
               ).then((_) => _loadMyList());
             },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: CachedNetworkImage(
-                imageUrl: item.posterUrl ?? item.coverUrl ?? '',
-                fit: BoxFit.cover,
-                placeholder:
-                    (context, url) => Container(
-                      color: Colors.grey[800],
-                      child: const Icon(Icons.movie, color: Colors.white),
-                    ),
-                errorWidget:
-                    (context, url, error) => Container(
-                      color: Colors.grey[800],
-                      child: const Icon(Icons.movie, color: Colors.white),
-                    ),
-              ),
+            child: TMDBImage(
+              tmdbId: item.tmdbId,
+              fallbackUrl: item.coverUrl,
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.cover,
+              isMovie: true,
             ),
           );
         } else if (item is TvSeries) {
@@ -179,22 +170,13 @@ class _MyListScreenState extends State<MyListScreen>
                 ),
               ).then((_) => _loadMyList());
             },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: CachedNetworkImage(
-                imageUrl: item.coverUrl ?? '',
-                fit: BoxFit.cover,
-                placeholder:
-                    (context, url) => Container(
-                      color: Colors.grey[800],
-                      child: const Icon(Icons.tv, color: Colors.white),
-                    ),
-                errorWidget:
-                    (context, url, error) => Container(
-                      color: Colors.grey[800],
-                      child: const Icon(Icons.tv, color: Colors.white),
-                    ),
-              ),
+            child: TMDBImage(
+              tmdbId: item.tmdbId,
+              fallbackUrl: item.coverUrl,
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.cover,
+              isMovie: false,
             ),
           );
         }
