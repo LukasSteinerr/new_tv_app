@@ -15,16 +15,33 @@ class MyListScreen extends StatefulWidget {
   _MyListScreenState createState() => _MyListScreenState();
 }
 
-class _MyListScreenState extends State<MyListScreen> {
+class _MyListScreenState extends State<MyListScreen>
+    with SingleTickerProviderStateMixin {
   late final ObjectBoxService _objectBoxService;
-  List<dynamic> _myList = [];
+  List<Movie> _myMovies = [];
+  List<TvSeries> _mySeries = [];
   bool _isLoading = true;
-  String _selectedFilter = 'All';
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(_handleTabSelection);
     _initializeServices();
+  }
+
+  @override
+  void dispose() {
+    _tabController.removeListener(_handleTabSelection);
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _handleTabSelection() {
+    setState(() {
+      // Re-renders the UI to show the correct list based on the selected tab
+    });
   }
 
   Future<void> _initializeServices() async {
@@ -33,180 +50,156 @@ class _MyListScreenState extends State<MyListScreen> {
   }
 
   void _loadMyList() {
-    final movies =
-        _objectBoxService.getAllMovies().where((m) => m.myList == 1).toList();
-    final series =
-        _objectBoxService.getAllTvSeries().where((s) => s.myList == 1).toList();
     setState(() {
-      if (_selectedFilter == 'All') {
-        _myList = [...movies, ...series];
-      } else if (_selectedFilter == 'Movies') {
-        _myList = movies;
-      } else {
-        _myList = series;
-      }
+      _myMovies =
+          _objectBoxService.getAllMovies().where((m) => m.myList == 1).toList();
+      _mySeries =
+          _objectBoxService
+              .getAllTvSeries()
+              .where((s) => s.myList == 1)
+              .toList();
       _isLoading = false;
     });
   }
 
+  List<dynamic> _getCurrentList() {
+    switch (_tabController.index) {
+      case 0:
+        return [..._myMovies, ..._mySeries];
+      case 1:
+        return _myMovies;
+      case 2:
+        return _mySeries;
+      default:
+        return [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final currentList = _isLoading ? [] : _getCurrentList();
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         title: const Text('My List'),
         backgroundColor: Colors.black,
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.red,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.grey,
+          tabs: [
+            Tab(text: 'All (${_myMovies.length + _mySeries.length})'),
+            Tab(text: 'Movies (${_myMovies.length})'),
+            Tab(text: 'TV Shows (${_mySeries.length})'),
+          ],
+        ),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ToggleButtons(
-              isSelected: [
-                _selectedFilter == 'All',
-                _selectedFilter == 'Movies',
-                _selectedFilter == 'TV Shows',
-              ],
-              onPressed: (index) {
-                setState(() {
-                  if (index == 0) {
-                    _selectedFilter = 'All';
-                  } else if (index == 1) {
-                    _selectedFilter = 'Movies';
-                  } else {
-                    _selectedFilter = 'TV Shows';
-                  }
-                  _loadMyList();
-                });
-              },
-              color: Colors.white,
-              selectedColor: Colors.black,
-              fillColor: Colors.white,
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : currentList.isEmpty
+              ? const Center(
+                child: Text(
+                  'Your list is empty.',
+                  style: TextStyle(color: Colors.white),
+                ),
+              )
+              : TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildGrid(currentList), // All
+                  _buildGrid(_myMovies), // Movies
+                  _buildGrid(_mySeries), // TV Shows
+                ],
+              ),
+    );
+  }
+
+  Widget _buildGrid(List<dynamic> items) {
+    if (items.isEmpty) {
+      return const Center(
+        child: Text(
+          'Nothing in this section.',
+          style: TextStyle(color: Colors.white70),
+        ),
+      );
+    }
+    return GridView.builder(
+      padding: const EdgeInsets.all(8.0),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 8.0,
+        mainAxisSpacing: 8.0,
+        childAspectRatio: 2 / 3,
+      ),
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final item = items[index];
+        if (item is Movie) {
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => NetflixStyleMovieDetailScreen(movie: item),
+                ),
+              ).then((_) => _loadMyList());
+            },
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
-              children: const [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text('All'),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text('Movies'),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text('TV Shows'),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child:
-                _isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : _myList.isEmpty
-                    ? const Center(
-                      child: Text(
-                        'Your list is empty.',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    )
-                    : GridView.builder(
-                      padding: const EdgeInsets.all(8.0),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 8.0,
-                            mainAxisSpacing: 8.0,
-                            childAspectRatio: 2 / 3,
-                          ),
-                      itemCount: _myList.length,
-                      itemBuilder: (context, index) {
-                        final item = _myList[index];
-                        if (item is Movie) {
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) =>
-                                          NetflixStyleMovieDetailScreen(
-                                            movie: item,
-                                          ),
-                                ),
-                              ).then((_) => _loadMyList());
-                            },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: CachedNetworkImage(
-                                imageUrl: item.posterUrl ?? item.coverUrl ?? '',
-                                fit: BoxFit.cover,
-                                placeholder:
-                                    (context, url) => Container(
-                                      color: Colors.grey[800],
-                                      child: const Icon(
-                                        Icons.movie,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                errorWidget:
-                                    (context, url, error) => Container(
-                                      color: Colors.grey[800],
-                                      child: const Icon(
-                                        Icons.movie,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                              ),
-                            ),
-                          );
-                        } else if (item is TvSeries) {
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) =>
-                                          NetflixStyleTvSeriesDetailScreen(
-                                            series: item,
-                                            playlistService:
-                                                widget.playlistService,
-                                          ),
-                                ),
-                              ).then((_) => _loadMyList());
-                            },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: CachedNetworkImage(
-                                imageUrl: item.coverUrl ?? '',
-                                fit: BoxFit.cover,
-                                placeholder:
-                                    (context, url) => Container(
-                                      color: Colors.grey[800],
-                                      child: const Icon(
-                                        Icons.tv,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                errorWidget:
-                                    (context, url, error) => Container(
-                                      color: Colors.grey[800],
-                                      child: const Icon(
-                                        Icons.tv,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                              ),
-                            ),
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      },
+              child: CachedNetworkImage(
+                imageUrl: item.posterUrl ?? item.coverUrl ?? '',
+                fit: BoxFit.cover,
+                placeholder:
+                    (context, url) => Container(
+                      color: Colors.grey[800],
+                      child: const Icon(Icons.movie, color: Colors.white),
                     ),
-          ),
-        ],
-      ),
+                errorWidget:
+                    (context, url, error) => Container(
+                      color: Colors.grey[800],
+                      child: const Icon(Icons.movie, color: Colors.white),
+                    ),
+              ),
+            ),
+          );
+        } else if (item is TvSeries) {
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => NetflixStyleTvSeriesDetailScreen(
+                        series: item,
+                        playlistService: widget.playlistService,
+                      ),
+                ),
+              ).then((_) => _loadMyList());
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: CachedNetworkImage(
+                imageUrl: item.coverUrl ?? '',
+                fit: BoxFit.cover,
+                placeholder:
+                    (context, url) => Container(
+                      color: Colors.grey[800],
+                      child: const Icon(Icons.tv, color: Colors.white),
+                    ),
+                errorWidget:
+                    (context, url, error) => Container(
+                      color: Colors.grey[800],
+                      child: const Icon(Icons.tv, color: Colors.white),
+                    ),
+              ),
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      },
     );
   }
 }

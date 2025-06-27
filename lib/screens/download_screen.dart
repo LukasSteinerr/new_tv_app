@@ -411,14 +411,8 @@ class _DownloadScreenState extends State<DownloadScreen>
           labelColor: Colors.white,
           unselectedLabelColor: Colors.grey,
           tabs: [
-            Tab(
-              icon: const Icon(Icons.movie),
-              text: 'Movies (${combinedMovieDownloads.length})',
-            ),
-            Tab(
-              icon: const Icon(Icons.tv),
-              text: 'TV Shows (${tvShowDownloads.length})',
-            ),
+            Tab(text: 'Movies (${combinedMovieDownloads.length})'),
+            Tab(text: 'TV Shows (${tvShowDownloads.length})'),
           ],
         ),
       ),
