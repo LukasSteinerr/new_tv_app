@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart' as xml_parser; // Aliased to avoid conflict
+import 'package:flutter/foundation.dart' hide Category; // Added for compute
 import '../models/epg_channel_info.dart';
 import '../models/tv_program.dart'; // Added TvProgram model
 import '../services/objectbox_service.dart';
 import '../services/epg_service.dart'; // Added EpgService
+import '../services/epg_parser_service.dart'; // Added EpgParserService
 import '../models/playlist.dart';
 import '../models/channel.dart';
 import '../models/category.dart';
@@ -388,68 +390,33 @@ class XtreamService {
     print('Fetching EPG data from: $epgUrl');
 
     try {
-      final response = await http.get(Uri.parse(epgUrl));
-      if (response.statusCode == 200) {
-        final xmlString = response.body;
-        final document = xml_parser.XmlDocument.parse(xmlString);
+      final parsedData = await compute(
+        EpgParserService.parseEpgDataIsolate,
+        epgUrl,
+      );
 
-        // Parse and store EpgChannelInfo
-        final channelsXml = document.findAllElements('channel');
-        final uniqueEpgInfosMap = <String, EpgChannelInfo>{};
+      final epgChannelInfos =
+          parsedData['epgChannelInfos'] as List<EpgChannelInfo>;
+      final tvPrograms = parsedData['tvPrograms'] as List<TvProgram>;
 
-        for (final channelElement in channelsXml) {
-          final xmlTvId = channelElement.getAttribute('id');
-          final displayNameElement =
-              channelElement.findElements('display-name').firstOrNull;
-          final iconElement = channelElement.findElements('icon').firstOrNull;
-
-          if (xmlTvId != null &&
-              xmlTvId.isNotEmpty &&
-              displayNameElement != null) {
-            final displayName = displayNameElement.innerText;
-            final iconUrl = iconElement?.getAttribute('src');
-            uniqueEpgInfosMap[xmlTvId] = EpgChannelInfo(
-              xmlTvId: xmlTvId,
-              displayName: displayName,
-              iconUrl: iconUrl,
-            );
-          }
-        }
-        final epgChannelInfos = uniqueEpgInfosMap.values.toList();
-        if (epgChannelInfos.isNotEmpty) {
-          await _objectBoxService.storeEpgChannelInfos(epgChannelInfos);
-          print(
-            'Successfully stored ${epgChannelInfos.length} unique EPG channels.',
-          );
-        } else {
-          print(
-            'No EPG channel information found in the XML for EpgChannelInfo.',
-          );
-        }
-
-        // Parse and store TvProgram data
-        // First, clear existing programs for this playlist to avoid duplicates if EPG is refetched.
-        // This assumes all programs from an EPG source are fetched at once.
-        // If your EPG source provides partial updates, this strategy might need adjustment.
-        // For simplicity, we'll clear all programs. If you associate programs with playlists,
-        // you'd clear programs for the specific playlist.
-        _objectBoxService
-            .deleteAllTvPrograms(); // Consider if this is too broad.
-        // You might want to delete programs only related to the channels in this EPG.
-
-        final List<TvProgram> tvPrograms = _epgService.parseTvProgramsFromXml(
-          xmlString,
+      if (epgChannelInfos.isNotEmpty) {
+        await _objectBoxService.storeEpgChannelInfos(epgChannelInfos);
+        print(
+          'Successfully stored ${epgChannelInfos.length} unique EPG channels.',
         );
-        if (tvPrograms.isNotEmpty) {
-          _objectBoxService.addTvPrograms(tvPrograms);
-          print('Successfully stored ${tvPrograms.length} TV programs.');
-        } else {
-          print('No TV program data found in the XML.');
-        }
       } else {
         print(
-          'Failed to load EPG data: ${response.statusCode} ${response.reasonPhrase}',
+          'No EPG channel information found in the XML for EpgChannelInfo.',
         );
+      }
+
+      _objectBoxService.deleteAllTvPrograms();
+
+      if (tvPrograms.isNotEmpty) {
+        _objectBoxService.addTvPrograms(tvPrograms);
+        print('Successfully stored ${tvPrograms.length} TV programs.');
+      } else {
+        print('No TV program data found in the XML.');
       }
     } catch (e) {
       print('Error parsing EPG XML or storing data: $e');

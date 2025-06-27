@@ -9,6 +9,7 @@ import '../widgets/movie_card.dart';
 import '../widgets/featured_content.dart';
 import 'netflix_style_movie_detail_screen.dart';
 import 'category_content_screen.dart';
+import 'universal_video_player.dart';
 
 class MoviesScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -134,6 +135,21 @@ class _MoviesScreenState extends State<MoviesScreen> {
     );
   }
 
+  void _playMovie(Movie movie) {
+    if (movie.streamUrl.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => UniversalVideoPlayer(movie: movie),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No stream URL found for this movie.')),
+      );
+    }
+  }
+
   void _navigateToSeeAll(Category category, List<Movie> movies) {
     Navigator.push(
       context,
@@ -239,14 +255,14 @@ class _MoviesScreenState extends State<MoviesScreen> {
         String imageUrl =
             movie.featuredPosterUrl ?? movie.posterUrl ?? movie.coverUrl ?? '';
         featuredImageUrls.add(imageUrl);
-        featuredPlayActions.add(() => _navigateToMovie(movie));
+        featuredPlayActions.add(() => _playMovie(movie));
         featuredDetailsActions.add(() => _navigateToMovie(movie));
       }
     }
     // Fallback if TMDB movies are not available but a _featuredMovie (from playlist) exists
     else if (_featuredMovie != null) {
       featuredImageUrls.add(_featuredMovie!.coverUrl ?? '');
-      featuredPlayActions.add(() => _navigateToMovie(_featuredMovie!));
+      featuredPlayActions.add(() => _playMovie(_featuredMovie!));
       featuredDetailsActions.add(() => _navigateToMovie(_featuredMovie!));
     }
 

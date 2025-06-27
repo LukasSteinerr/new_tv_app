@@ -8,6 +8,7 @@ import '../widgets/tv_series_card.dart';
 import '../widgets/featured_content.dart';
 import 'netflix_style_tv_series_detail_screen.dart';
 import 'category_content_screen.dart';
+import 'universal_video_player.dart';
 
 class TvSeriesScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -136,6 +137,30 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
     );
   }
 
+  void _playFirstEpisode(TvSeries series) async {
+    try {
+      final episodes = await widget.playlistService.getTvSeriesEpisodes(series);
+      if (episodes.isNotEmpty && episodes.first.streamUrl.isNotEmpty) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UniversalVideoPlayer(episode: episodes.first),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No playable episodes found for this series.'),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error loading episodes: $e')));
+    }
+  }
+
   void _navigateToSeeAll(Category category, List<TvSeries> seriesList) {
     Navigator.push(
       context,
@@ -244,14 +269,14 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
         // Prefer featuredPosterUrl for featured content, then coverUrl.
         String imageUrl = series.featuredPosterUrl ?? series.coverUrl ?? '';
         featuredImageUrls.add(imageUrl);
-        featuredPlayActions.add(() => _navigateToSeries(series));
+        featuredPlayActions.add(() => _playFirstEpisode(series));
         featuredDetailsActions.add(() => _navigateToSeries(series));
       }
     }
     // Fallback if TMDB series are not available but a _featuredSeriesToShow (from playlist) exists
     else if (_featuredSeriesToShow != null) {
       featuredImageUrls.add(_featuredSeriesToShow!.coverUrl ?? '');
-      featuredPlayActions.add(() => _navigateToSeries(_featuredSeriesToShow!));
+      featuredPlayActions.add(() => _playFirstEpisode(_featuredSeriesToShow!));
       featuredDetailsActions.add(
         () => _navigateToSeries(_featuredSeriesToShow!),
       );
