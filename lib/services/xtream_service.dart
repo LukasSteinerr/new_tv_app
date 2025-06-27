@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:xml/xml.dart' as xml_parser; // Aliased to avoid conflict
+// Aliased to avoid conflict
 import 'package:flutter/foundation.dart' hide Category; // Added for compute
 import '../models/epg_channel_info.dart';
 import '../models/tv_program.dart'; // Added TvProgram model

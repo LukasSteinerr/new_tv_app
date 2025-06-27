@@ -64,6 +64,7 @@ class DownloadService {
             'progress': progress,
             'status': update.status,
             'statusString': update.status.toString().split('.').last,
+            'directory': update.task.directory, // Add directory info
           });
         }
       } else if (update is TaskProgressUpdate) {
@@ -76,6 +77,7 @@ class DownloadService {
           'progress': update.progress,
           'status': TaskStatus.running,
           'statusString': 'running',
+          'directory': update.task.directory, // Add directory info
         });
       }
     });
@@ -283,6 +285,7 @@ class DownloadService {
             'progress': record.progress,
             'status': record.status,
             'statusString': record.status.toString().split('.').last,
+            'directory': record.task.directory, // Add directory info
           };
           allDownloads.add(downloadData);
 
