@@ -246,15 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('IPTV Playlists'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.download),
-            onPressed: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => DownloadScreen()),
-              // );
-            },
-          ),
+          // The download button has been removed from here.
         ],
       ),
       body:

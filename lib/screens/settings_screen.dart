@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:background_downloader/background_downloader.dart';
 import '../models/playlist.dart';
 import '../services/playlist_service.dart';
+import '../services/download_service.dart';
 import 'add_playlist_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -206,6 +208,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const Divider(),
           ListTile(
+            leading: const Icon(Icons.delete_forever, color: Colors.red),
+            title: const Text('Delete Download History'),
+            subtitle: const Text('Remove all download records'),
+            onTap: _deleteAllDownloads,
+          ),
+          const Divider(),
+          ListTile(
             leading: const Icon(Icons.info),
             title: const Text('Playlist Details'),
             subtitle: Column(
@@ -241,5 +250,64 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   String _formatDate(DateTime dateTime) {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
+
+  Future<void> _deleteAllDownloads() async {
+    final downloadService = DownloadService();
+    final count = (await downloadService.getAllDownloads()).length;
+    if (count == 0) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No download history to delete.'),
+            backgroundColor: Colors.blue,
+          ),
+        );
+      }
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: Colors.grey[900],
+            title: const Text(
+              'Delete All Downloads',
+              style: TextStyle(color: Colors.white),
+            ),
+            content: Text(
+              'Are you sure you want to delete all $count download records? This action cannot be undone.',
+              style: const TextStyle(color: Colors.white70),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('No', style: TextStyle(color: Colors.grey)),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+    );
+
+    if (confirmed == true) {
+      final records = await FileDownloader().database.allRecords();
+      final numDeleted = records.length;
+      await FileDownloader().database.deleteAllRecords();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$numDeleted download records deleted successfully.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    }
   }
 }

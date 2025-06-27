@@ -398,9 +398,8 @@ class _DownloadScreenState extends State<DownloadScreen>
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.delete_forever),
-          tooltip: 'Delete all download history',
-          onPressed: _deleteAllDownloads,
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text('Downloads'),
         backgroundColor: Colors.black,
