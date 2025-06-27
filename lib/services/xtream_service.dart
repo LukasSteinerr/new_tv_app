@@ -413,7 +413,7 @@ class XtreamService {
       _objectBoxService.deleteAllTvPrograms();
 
       if (tvPrograms.isNotEmpty) {
-        _objectBoxService.addTvPrograms(tvPrograms);
+        await _objectBoxService.addTvProgramsWithYielding(tvPrograms);
         print('Successfully stored ${tvPrograms.length} TV programs.');
       } else {
         print('No TV program data found in the XML.');

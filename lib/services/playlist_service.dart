@@ -34,85 +34,46 @@ class PlaylistService {
   Future<void> refreshPlaylist(Playlist playlist) async {
     Map<String, dynamic> result;
 
-    // Delete existing data for this playlist
-    final existingCategories = _objectBoxService.getCategoriesByPlaylist(
-      playlist.id,
-    );
-    for (final category in existingCategories) {
-      _objectBoxService.deleteCategory(category.id);
-    }
+    // Delete existing data for this playlist with yielding
+    await _deleteExistingDataWithYielding(playlist);
 
-    final existingChannels = _objectBoxService.getChannelsByPlaylist(
-      playlist.id,
-    );
-    for (final channel in existingChannels) {
-      _objectBoxService.deleteChannel(channel.id);
-    }
-
-    // Delete movies if they exist
-    try {
-      final existingMovies = _objectBoxService.getMoviesByPlaylist(playlist.id);
-      for (final movie in existingMovies) {
-        _objectBoxService.deleteMovie(movie.id);
-      }
-    } catch (e) {
-      // Ignore if movies don't exist yet
-    }
-
-    // Delete TV series if they exist
-    try {
-      final existingTvSeries = _objectBoxService.getTvSeriesByPlaylist(
-        playlist.id,
-      );
-      for (final series in existingTvSeries) {
-        _objectBoxService.deleteTvSeries(series.id);
-      }
-    } catch (e) {
-      // Ignore if TV series don't exist yet
-    }
+    // Add a yield point to allow UI updates
+    await Future.delayed(const Duration(milliseconds: 10));
 
     // Fetch new data based on playlist type
     if (playlist.isM3u) {
       result = await _m3uService.parseM3uPlaylist(playlist);
 
-      // Save new categories and channels
-      final categories = result['categories'] as List<Category>;
-      _objectBoxService.addCategories(categories);
-
-      final channels = result['channels'] as List<Channel>;
-      _objectBoxService.addChannels(channels);
+      // Save new categories and channels with yielding
+      await _saveCategoriesWithYielding(result['categories'] as List<Category>);
+      await _saveChannelsWithYielding(result['channels'] as List<Channel>);
     } else {
       // For Xtream playlists, we get more content types
       result = await _xtreamService.fetchXtreamData(playlist);
 
-      // Save live TV categories and channels
-      final liveCategories = result['categories'] as List<Category>;
-      _objectBoxService.addCategories(liveCategories);
+      // Save live TV categories and channels with yielding
+      await _saveCategoriesWithYielding(result['categories'] as List<Category>);
+      await _saveChannelsWithYielding(result['channels'] as List<Channel>);
 
-      final channels = result['channels'] as List<Channel>;
-      _objectBoxService.addChannels(channels);
-
-      // Save movie categories and movies
+      // Save movie categories and movies with yielding
       if (result.containsKey('movieCategories') &&
           result.containsKey('movies')) {
-        final movieCategories = result['movieCategories'] as List<Category>;
-        _objectBoxService.addCategories(movieCategories);
-
-        final movies = result['movies'] as List<Movie>;
-        _objectBoxService.addMovies(movies);
+        await _saveCategoriesWithYielding(
+          result['movieCategories'] as List<Category>,
+        );
+        await _saveMoviesWithYielding(result['movies'] as List<Movie>);
 
         // Match TMDB popular movies with local movies after movies are saved
         await _matchTmdbPopularMovies(playlist.id);
       }
 
-      // Save series categories and series
+      // Save series categories and series with yielding
       if (result.containsKey('seriesCategories') &&
           result.containsKey('series')) {
-        final seriesCategories = result['seriesCategories'] as List<Category>;
-        _objectBoxService.addCategories(seriesCategories);
-
-        final seriesList = result['series'] as List<TvSeries>;
-        _objectBoxService.addTvSeriesList(seriesList);
+        await _saveCategoriesWithYielding(
+          result['seriesCategories'] as List<Category>,
+        );
+        await _saveTvSeriesWithYielding(result['series'] as List<TvSeries>);
 
         // Match TMDB popular TV series with local series after series are saved
         await _matchTmdbPopularTvSeries(playlist.id);
@@ -122,6 +83,124 @@ class PlaylistService {
     // Update last updated timestamp
     playlist.lastUpdated = DateTime.now();
     _objectBoxService.addPlaylist(playlist);
+  }
+
+  Future<void> _deleteExistingDataWithYielding(Playlist playlist) async {
+    // Delete existing categories with yielding
+    final existingCategories = _objectBoxService.getCategoriesByPlaylist(
+      playlist.id,
+    );
+    for (int i = 0; i < existingCategories.length; i++) {
+      _objectBoxService.deleteCategory(existingCategories[i].id);
+
+      // Yield every 10 deletions to allow UI updates
+      if (i % 10 == 0) {
+        await Future.delayed(const Duration(microseconds: 1));
+      }
+    }
+
+    // Delete existing channels with yielding
+    final existingChannels = _objectBoxService.getChannelsByPlaylist(
+      playlist.id,
+    );
+    for (int i = 0; i < existingChannels.length; i++) {
+      _objectBoxService.deleteChannel(existingChannels[i].id);
+
+      // Yield every 10 deletions to allow UI updates
+      if (i % 10 == 0) {
+        await Future.delayed(const Duration(microseconds: 1));
+      }
+    }
+
+    // Delete movies if they exist with yielding
+    try {
+      final existingMovies = _objectBoxService.getMoviesByPlaylist(playlist.id);
+      for (int i = 0; i < existingMovies.length; i++) {
+        _objectBoxService.deleteMovie(existingMovies[i].id);
+
+        // Yield every 10 deletions to allow UI updates
+        if (i % 10 == 0) {
+          await Future.delayed(const Duration(microseconds: 1));
+        }
+      }
+    } catch (e) {
+      // Ignore if movies don't exist yet
+    }
+
+    // Delete TV series if they exist with yielding
+    try {
+      final existingTvSeries = _objectBoxService.getTvSeriesByPlaylist(
+        playlist.id,
+      );
+      for (int i = 0; i < existingTvSeries.length; i++) {
+        _objectBoxService.deleteTvSeries(existingTvSeries[i].id);
+
+        // Yield every 10 deletions to allow UI updates
+        if (i % 10 == 0) {
+          await Future.delayed(const Duration(microseconds: 1));
+        }
+      }
+    } catch (e) {
+      // Ignore if TV series don't exist yet
+    }
+  }
+
+  Future<void> _saveCategoriesWithYielding(List<Category> categories) async {
+    const batchSize = 20;
+    for (int i = 0; i < categories.length; i += batchSize) {
+      final end =
+          (i + batchSize < categories.length)
+              ? i + batchSize
+              : categories.length;
+      final batch = categories.sublist(i, end);
+
+      _objectBoxService.addCategories(batch);
+
+      // Yield after each batch to allow UI updates
+      await Future.delayed(const Duration(microseconds: 1));
+    }
+  }
+
+  Future<void> _saveChannelsWithYielding(List<Channel> channels) async {
+    const batchSize = 50;
+    for (int i = 0; i < channels.length; i += batchSize) {
+      final end =
+          (i + batchSize < channels.length) ? i + batchSize : channels.length;
+      final batch = channels.sublist(i, end);
+
+      _objectBoxService.addChannels(batch);
+
+      // Yield after each batch to allow UI updates
+      await Future.delayed(const Duration(microseconds: 1));
+    }
+  }
+
+  Future<void> _saveMoviesWithYielding(List<Movie> movies) async {
+    const batchSize = 100;
+    for (int i = 0; i < movies.length; i += batchSize) {
+      final end =
+          (i + batchSize < movies.length) ? i + batchSize : movies.length;
+      final batch = movies.sublist(i, end);
+
+      _objectBoxService.addMovies(batch);
+
+      // Yield after each batch to allow UI updates
+      await Future.delayed(const Duration(microseconds: 1));
+    }
+  }
+
+  Future<void> _saveTvSeriesWithYielding(List<TvSeries> series) async {
+    const batchSize = 100;
+    for (int i = 0; i < series.length; i += batchSize) {
+      final end =
+          (i + batchSize < series.length) ? i + batchSize : series.length;
+      final batch = series.sublist(i, end);
+
+      _objectBoxService.addTvSeriesList(batch);
+
+      // Yield after each batch to allow UI updates
+      await Future.delayed(const Duration(microseconds: 1));
+    }
   }
 
   Future<void> refreshEpgData(Playlist playlist) async {

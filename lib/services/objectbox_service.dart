@@ -292,6 +292,22 @@ class ObjectBoxService {
     _tvProgramBox.putMany(programs);
   }
 
+  // Add TV programs in batches with yielding to prevent UI blocking
+  Future<void> addTvProgramsWithYielding(List<TvProgram> programs) async {
+    const batchSize = 1000; // Process 1000 programs at a time
+
+    for (int i = 0; i < programs.length; i += batchSize) {
+      final end =
+          (i + batchSize < programs.length) ? i + batchSize : programs.length;
+      final batch = programs.sublist(i, end);
+
+      _tvProgramBox.putMany(batch);
+
+      // Yield after each batch to allow UI updates
+      await Future.delayed(const Duration(milliseconds: 1));
+    }
+  }
+
   List<TvProgram> getTvProgramsForChannel(String channelXmlTvId) {
     final QueryBuilder<TvProgram> queryBuilder = _tvProgramBox.query(
       TvProgram_.channelXmlTvId.equals(channelXmlTvId),

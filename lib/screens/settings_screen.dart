@@ -44,31 +44,82 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _refreshPlaylist() async {
-    setState(() {
-      _isLoading = true;
-    });
+    // Show a loading dialog that can't be dismissed by tapping outside
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return PopScope(
+          canPop: false, // Prevent back button from closing dialog
+          child: AlertDialog(
+            title: const Text('Refreshing Playlist'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(),
+                const SizedBox(height: 16),
+                const Text(
+                  'This may take a few minutes...\nFetching channels, movies, TV series, and EPG data.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Please wait and do not close the app.',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
 
     try {
-      await widget.playlistService.refreshPlaylist(widget.playlist);
+      // Run the heavy operation in the background
+      await _performRefreshInBackground();
 
       if (mounted) {
+        // Close the loading dialog
+        Navigator.of(context).pop();
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Playlist refreshed successfully')),
+          const SnackBar(
+            content: Text('Playlist refreshed successfully!'),
+            backgroundColor: Colors.green,
+          ),
         );
       }
-    } catch (e) {
+    } catch (e, s) {
+      print('Error refreshing playlist: $e');
+      print('Stack trace: $s');
+
       if (mounted) {
+        // Close the loading dialog
+        Navigator.of(context).pop();
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error refreshing playlist: $e')),
+          SnackBar(
+            content: Text('Error refreshing playlist: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
       }
     }
+  }
+
+  Future<void> _performRefreshInBackground() async {
+    // Use a microtask to ensure the dialog shows before starting heavy work
+    await Future.microtask(() {});
+
+    // Add small delays between major operations to allow UI updates
+    await widget.playlistService.refreshPlaylist(widget.playlist);
+
+    // Give a brief pause before returning to allow final UI updates
+    await Future.delayed(const Duration(milliseconds: 100));
   }
 
   Future<void> _editPlaylist() async {
@@ -101,6 +152,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       // AppBar is removed from here and will be in the parent XtreamPlaylistScreen
       body: ListView(
         // Keep ListView for content
+        controller: _scrollController, // Add the ScrollController
         padding: const EdgeInsets.only(
           top: kToolbarHeight + 24, // Add back top padding
         ),
@@ -135,6 +187,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 if (widget.playlist.username != null)
                   Text('Username: ${widget.playlist.username}'),
               ],
+            ),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.help_outline),
+            title: const Text('Refresh Tips'),
+            subtitle: const Text(
+              'If refresh takes too long:\n'
+              '• Make sure your internet connection is stable\n'
+              '• Large playlists may take 5-10 minutes\n'
+              '• The app may appear frozen but is working',
             ),
           ),
           const Divider(),
