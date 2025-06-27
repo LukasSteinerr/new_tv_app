@@ -64,54 +64,98 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _refreshPlaylist(Playlist playlist) async {
-    setState(() {
-      _isLoading = true;
-    });
+    // Show a confirmation dialog before starting the refresh
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Refresh'),
+          content: const Text(
+            'Are you sure you want to refresh this playlist?\n'
+            'This can take several minutes and cannot be stopped.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Refresh'),
+            ),
+          ],
+        );
+      },
+    );
 
-    try {
-      await widget.playlistService.refreshPlaylist(playlist);
-      await _loadPlaylists();
+    // If the user did not confirm, do nothing
+    if (confirmed != true) {
+      return;
+    }
 
-      // Show success message with green checkmark
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
+    // Show a loading dialog that can't be dismissed
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return PopScope(
+          canPop: false,
+          child: AlertDialog(
+            title: const Text('Refreshing Playlist'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.check_circle, color: Colors.green),
-                SizedBox(width: 10),
-                Text(
-                  'Playlist refreshed successfully',
-                  style: TextStyle(color: Colors.white),
+                const CircularProgressIndicator(),
+                const SizedBox(height: 16),
+                const Text(
+                  'This may take a few minutes...\nFetching channels, movies, TV series, and EPG data.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Please wait and do not close the app.',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
-            backgroundColor: Colors.black87,
-            duration: Duration(seconds: 2),
+          ),
+        );
+      },
+    );
+
+    try {
+      // Use a microtask to allow the dialog to render before heavy work
+      await Future.microtask(() async {
+        await widget.playlistService.refreshPlaylist(playlist);
+        await _loadPlaylists();
+      });
+
+      if (mounted) {
+        // Close the loading dialog
+        Navigator.of(context).pop();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Playlist refreshed successfully!'),
+            backgroundColor: Colors.green,
           ),
         );
       }
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+    } catch (e, s) {
+      print('Error refreshing playlist: $e');
+      print('Stack trace: $s');
       if (mounted) {
+        // Close the loading dialog
+        Navigator.of(context).pop();
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.error, color: Colors.red),
-                SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Error refreshing playlist: $e',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Colors.black87,
-            duration: Duration(seconds: 4),
+            content: Text('Error refreshing playlist: $e'),
+            backgroundColor: Colors.red,
           ),
         );
       }

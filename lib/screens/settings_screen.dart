@@ -44,6 +44,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _refreshPlaylist() async {
+    // Show a confirmation dialog before starting the refresh
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Refresh'),
+          content: const Text(
+            'Are you sure you want to refresh this playlist?\n'
+            'This can take several minutes and cannot be stopped.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Refresh'),
+            ),
+          ],
+        );
+      },
+    );
+
+    // If the user did not confirm, do nothing
+    if (confirmed != true) {
+      return;
+    }
+
     // Show a loading dialog that can't be dismissed by tapping outside
     showDialog(
       context: context,
