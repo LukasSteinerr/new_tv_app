@@ -522,6 +522,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       key: _scaffoldKey,
       extendBodyBehindAppBar: true,
       drawer: _buildDrawer(),

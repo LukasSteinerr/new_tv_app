@@ -22,7 +22,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _isLoading = false;
+  final bool _isLoading = false;
   late ScrollController _scrollController; // Add ScrollController
 
   @override
@@ -178,6 +178,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
 
     return Scaffold(
+      backgroundColor: Colors.black,
       // Remove the standard app bar
       extendBodyBehindAppBar: true, // Allow content to go behind app bar
       // AppBar is removed from here and will be in the parent XtreamPlaylistScreen
