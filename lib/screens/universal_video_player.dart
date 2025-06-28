@@ -145,31 +145,111 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
       if (!mounted) return;
       final selectedSubId = await showDialog<int>(
         context: context,
-        builder: (BuildContext _) {
-          return AlertDialog(
-            title: const Text('Select Subtitle'),
-            content: SizedBox(
-              width: double.maxFinite,
-              height: 250,
-              child: ListView.builder(
-                itemCount: subtitleTracks.keys.length + 1,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(
-                      index < subtitleTracks.keys.length
-                          ? subtitleTracks.values.elementAt(index)
-                          : 'Disable',
+        barrierColor: Colors.black.withOpacity(0.3),
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 320, maxHeight: 200),
+              margin: const EdgeInsets.symmetric(horizontal: 40),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E1E1E),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF2D2D2D),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                      ),
                     ),
-                    onTap: () {
-                      Navigator.pop(
-                        context,
-                        index < subtitleTracks.keys.length
-                            ? subtitleTracks.keys.elementAt(index)
-                            : -1,
-                      );
-                    },
-                  );
-                },
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.closed_caption,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Select Subtitles',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              color: Colors.white70,
+                              size: 16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Subtitle tracks list
+                  Flexible(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        itemCount: subtitleTracks.keys.length + 1,
+                        separatorBuilder:
+                            (context, index) => Divider(
+                              height: 1,
+                              color: Colors.white.withOpacity(0.1),
+                              indent: 16,
+                              endIndent: 16,
+                            ),
+                        itemBuilder: (context, index) {
+                          if (index == subtitleTracks.keys.length) {
+                            return _buildSubtitleItem(
+                              icon: Icons.subtitles_off,
+                              title: 'Disable Subtitles',
+                              subtitle: 'Turn off all subtitles',
+                              onTap: () => Navigator.pop(context, -1),
+                            );
+                          }
+                          final key = subtitleTracks.keys.elementAt(index);
+                          final trackName = subtitleTracks.values.elementAt(
+                            index,
+                          );
+                          return _buildSubtitleItem(
+                            icon: Icons.subtitles,
+                            title: trackName,
+                            subtitle: 'Subtitle track ${index + 1}',
+                            onTap: () => Navigator.pop(context, key),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           );
@@ -182,6 +262,67 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
     }
   }
 
+  Widget _buildSubtitleItem({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: Colors.orange[300], size: 18),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.7),
+                        fontSize: 12,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.white.withOpacity(0.3),
+                size: 16,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _getRendererDevices() async {
     final castDevices = await _controller.getRendererDevices();
 
@@ -189,32 +330,105 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
       if (!mounted) return;
       final selectedCastDeviceName = await showDialog<String>(
         context: context,
+        barrierColor: Colors.black.withOpacity(0.3),
         builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Select Cast Device'),
-            content: SizedBox(
-              width: double.maxFinite,
-              height: 250,
-              child: ListView.builder(
-                itemCount: castDevices.keys.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return ListTile(
-                      title: const Text('Play on device'),
-                      onTap: () {
-                        Navigator.pop(context, null);
-                      },
-                    );
-                  }
-                  final key = castDevices.keys.elementAt(index - 1);
-                  final name = castDevices[key];
-                  return ListTile(
-                    title: Text(name ?? 'Unknown device'),
-                    onTap: () {
-                      Navigator.pop(context, name);
-                    },
-                  );
-                },
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 320, maxHeight: 200),
+              margin: const EdgeInsets.symmetric(horizontal: 40),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E1E1E),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF2D2D2D),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.cast, color: Colors.white, size: 20),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Cast to Device',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              color: Colors.white70,
+                              size: 16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Device list
+                  Flexible(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        itemCount: castDevices.keys.length + 1,
+                        separatorBuilder:
+                            (context, index) => Divider(
+                              height: 1,
+                              color: Colors.white.withOpacity(0.1),
+                              indent: 16,
+                              endIndent: 16,
+                            ),
+                        itemBuilder: (context, index) {
+                          if (index == 0) {
+                            return _buildCastDeviceItem(
+                              icon: Icons.smartphone,
+                              title: 'Play on This Device',
+                              subtitle: 'Current device',
+                              onTap: () => Navigator.pop(context, null),
+                            );
+                          }
+                          final key = castDevices.keys.elementAt(index - 1);
+                          final name = castDevices[key] ?? 'Unknown device';
+                          return _buildCastDeviceItem(
+                            icon: Icons.cast_connected,
+                            title: name,
+                            subtitle: 'Available for casting',
+                            onTap: () => Navigator.pop(context, name),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           );
@@ -233,6 +447,67 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
         context,
       ).showSnackBar(const SnackBar(content: Text('No Cast Devices Found!')));
     }
+  }
+
+  Widget _buildCastDeviceItem({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: Colors.blue[300], size: 18),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.7),
+                        fontSize: 12,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.white.withOpacity(0.3),
+                size: 16,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
