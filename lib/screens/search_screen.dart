@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../models/movie.dart';
 import '../models/tv_series.dart';
 import '../services/objectbox_service.dart';
@@ -87,13 +88,7 @@ class SearchScreen extends SearchDelegate {
           if (item is Movie) {
             return GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) => NetflixStyleMovieDetailScreen(movie: item),
-                  ),
-                );
+                context.push('/movie-detail', extra: item);
               },
               child: TMDBImage(
                 tmdbId: item.tmdbId,
@@ -107,15 +102,9 @@ class SearchScreen extends SearchDelegate {
           } else if (item is TvSeries) {
             return GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) => NetflixStyleTvSeriesDetailScreen(
-                          series: item,
-                          playlistService: playlistService,
-                        ),
-                  ),
+                context.push(
+                  '/tv-series-detail',
+                  extra: {'series': item, 'playlistService': playlistService},
                 );
               },
               child: TMDBImage(
@@ -171,13 +160,7 @@ class SearchScreen extends SearchDelegate {
           if (item is Movie) {
             return GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) => NetflixStyleMovieDetailScreen(movie: item),
-                  ),
-                );
+                context.push('/movie-detail', extra: item);
               },
               child: TMDBImage(
                 tmdbId: item.tmdbId,
@@ -191,15 +174,9 @@ class SearchScreen extends SearchDelegate {
           } else if (item is TvSeries) {
             return GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) => NetflixStyleTvSeriesDetailScreen(
-                          series: item,
-                          playlistService: playlistService,
-                        ),
-                  ),
+                context.push(
+                  '/tv-series-detail',
+                  extra: {'series': item, 'playlistService': playlistService},
                 );
               },
               child: TMDBImage(

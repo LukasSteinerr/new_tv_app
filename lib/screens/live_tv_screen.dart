@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
+import 'package:go_router/go_router.dart';
 import '../models/playlist.dart';
 import '../models/category.dart';
 import '../models/channel.dart';
@@ -194,7 +195,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
       }
     } finally {
       if (mounted) {
-        Navigator.of(context).pop(); // Close the loading dialog
+        context.pop(); // Close the loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('EPG data has been refreshed.'),
@@ -217,7 +218,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                 .where((channel) => channel.category.targetId == category.id)
                 .toList();
       }
-      Navigator.of(context).pop(); // Close the drawer
+      context.pop(); // Close the drawer
     });
   }
 
@@ -230,26 +231,15 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
 
     if (hasEpg) {
       // Navigate to the EPG guide screen
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder:
-              (context) => ChannelEpgGuideScreen(
-                channel: channel,
-                playlistService: widget.playlistService,
-              ),
-        ),
+      await context.push(
+        '/channel-epg-guide',
+        extra: {'channel': channel, 'playlistService': widget.playlistService},
       );
       _setPortraitMode(); // Restore portrait mode if needed after returning
     } else {
       // Original behavior: play channel directly
       if (channel.streamUrl.isNotEmpty) {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UniversalVideoPlayer(channel: channel),
-          ),
-        );
+        await context.push('/video-player', extra: channel);
         _setPortraitMode(); // Restore portrait mode
         SystemChrome.setEnabledSystemUIMode(
           SystemUiMode.manual,

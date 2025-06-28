@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:background_downloader/background_downloader.dart';
+import 'package:go_router/go_router.dart';
 import '../models/playlist.dart';
 import '../services/playlist_service.dart';
 import '../services/download_service.dart';
-import 'add_playlist_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -58,11 +58,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
+              onPressed: () => context.pop(false),
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
+              onPressed: () => context.pop(true),
               child: const Text('Refresh'),
             ),
           ],
@@ -115,7 +115,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       if (mounted) {
         // Close the loading dialog
-        Navigator.of(context).pop();
+        context.pop();
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -130,7 +130,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       if (mounted) {
         // Close the loading dialog
-        Navigator.of(context).pop();
+        context.pop();
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -154,16 +154,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _editPlaylist() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) => AddPlaylistScreen(
-              playlistService: widget.playlistService,
-              playlist: widget.playlist,
-            ),
-      ),
-    );
+    final result = await context.push('/add-playlist', extra: widget.playlist);
 
     if (result == true) {
       // Playlist was updated, refresh the UI
@@ -283,11 +274,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
+                onPressed: () => context.pop(false),
                 child: const Text('No', style: TextStyle(color: Colors.grey)),
               ),
               TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
+                onPressed: () => context.pop(true),
                 child: const Text(
                   'Delete',
                   style: TextStyle(color: Colors.red),

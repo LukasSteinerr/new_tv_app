@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../models/category.dart';
 import '../models/movie.dart';
 import '../models/tv_series.dart';
@@ -77,24 +78,13 @@ class _CategoryContentScreenState extends State<CategoryContentScreen> {
   }
 
   void _navigateToMovie(BuildContext context, Movie movie) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => NetflixStyleMovieDetailScreen(movie: movie),
-      ),
-    );
+    context.push('/movie-detail', extra: movie);
   }
 
   void _navigateToSeries(BuildContext context, TvSeries series) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) => NetflixStyleTvSeriesDetailScreen(
-              series: series,
-              playlistService: widget.playlistService,
-            ),
-      ),
+    context.push(
+      '/tv-series-detail',
+      extra: {'series': series, 'playlistService': widget.playlistService},
     );
   }
 }

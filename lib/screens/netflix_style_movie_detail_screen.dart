@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
 import 'package:flutter_rating/flutter_rating.dart';
+import 'package:go_router/go_router.dart';
 import '../models/cast.dart';
 import '../models/movie.dart';
 import '../services/objectbox_service.dart';
@@ -122,12 +123,7 @@ class _NetflixStyleMovieDetailScreenState
   void _playMovie() async {
     // Made async to await Navigator.pop
     // UniversalVideoPlayer will set landscape mode
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => UniversalVideoPlayer(movie: widget.movie),
-      ),
-    );
+    await context.push('/video-player', extra: widget.movie);
     // After returning from player, ensure detail screen is portrait
     _setPortraitMode();
     // Also restore SystemUIOverlays if needed, though UniversalVideoPlayer should handle its own.
@@ -418,14 +414,7 @@ class _NetflixStyleMovieDetailScreenState
                         if (index == 10) {
                           return GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) =>
-                                          AllActorsScreen(movie: widget.movie),
-                                ),
-                              );
+                              context.push('/all-actors', extra: widget.movie);
                             },
                             child: Container(
                               width: 80,
@@ -552,14 +541,7 @@ class _NetflixStyleMovieDetailScreenState
               final movie = _similarMovies[index];
               return GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) =>
-                              NetflixStyleMovieDetailScreen(movie: movie),
-                    ),
-                  );
+                  context.push('/movie-detail', extra: movie);
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16.0),
@@ -695,7 +677,7 @@ class _NetflixStyleMovieDetailScreenState
           child: Row(
             children: [
               GestureDetector(
-                onTap: Navigator.of(context).pop,
+                onTap: context.pop,
                 child: CircleAvatar(
                   backgroundColor: Colors.black54,
                   child: const Icon(Icons.close, color: Colors.white),

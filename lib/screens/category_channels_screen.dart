@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'universal_video_player.dart';
 import '../models/category.dart';
 import '../models/channel.dart';
-import 'universal_video_player.dart';
+import 'package:go_router/go_router.dart';
 
 class CategoryChannelsScreen extends StatelessWidget {
   final Category category;
@@ -23,34 +24,40 @@ class CategoryChannelsScreen extends StatelessWidget {
               : ListView.builder(
                 itemCount: channels.length,
                 itemBuilder: (context, index) {
-                  final channel = channels[index];
-                  return ListTile(
-                    leading:
-                        channel.logoUrl != null && channel.logoUrl!.isNotEmpty
-                            ? CircleAvatar(
-                              backgroundImage: NetworkImage(channel.logoUrl!),
-                              onBackgroundImageError: (_, __) {},
-                              child:
-                                  channel.logoUrl == null ||
-                                          channel.logoUrl!.isEmpty
-                                      ? const Icon(Icons.tv)
-                                      : null,
-                            )
-                            : const CircleAvatar(child: Icon(Icons.tv)),
-                    title: Text(channel.name),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) =>
-                                  UniversalVideoPlayer(channel: channel),
-                        ),
-                      );
-                    },
-                  );
+                  return ChannelListTile(channel: channels[index]);
                 },
               ),
+    );
+  }
+}
+
+class ChannelListTile extends StatelessWidget {
+  final Channel channel;
+
+  const ChannelListTile({super.key, required this.channel});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading:
+          channel.logoUrl != null && channel.logoUrl!.isNotEmpty
+              ? CircleAvatar(
+                backgroundImage: NetworkImage(channel.logoUrl!),
+                onBackgroundImageError: (_, __) {},
+                child:
+                    channel.logoUrl == null || channel.logoUrl!.isEmpty
+                        ? const Icon(Icons.tv)
+                        : null,
+              )
+              : const CircleAvatar(child: Icon(Icons.tv)),
+      title: Text(channel.name),
+      subtitle:
+          channel.category.target != null
+              ? Text(channel.category.target!.name)
+              : null,
+      onTap: () {
+        context.push('/video-player', extra: channel);
+      },
     );
   }
 }

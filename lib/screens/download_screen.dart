@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:background_downloader/background_downloader.dart';
+import 'package:go_router/go_router.dart';
 import '../services/download_service.dart';
 import 'dart:async';
 
@@ -85,11 +86,11 @@ class _DownloadScreenState extends State<DownloadScreen>
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
+                onPressed: () => context.pop(false),
                 child: const Text('No', style: TextStyle(color: Colors.grey)),
               ),
               TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
+                onPressed: () => context.pop(true),
                 child: const Text('Yes', style: TextStyle(color: Colors.red)),
               ),
             ],
@@ -153,11 +154,11 @@ class _DownloadScreenState extends State<DownloadScreen>
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
+                onPressed: () => context.pop(false),
                 child: const Text('No', style: TextStyle(color: Colors.grey)),
               ),
               TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
+                onPressed: () => context.pop(true),
                 child: const Text(
                   'Delete',
                   style: TextStyle(color: Colors.red),
@@ -399,7 +400,7 @@ class _DownloadScreenState extends State<DownloadScreen>
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
         ),
         title: const Text('Downloads'),
         backgroundColor: Colors.black,

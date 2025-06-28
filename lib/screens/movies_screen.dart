@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 // Will be used for BackdropFilter if we keep parts of old FeaturedContent
 import '../models/playlist.dart';
 import '../models/movie.dart';
@@ -127,22 +128,12 @@ class _MoviesScreenState extends State<MoviesScreen> {
   }
 
   void _navigateToMovie(Movie movie) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => NetflixStyleMovieDetailScreen(movie: movie),
-      ),
-    );
+    context.push('/movie-detail', extra: movie);
   }
 
   void _playMovie(Movie movie) {
     if (movie.streamUrl.isNotEmpty) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => UniversalVideoPlayer(movie: movie),
-        ),
-      );
+      context.push('/video-player', extra: movie);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No stream URL found for this movie.')),
@@ -151,16 +142,13 @@ class _MoviesScreenState extends State<MoviesScreen> {
   }
 
   void _navigateToSeeAll(Category category, List<Movie> movies) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) => CategoryContentScreen(
-              category: category,
-              items: movies,
-              playlistService: widget.playlistService,
-            ),
-      ),
+    context.push(
+      '/category-content',
+      extra: {
+        'category': category,
+        'items': movies,
+        'playlistService': widget.playlistService,
+      },
     );
   }
 
@@ -228,7 +216,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => context.pop(),
           ),
           title: Text(
             widget.playlist.name,

@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
 import 'package:flutter_rating/flutter_rating.dart';
+import 'package:go_router/go_router.dart';
 import '../models/tv_series.dart';
 import '../models/tv_episode.dart';
 import '../services/download_service.dart';
@@ -233,13 +234,7 @@ class _NetflixStyleTvSeriesDetailScreenState
         _seasonEpisodes.containsKey(_selectedSeason)) {
       final episodes = _seasonEpisodes[_selectedSeason]!;
       if (episodes.isNotEmpty) {
-        await Navigator.push(
-          // await
-          context,
-          MaterialPageRoute(
-            builder: (context) => UniversalVideoPlayer(episode: episodes.first),
-          ),
-        );
+        await context.push('/video-player', extra: episodes.first);
         _setPortraitMode(); // Restore portrait mode
         SystemChrome.setEnabledSystemUIMode(
           SystemUiMode.manual,
@@ -313,7 +308,7 @@ class _NetflixStyleTvSeriesDetailScreenState
           child: Row(
             children: [
               GestureDetector(
-                onTap: Navigator.of(context).pop,
+                onTap: context.pop,
                 child: CircleAvatar(
                   backgroundColor: Colors.black54,
                   child: const Icon(Icons.close, color: Colors.white),
@@ -522,13 +517,7 @@ class _NetflixStyleTvSeriesDetailScreenState
             padding: const EdgeInsets.only(bottom: 24.0),
             child: InkWell(
               onTap: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) => UniversalVideoPlayer(episode: episode),
-                  ),
-                );
+                await context.push('/video-player', extra: episode);
                 _setPortraitMode();
                 SystemChrome.setEnabledSystemUIMode(
                   SystemUiMode.manual,

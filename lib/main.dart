@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logging/logging.dart'; // Import logging
+import 'router/app_router.dart';
 import 'services/objectbox_service.dart';
 import 'services/playlist_service.dart';
 import 'screens/home_screen.dart';
@@ -86,7 +87,9 @@ void main() async {
   await FileDownloader().start();
   _log.info('FileDownloader started in main'); // Log FileDownloader start
 
-  runApp(MyApp(playlistService: playlistService));
+  final appRouter = AppRouter(playlistService: playlistService);
+
+  runApp(MyApp(appRouter: appRouter));
 }
 
 /// Process the user tapping on a notification by printing a message
@@ -99,17 +102,17 @@ void myNotificationTapCallback(Task task, NotificationType notificationType) {
 }
 
 class MyApp extends StatelessWidget {
-  final PlaylistService playlistService;
+  final AppRouter appRouter;
 
-  const MyApp({super.key, required this.playlistService});
+  const MyApp({super.key, required this.appRouter});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'IPTV Player',
       theme: ThemeData.dark(),
       darkTheme: ThemeData.dark(),
-      home: HomeScreen(playlistService: playlistService),
+      routerConfig: appRouter.router,
     );
   }
 }

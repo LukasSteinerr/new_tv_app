@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../models/movie.dart';
 import '../models/tv_series.dart';
 import '../services/objectbox_service.dart';
@@ -139,13 +140,9 @@ class _MyListScreenState extends State<MyListScreen>
         if (item is Movie) {
           return GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) => NetflixStyleMovieDetailScreen(movie: item),
-                ),
-              ).then((_) => _loadMyList());
+              context
+                  .push('/movie-detail', extra: item)
+                  .then((_) => _loadMyList());
             },
             child: TMDBImage(
               tmdbId: item.tmdbId,
@@ -159,16 +156,15 @@ class _MyListScreenState extends State<MyListScreen>
         } else if (item is TvSeries) {
           return GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) => NetflixStyleTvSeriesDetailScreen(
-                        series: item,
-                        playlistService: widget.playlistService,
-                      ),
-                ),
-              ).then((_) => _loadMyList());
+              context
+                  .push(
+                    '/tv-series-detail',
+                    extra: {
+                      'series': item,
+                      'playlistService': widget.playlistService,
+                    },
+                  )
+                  .then((_) => _loadMyList());
             },
             child: TMDBImage(
               tmdbId: item.tmdbId,

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../models/playlist.dart';
 import '../models/channel.dart';
 import '../models/category.dart';
 import '../services/playlist_service.dart';
-import 'universal_video_player.dart';
 import 'xtream_playlist_screen.dart';
+import 'category_channels_screen.dart';
 
 class PlaylistDetailScreen extends StatelessWidget {
   final PlaylistService playlistService;
@@ -140,15 +141,9 @@ class _M3uPlaylistScreenState extends State<_M3uPlaylistScreen>
               category.id,
             );
             if (mounted) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) => CategoryChannelsScreen(
-                        category: category,
-                        channels: channels,
-                      ),
-                ),
+              context.push(
+                '/category-channels',
+                extra: {'category': category, 'channels': channels},
               );
             }
           },
@@ -167,69 +162,6 @@ class _M3uPlaylistScreenState extends State<_M3uPlaylistScreen>
       itemBuilder: (context, index) {
         final channel = _channels[index];
         return ChannelListTile(channel: channel);
-      },
-    );
-  }
-}
-
-class CategoryChannelsScreen extends StatelessWidget {
-  final Category category;
-  final List<Channel> channels;
-
-  const CategoryChannelsScreen({
-    super.key,
-    required this.category,
-    required this.channels,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(category.name)),
-      body:
-          channels.isEmpty
-              ? const Center(child: Text('No channels in this category'))
-              : ListView.builder(
-                itemCount: channels.length,
-                itemBuilder: (context, index) {
-                  return ChannelListTile(channel: channels[index]);
-                },
-              ),
-    );
-  }
-}
-
-class ChannelListTile extends StatelessWidget {
-  final Channel channel;
-
-  const ChannelListTile({super.key, required this.channel});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading:
-          channel.logoUrl != null && channel.logoUrl!.isNotEmpty
-              ? CircleAvatar(
-                backgroundImage: NetworkImage(channel.logoUrl!),
-                onBackgroundImageError: (_, __) {},
-                child:
-                    channel.logoUrl == null || channel.logoUrl!.isEmpty
-                        ? const Icon(Icons.tv)
-                        : null,
-              )
-              : const CircleAvatar(child: Icon(Icons.tv)),
-      title: Text(channel.name),
-      subtitle:
-          channel.category.target != null
-              ? Text(channel.category.target!.name)
-              : null,
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UniversalVideoPlayer(channel: channel),
-          ),
-        );
       },
     );
   }

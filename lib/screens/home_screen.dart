@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../models/playlist.dart';
 import '../services/playlist_service.dart';
@@ -269,15 +270,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) => AddPlaylistScreen(
-                                  playlistService: widget.playlistService,
-                                ),
-                          ),
-                        );
+                        final result = await context.push('/add-playlist');
+
                         if (result == true) {
                           await _loadPlaylists();
                         }
@@ -312,32 +306,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    onTap: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) => PlaylistDetailScreen(
-                                playlistService: widget.playlistService,
-                                playlist: playlist,
-                              ),
-                        ),
-                      );
+                    onTap: () {
+                      context.push('/playlist-detail', extra: playlist);
                     },
                   );
                 },
               ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder:
-                  (context) => AddPlaylistScreen(
-                    playlistService: widget.playlistService,
-                  ),
-            ),
-          );
+          final result = await context.push('/add-playlist');
           if (result == true) {
             await _loadPlaylists();
           }

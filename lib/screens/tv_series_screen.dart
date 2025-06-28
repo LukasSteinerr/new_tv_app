@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../models/playlist.dart';
 import '../models/tv_series.dart';
 import '../models/category.dart';

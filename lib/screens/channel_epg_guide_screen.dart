@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import '../models/channel.dart';
 import '../models/tv_program.dart';
@@ -50,12 +51,7 @@ class _ChannelEpgGuideScreenState extends State<ChannelEpgGuideScreen> {
 
   void _playChannel() {
     if (widget.channel.streamUrl.isNotEmpty) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => UniversalVideoPlayer(channel: widget.channel),
-        ),
-      );
+      context.push('/video-player', extra: widget.channel);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Channel stream URL is not available.')),
