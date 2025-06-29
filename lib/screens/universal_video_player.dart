@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'dart:async';
+import 'dart:io';
 import '../models/movie.dart';
 import '../models/tv_episode.dart';
 import '../models/channel.dart';
@@ -11,6 +12,7 @@ class UniversalVideoPlayer extends StatefulWidget {
   final Movie? movie;
   final TvEpisode? episode;
   final Channel? channel;
+  final String? localPath; // New parameter for local file path
 
   // Constructor with named parameters for different content types
   const UniversalVideoPlayer({
@@ -18,6 +20,7 @@ class UniversalVideoPlayer extends StatefulWidget {
     this.movie,
     this.episode,
     this.channel,
+    this.localPath, // Add to constructor
   }) : assert(
          (movie != null && episode == null && channel == null) ||
              (movie == null && episode != null && channel == null) ||
@@ -50,19 +53,38 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
   }
 
   void _initializePlayer() {
-    // Get the appropriate stream URL based on content type
-    final String streamUrl = _getStreamUrl();
+    // Check if a local path is provided
+    if (widget.localPath != null && widget.localPath!.isNotEmpty) {
+      _controller = VlcPlayerController.file(
+        File(widget.localPath!),
+        hwAcc: HwAcc.full,
+        autoPlay: true,
+        options: VlcPlayerOptions(
+          advanced: VlcAdvancedOptions([
+            VlcAdvancedOptions.networkCaching(2000),
+          ]),
+          http: VlcHttpOptions([VlcHttpOptions.httpReconnect(true)]),
+          rtp: VlcRtpOptions([VlcRtpOptions.rtpOverRtsp(true)]),
+        ),
+      );
+    } else {
+      // Get the appropriate stream URL based on content type
+      final String streamUrl = _getStreamUrl();
 
-    _controller = VlcPlayerController.network(
-      streamUrl,
-      hwAcc: HwAcc.full,
-      autoPlay: true,
-      options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([VlcAdvancedOptions.networkCaching(2000)]),
-        http: VlcHttpOptions([VlcHttpOptions.httpReconnect(true)]),
-        rtp: VlcRtpOptions([VlcRtpOptions.rtpOverRtsp(true)]),
-      ),
-    );
+      _controller = VlcPlayerController.network(
+        streamUrl,
+        hwAcc: HwAcc.full,
+        autoPlay: true,
+        options: VlcPlayerOptions(
+          advanced: VlcAdvancedOptions([
+            VlcAdvancedOptions.networkCaching(2000),
+          ]),
+          http: VlcHttpOptions([VlcHttpOptions.httpReconnect(true)]),
+          rtp: VlcRtpOptions([VlcRtpOptions.rtpOverRtsp(true)]),
+        ),
+      );
+    }
+
     _controller.addOnInitListener(() async {
       await _controller.startRendererScanning();
     });

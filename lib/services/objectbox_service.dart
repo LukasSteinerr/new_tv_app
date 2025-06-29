@@ -142,6 +142,8 @@ class ObjectBoxService {
     return result;
   }
 
+  Movie? getMovieByDbId(int id) => _movieBox.get(id);
+
   // Get featured movies by playlist
   List<Movie> getFeaturedMoviesByPlaylist(int playlistId) {
     final query =
@@ -247,6 +249,8 @@ class ObjectBoxService {
   void addTvEpisodes(List<TvEpisode> episodes) =>
       _tvEpisodeBox.putMany(episodes);
   bool deleteTvEpisode(int id) => _tvEpisodeBox.remove(id);
+
+  TvEpisode? getTvEpisodeByDbId(int id) => _tvEpisodeBox.get(id);
 
   // EPG Channel Info operations
   Future<void> storeEpgChannelInfos(

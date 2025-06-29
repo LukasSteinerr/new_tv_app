@@ -12,6 +12,8 @@ import '../services/tmdb_service.dart'; // Import TMDBService
 import 'universal_video_player.dart';
 import '../services/download_service.dart';
 import 'all_actors_screen.dart'; // Import the new screen
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class NetflixStyleMovieDetailScreen extends StatefulWidget {
   final Movie movie;
@@ -121,9 +123,21 @@ class _NetflixStyleMovieDetailScreenState
   }
 
   void _playMovie() async {
-    // Made async to await Navigator.pop
-    // UniversalVideoPlayer will set landscape mode
-    await context.push('/video-player', extra: widget.movie);
+    final appDir = await getApplicationDocumentsDirectory();
+    final localPath = '${appDir.path}/movies/${widget.movie.name}.mp4';
+    final localFile = File(localPath);
+
+    if (localFile.existsSync()) {
+      // Play from local file
+      await context.push(
+        '/video-player',
+        extra: {'movie': widget.movie, 'localPath': localPath},
+      );
+    } else {
+      // Play from stream URL
+      await context.push('/video-player', extra: {'movie': widget.movie});
+    }
+
     // After returning from player, ensure detail screen is portrait
     _setPortraitMode();
     // Also restore SystemUIOverlays if needed, though UniversalVideoPlayer should handle its own.

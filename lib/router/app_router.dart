@@ -86,6 +86,19 @@ class AppRouter {
             return UniversalVideoPlayer(movie: state.extra as Movie);
           } else if (state.extra is TvEpisode) {
             return UniversalVideoPlayer(episode: state.extra as TvEpisode);
+          } else if (state.extra is Map<String, dynamic>) {
+            final args = state.extra as Map<String, dynamic>;
+            if (args.containsKey('movie')) {
+              return UniversalVideoPlayer(
+                movie: args['movie'] as Movie,
+                localPath: args['localPath'] as String?,
+              );
+            } else if (args.containsKey('episode')) {
+              return UniversalVideoPlayer(
+                episode: args['episode'] as TvEpisode,
+                localPath: args['localPath'] as String?,
+              );
+            }
           }
           // You might want to return an error page or a default state
           return const Scaffold(

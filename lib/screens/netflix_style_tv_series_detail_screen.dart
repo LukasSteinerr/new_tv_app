@@ -11,6 +11,8 @@ import '../services/objectbox_service.dart';
 import '../services/playlist_service.dart';
 import '../services/tmdb_image_provider.dart';
 import 'universal_video_player.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class NetflixStyleTvSeriesDetailScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -234,7 +236,19 @@ class _NetflixStyleTvSeriesDetailScreenState
         _seasonEpisodes.containsKey(_selectedSeason)) {
       final episodes = _seasonEpisodes[_selectedSeason]!;
       if (episodes.isNotEmpty) {
-        await context.push('/video-player', extra: episodes.first);
+        final episode = episodes.first;
+        final appDir = await getApplicationDocumentsDirectory();
+        final localPath = '${appDir.path}/episodes/${episode.title}.mp4';
+        final localFile = File(localPath);
+
+        if (localFile.existsSync()) {
+          await context.push(
+            '/video-player',
+            extra: {'episode': episode, 'localPath': localPath},
+          );
+        } else {
+          await context.push('/video-player', extra: episode);
+        }
         _setPortraitMode(); // Restore portrait mode
         SystemChrome.setEnabledSystemUIMode(
           SystemUiMode.manual,
@@ -517,7 +531,20 @@ class _NetflixStyleTvSeriesDetailScreenState
             padding: const EdgeInsets.only(bottom: 24.0),
             child: InkWell(
               onTap: () async {
-                await context.push('/video-player', extra: episode);
+                final appDir = await getApplicationDocumentsDirectory();
+                final localPath =
+                    '${appDir.path}/episodes/${episode.title}.mp4';
+                final localFile = File(localPath);
+
+                if (localFile.existsSync()) {
+                  await context.push(
+                    '/video-player',
+                    extra: {'episode': episode, 'localPath': localPath},
+                  );
+                } else {
+                  await context.push('/video-player', extra: episode);
+                }
+
                 _setPortraitMode();
                 SystemChrome.setEnabledSystemUIMode(
                   SystemUiMode.manual,
