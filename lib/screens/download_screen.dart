@@ -8,6 +8,8 @@ import 'package:path_provider/path_provider.dart';
 import '../services/objectbox_service.dart';
 import '../models/movie.dart';
 import '../models/tv_episode.dart';
+import '../models/tv_series.dart';
+import '../widgets/tmdb_image.dart';
 
 class DownloadScreen extends StatefulWidget {
   const DownloadScreen({super.key});
@@ -355,10 +357,7 @@ class _DownloadScreenState extends State<DownloadScreen>
     );
   }
 
-  Widget _buildDownloadList(
-    List<Map<String, dynamic>> downloads,
-    IconData iconData,
-  ) {
+  Widget _buildDownloadList(List<Map<String, dynamic>> downloads) {
     if (downloads.isEmpty) {
       return const Center(
         child: Text(
@@ -372,120 +371,169 @@ class _DownloadScreenState extends State<DownloadScreen>
       padding: const EdgeInsets.all(8.0),
       itemCount: downloads.length,
       itemBuilder: (context, index) {
-        final movie = downloads[index];
-        final status = movie['status'] as TaskStatus;
-        final progress = movie['progress'] as double;
-        final contentId = movie['id'] as String;
+        final download = downloads[index];
+        final status = download['status'] as TaskStatus;
+        final progress = download['progress'] as double;
+        final contentIdString = download['id'] as String;
+        final contentId = int.tryParse(contentIdString);
+        final directory = download['directory'] as String?;
+
+        String? tmdbId;
+        String? fallbackUrl;
+        bool isMovie = true;
+
+        if (_objectBoxService != null && contentId != null) {
+          if (directory == 'movies' ||
+              (directory != 'episodes' && directory != null)) {
+            final movie = _objectBoxService!.getMovieByDbId(contentId);
+            tmdbId = movie?.tmdbId;
+            fallbackUrl = movie?.posterUrl ?? movie?.coverUrl;
+            isMovie = true;
+          } else if (directory == 'episodes') {
+            final episode = _objectBoxService!.getTvEpisodeByDbId(contentId);
+            tmdbId = episode?.series.target?.tmdbId;
+            fallbackUrl = episode?.series.target?.coverUrl;
+            isMovie = false;
+          }
+        }
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
+          padding: const EdgeInsets.only(bottom: 12.0),
           child: Card(
             color: Colors.grey[900],
             elevation: 4,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Movie title and progress
-                  Row(
-                    children: [
-                      Icon(iconData, color: Colors.white),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              movie['name'],
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Poster Image
+                SizedBox(
+                  width: 100,
+                  height: 150,
+                  child: TMDBImage(
+                    tmdbId: tmdbId,
+                    fallbackUrl: fallbackUrl,
+                    isMovie: isMovie,
+                    width: 100,
+                    height: 150,
+                  ),
+                ),
+
+                // Details Section
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Movie title
+                        Text(
+                          download['name'],
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Status text
+                        Text(
+                          _getStatusText(download),
+                          style: TextStyle(
+                            color: Colors.grey[400],
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Progress bar
+                        if (status != TaskStatus.complete)
+                          LinearProgressIndicator(
+                            value: progress >= 0 ? progress : null,
+                            backgroundColor: Colors.grey[800],
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              _getProgressColor(status),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              _getStatusText(movie),
-                              style: TextStyle(
-                                color: Colors.grey[400],
-                                fontSize: 14,
+                          ),
+                        if (status != TaskStatus.complete)
+                          const SizedBox(height: 8),
+
+                        // Control buttons
+                        Wrap(
+                          spacing: 8.0,
+                          runSpacing: 4.0,
+                          children: [
+                            if (status == TaskStatus.complete)
+                              ElevatedButton.icon(
+                                onPressed: () => _playVideo(download),
+                                icon: const Icon(Icons.play_arrow, size: 18),
+                                label: const Text('Play'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                ),
                               ),
+
+                            // Pause button
+                            if (status == TaskStatus.running ||
+                                status == TaskStatus.enqueued)
+                              ElevatedButton.icon(
+                                onPressed:
+                                    () => _pauseDownload(contentIdString),
+                                icon: const Icon(Icons.pause, size: 18),
+                                label: const Text('Pause'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.orange,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                ),
+                              ),
+
+                            // Resume button
+                            if (status == TaskStatus.paused)
+                              ElevatedButton.icon(
+                                onPressed:
+                                    () => _resumeDownload(contentIdString),
+                                icon: const Icon(Icons.play_arrow, size: 18),
+                                label: const Text('Resume'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                ),
+                              ),
+
+                            IconButton(
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.white70,
+                              ),
+                              tooltip: 'Delete this download',
+                              onPressed: () => _deleteDownload(contentIdString),
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Progress bar
-                  LinearProgressIndicator(
-                    value: progress >= 0 ? progress : null,
-                    backgroundColor: Colors.grey[800],
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      _getProgressColor(status),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 12),
-
-                  // Control buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      if (status == TaskStatus.complete)
-                        ElevatedButton.icon(
-                          onPressed: () => _playVideo(movie),
-                          icon: const Icon(Icons.play_arrow, size: 18),
-                          label: const Text('Play'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            foregroundColor: Colors.white,
-                          ),
-                        ),
-
-                      // Pause button
-                      if (status != TaskStatus.complete)
-                        ElevatedButton.icon(
-                          onPressed:
-                              (status == TaskStatus.running ||
-                                      status == TaskStatus.enqueued)
-                                  ? () => _pauseDownload(contentId)
-                                  : null,
-                          icon: const Icon(Icons.pause, size: 18),
-                          label: const Text('Pause'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orange,
-                            foregroundColor: Colors.white,
-                            disabledBackgroundColor: Colors.grey[700],
-                          ),
-                        ),
-
-                      // Resume button
-                      if (status != TaskStatus.complete)
-                        ElevatedButton.icon(
-                          onPressed:
-                              status == TaskStatus.paused
-                                  ? () => _resumeDownload(contentId)
-                                  : null,
-                          icon: const Icon(Icons.play_arrow, size: 18),
-                          label: const Text('Resume'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            disabledBackgroundColor: Colors.grey[700],
-                          ),
-                        ),
-
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.white),
-                        tooltip: 'Delete this download',
-                        onPressed: () => _deleteDownload(contentId),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );
@@ -532,8 +580,8 @@ class _DownloadScreenState extends State<DownloadScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildDownloadList(combinedMovieDownloads, Icons.movie),
-          _buildDownloadList(tvShowDownloads, Icons.tv),
+          _buildDownloadList(combinedMovieDownloads),
+          _buildDownloadList(tvShowDownloads),
           _buildAllFilesList(),
         ],
       ),
