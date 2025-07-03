@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tv/main.dart';
+import 'package:tv/router/app_router.dart';
 import 'package:tv/services/playlist_service.dart';
 
 // Import models
@@ -79,15 +80,19 @@ class MockPlaylistService implements PlaylistService {
 
   @override
   Future<void> refreshFeaturedTvSeries(int playlistId) async {}
+
+  @override
+  Future<void> refreshEpgData(Playlist playlist) async {}
 }
 
 void main() {
   testWidgets('App initializes correctly', (WidgetTester tester) async {
     // Create a mock playlist service
     final mockPlaylistService = MockPlaylistService();
+    final appRouter = AppRouter(playlistService: mockPlaylistService);
 
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp(playlistService: mockPlaylistService));
+    await tester.pumpWidget(MyApp(appRouter: appRouter));
 
     // Just verify that the app builds without errors
     expect(find.byType(MaterialApp), findsOneWidget);

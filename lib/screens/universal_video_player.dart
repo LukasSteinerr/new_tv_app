@@ -32,14 +32,16 @@ class UniversalVideoPlayer extends StatefulWidget {
   State<UniversalVideoPlayer> createState() => _UniversalVideoPlayerState();
 }
 
-class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
-  late VlcPlayerController _controller;
+class _UniversalVideoPlayerState extends State<UniversalVideoPlayer>
+    with WidgetsBindingObserver {
+  VlcPlayerController? _controller;
   bool _showControls = false; // Controls visibility flag
   Timer? _controlsTimer;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _initializePlayer();
 
     // Set landscape orientation
@@ -85,8 +87,8 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
       );
     }
 
-    _controller.addOnInitListener(() async {
-      await _controller.startRendererScanning();
+    _controller!.addOnInitListener(() async {
+      await _controller!.startRendererScanning();
     });
   }
 
@@ -103,9 +105,26 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // Pause the video when the app is in the background
+    if (state == AppLifecycleState.paused) {
+      _controller?.pause();
+    }
+    // Resume the video when the app is in the foreground
+    if (state == AppLifecycleState.resumed) {
+      _controller?.play();
+    }
+  }
+
+  @override
   void dispose() {
-    _controller.stopRendererScanning();
-    _controller.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    // The controller is disposed manually via _handleClose,
+    // but as a fallback, we can dispose it here.
+    if (_controller != null) {
+      _controller!.dispose();
+    }
 
     // Reset orientation and UI mode when leaving the player
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -115,6 +134,22 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
     );
 
     super.dispose();
+  }
+
+  Future<void> _handleClose() async {
+    final VlcPlayerController? controllerToDispose = _controller;
+    if (mounted) {
+      setState(() {
+        _controller = null; // Remove the player from the tree
+      });
+    }
+
+    await controllerToDispose?.stop();
+    await controllerToDispose?.dispose();
+
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   void _toggleControls() {
@@ -159,9 +194,9 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
   }
 
   Future<void> _getSubtitleTracks() async {
-    if (!_controller.value.isPlaying) return;
+    if (_controller == null || !_controller!.value.isPlaying) return;
 
-    final subtitleTracks = await _controller.getSpuTracks();
+    final subtitleTracks = await _controller!.getSpuTracks();
 
     if (subtitleTracks.isNotEmpty) {
       if (!mounted) return;
@@ -279,7 +314,7 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
       );
 
       if (selectedSubId != null) {
-        await _controller.setSpuTrack(selectedSubId);
+        await _controller!.setSpuTrack(selectedSubId);
       }
     }
   }
@@ -346,7 +381,8 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
   }
 
   Future<void> _getRendererDevices() async {
-    final castDevices = await _controller.getRendererDevices();
+    if (_controller == null) return;
+    final castDevices = await _controller!.getRendererDevices();
 
     if (castDevices.isNotEmpty) {
       if (!mounted) return;
@@ -457,10 +493,10 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
         },
       );
       if (selectedCastDeviceName != null) {
-        await _controller.castToRenderer(selectedCastDeviceName);
+        await _controller!.castToRenderer(selectedCastDeviceName);
       } else {
         // User selected to play on device, stop casting
-        await _controller
+        await _controller!
             .startRendererScanning(); // This will stop casting and start scanning again
       }
     } else {
@@ -534,40 +570,54 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          // Video player takes the full screen
-          Center(
-            child: VlcPlayer(
-              controller: _controller,
-              aspectRatio: 16 / 9,
-              placeholder: const Center(child: CircularProgressIndicator()),
-            ),
-          ),
-          // Gesture detector covering the entire screen
-          Positioned.fill(
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                // Toggle controls visibility when tapped
-                _toggleControls();
-              },
-              // Use a transparent container to ensure the gesture detector covers everything
-              child: Container(color: Colors.transparent),
-            ),
-          ),
-          // Controls overlay that appears when tapped
-          if (_showControls) _buildControlsOverlay(),
-        ],
+    return WillPopScope(
+      onWillPop: () async {
+        await _handleClose();
+        return false; // We handle the pop manually
+      },
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body:
+            _controller == null
+                ? const Center(child: CircularProgressIndicator())
+                : Stack(
+                  children: [
+                    // Video player takes the full screen
+                    Center(
+                      child: VlcPlayer(
+                        controller: _controller!,
+                        aspectRatio: 16 / 9,
+                        placeholder: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    ),
+                    // Gesture detector covering the entire screen
+                    Positioned.fill(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          // Toggle controls visibility when tapped
+                          _toggleControls();
+                        },
+                        // Use a transparent container to ensure the gesture detector covers everything
+                        child: Container(color: Colors.transparent),
+                      ),
+                    ),
+                    // Controls overlay that appears when tapped
+                    if (_showControls) _buildControlsOverlay(),
+                  ],
+                ),
       ),
     );
   }
 
   Widget _buildControlsOverlay() {
+    if (_controller == null) {
+      return const SizedBox.shrink();
+    }
     return ValueListenableBuilder(
-      valueListenable: _controller,
+      valueListenable: _controller!,
       builder: (context, VlcPlayerValue value, child) {
         // Calculate current position and total duration
         final position = value.position;
@@ -628,7 +678,7 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
                       ),
                       IconButton(
                         icon: const Icon(Icons.close, color: Colors.white),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: _handleClose,
                       ),
                     ],
                   ),
@@ -687,7 +737,7 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
                                           (value * duration.inMilliseconds)
                                               .round(),
                                     );
-                                    _controller.seekTo(newPosition);
+                                    _controller!.seekTo(newPosition);
                                   },
                                 ),
                               ),
@@ -717,7 +767,7 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
                                 color: Colors.white,
                               ),
                               onPressed:
-                                  () => _controller.seekTo(
+                                  () => _controller!.seekTo(
                                     Duration(seconds: position.inSeconds - 10),
                                   ),
                             ),
@@ -731,9 +781,9 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
                               ),
                               onPressed: () {
                                 if (value.isPlaying) {
-                                  _controller.pause();
+                                  _controller!.pause();
                                 } else {
-                                  _controller.play();
+                                  _controller!.play();
                                 }
                               },
                             ),
@@ -743,7 +793,7 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer> {
                                 color: Colors.white,
                               ),
                               onPressed:
-                                  () => _controller.seekTo(
+                                  () => _controller!.seekTo(
                                     Duration(seconds: position.inSeconds + 10),
                                   ),
                             ),
