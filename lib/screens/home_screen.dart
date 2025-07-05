@@ -246,6 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('IPTV Playlists'),
+        backgroundColor: Colors.black, // Set AppBar color to black
         actions: [
           // The download button has been removed from here.
         ],

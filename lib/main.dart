@@ -110,8 +110,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'IPTV Player',
-      theme: ThemeData.dark(),
-      darkTheme: ThemeData.dark(),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.black),
+      darkTheme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: Colors.black,
+      ),
       routerConfig: appRouter.router,
     );
   }
