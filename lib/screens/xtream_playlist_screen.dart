@@ -130,7 +130,7 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
                   size: 50,
                 ),
               )
-              : _screens[_currentIndex],
+              : IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: XtreamBottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
