@@ -308,7 +308,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     onTap: () {
-                      context.push('/playlist-detail', extra: playlist);
+                      context.push('/loader', extra: playlist);
                     },
                   );
                 },

@@ -25,6 +25,7 @@ import '../screens/tv_series_screen.dart';
 import '../screens/universal_video_player.dart';
 import '../screens/xtream_playlist_screen.dart';
 import '../services/playlist_service.dart';
+import '../screens/playlist_loader_screen.dart';
 
 class AppRouter {
   final PlaylistService playlistService;
@@ -59,12 +60,24 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path: '/xtream-playlist',
+        path: '/loader',
         builder: (context, state) {
           final playlist = state.extra as Playlist;
-          return XtreamPlaylistScreen(
-            playlistService: playlistService,
+          return PlaylistLoaderScreen(
             playlist: playlist,
+            playlistService: playlistService,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/playlist',
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          final playlist = args['playlist'] as Playlist;
+          final service = args['playlistService'] as PlaylistService;
+          return XtreamPlaylistScreen(
+            playlist: playlist,
+            playlistService: service,
           );
         },
       ),

@@ -27,7 +27,7 @@ class XtreamPlaylistScreen extends StatefulWidget {
 class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
   int _currentIndex = 0;
   late List<Widget> _screens;
-  bool _isLoading = true;
+  bool _isLoading = false; // Set to false, no loading needed here
   ObjectBoxService? _objectBoxService;
 
   // For AppBar opacity based on scroll
@@ -36,12 +36,11 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeServices();
+    _initScreens();
   }
 
   Future<void> _initializeServices() async {
-    _objectBoxService = await ObjectBoxService.create();
-    _initScreens();
+    // No longer needed, this logic is now in PlaylistLoaderScreen
   }
 
   @override
@@ -94,19 +93,12 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
           onScrollUpdate: _updateAppBarOpacity, // Pass the callback
         ),
       ];
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      // No need for setState or _isLoading here as it's synchronous now
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Error loading content: $e')));
-        setState(() {
-          _isLoading = false;
-        });
       }
     }
   }
@@ -122,15 +114,7 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
         objectBoxService: _objectBoxService,
         playlist: widget.playlist,
       ),
-      body:
-          _isLoading
-              ? Center(
-                child: LoadingAnimationWidget.dotsTriangle(
-                  color: Colors.white,
-                  size: 50,
-                ),
-              )
-              : IndexedStack(index: _currentIndex, children: _screens),
+      body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: XtreamBottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
