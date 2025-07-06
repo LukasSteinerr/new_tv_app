@@ -63,22 +63,8 @@ class _MyListScreenState extends State<MyListScreen>
     });
   }
 
-  List<dynamic> _getCurrentList() {
-    switch (_tabController.index) {
-      case 0:
-        return [..._myMovies, ..._mySeries];
-      case 1:
-        return _myMovies;
-      case 2:
-        return _mySeries;
-      default:
-        return [];
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final currentList = _isLoading ? [] : _getCurrentList();
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -99,17 +85,10 @@ class _MyListScreenState extends State<MyListScreen>
       body:
           _isLoading
               ? const Center(child: CircularProgressIndicator())
-              : currentList.isEmpty
-              ? const Center(
-                child: Text(
-                  'Your list is empty.',
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
               : TabBarView(
                 controller: _tabController,
                 children: [
-                  _buildGrid(currentList), // All
+                  _buildGrid([..._myMovies, ..._mySeries]), // All
                   _buildGrid(_myMovies), // Movies
                   _buildGrid(_mySeries), // TV Shows
                 ],
@@ -119,10 +98,14 @@ class _MyListScreenState extends State<MyListScreen>
 
   Widget _buildGrid(List<dynamic> items) {
     if (items.isEmpty) {
-      return const Center(
-        child: Text(
-          'Nothing in this section.',
-          style: TextStyle(color: Colors.white70),
+      return Container(
+        width: double.infinity,
+        height: double.infinity,
+        child: const Center(
+          child: Text(
+            'Nothing in this section.',
+            style: TextStyle(color: Colors.white70),
+          ),
         ),
       );
     }
