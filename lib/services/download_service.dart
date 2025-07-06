@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:background_downloader/background_downloader.dart';
 import 'package:logging/logging.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../models/movie.dart';
 import '../models/tv_episode.dart';
 
@@ -113,6 +114,24 @@ class DownloadService {
   }
 
   Future<void> startDownload(dynamic content) async {
+    // Request notification permission before starting download
+    var status = await Permission.notification.status;
+    if (status.isDenied) {
+      // Here, you can request the permission.
+      if (await Permission.notification.request().isGranted) {
+        // Permission is granted, you can now proceed with the download.
+        _log.info('Notification permission granted.');
+      } else {
+        // Permission is denied.
+        _log.warning('Notification permission denied.');
+      }
+    } else if (status.isPermanentlyDenied) {
+      // The user has permanently denied the permission.
+      // You can open the app settings to allow the user to enable it manually.
+      _log.warning('Notification permission permanently denied.');
+      openAppSettings();
+    }
+
     if (content is Movie) {
       _log.info(
         'Attempting to start download for movie: ${content.name}',
