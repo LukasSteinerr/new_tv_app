@@ -352,13 +352,6 @@ class _NetflixStyleTvSeriesDetailScreenState
           ),
         ),
         // Netflix-style logo
-        Expanded(
-          flex: 1,
-          child: Container(
-            alignment: Alignment.centerRight,
-            child: const Icon(Icons.tv, color: Colors.red, size: 30),
-          ),
-        ),
       ],
     );
   }
