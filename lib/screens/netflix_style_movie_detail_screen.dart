@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:readmore/readmore.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:go_router/go_router.dart';
@@ -387,8 +388,18 @@ class _NetflixStyleMovieDetailScreenState
                   SizedBox(height: 8),
                   if (_overview != null &&
                       _overview!.isNotEmpty) // Use _overview
-                    Text(
+                    ReadMoreText(
                       _overview!,
+                      trimLines: 3,
+                      colorClickableText: Colors.pink,
+                      trimMode: TrimMode.Line,
+                      trimCollapsedText: 'Show more',
+                      trimExpandedText: 'Show less',
+                      moreStyle: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                       style: TextStyle(
                         color: Colors.grey[400],
                         fontSize: 14,

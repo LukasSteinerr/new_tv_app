@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:readmore/readmore.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:go_router/go_router.dart';
@@ -421,8 +422,18 @@ class _NetflixStyleTvSeriesDetailScreenState
           ),
         ),
         const SizedBox(height: 8),
-        Text(
+        ReadMoreText(
           widget.series.description!,
+          trimLines: 3,
+          colorClickableText: Colors.pink,
+          trimMode: TrimMode.Line,
+          trimCollapsedText: 'Show more',
+          trimExpandedText: 'Show less',
+          moreStyle: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
           style: const TextStyle(fontSize: 14, color: Colors.white70),
         ),
       ],
