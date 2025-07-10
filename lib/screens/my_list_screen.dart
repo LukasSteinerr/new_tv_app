@@ -78,7 +78,8 @@ class _MyListScreenState extends State<MyListScreen>
 
   @override
   Widget build(BuildContext context) {
-    final currentList = _isLoading ? [] : _getCurrentList();
+    final allContent = [..._myMovies, ..._mySeries];
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -90,7 +91,7 @@ class _MyListScreenState extends State<MyListScreen>
           labelColor: Colors.white,
           unselectedLabelColor: Colors.grey,
           tabs: [
-            Tab(text: 'All (${_myMovies.length + _mySeries.length})'),
+            Tab(text: 'All (${allContent.length})'),
             Tab(text: 'Movies (${_myMovies.length})'),
             Tab(text: 'TV Shows (${_mySeries.length})'),
           ],
@@ -99,17 +100,10 @@ class _MyListScreenState extends State<MyListScreen>
       body:
           _isLoading
               ? const Center(child: CircularProgressIndicator())
-              : currentList.isEmpty
-              ? const Center(
-                child: Text(
-                  'Your list is empty.',
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
               : TabBarView(
                 controller: _tabController,
                 children: [
-                  _buildGrid(currentList), // All
+                  _buildGrid(allContent), // All
                   _buildGrid(_myMovies), // Movies
                   _buildGrid(_mySeries), // TV Shows
                 ],
