@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'dart:async';
 import 'dart:io';
 import '../models/movie.dart';
@@ -52,6 +53,9 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer>
 
     // Hide status bar and navigation
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
+    // Keep the screen on
+    WakelockPlus.enable();
   }
 
   void _initializePlayer() {
@@ -110,10 +114,12 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer>
     // Pause the video when the app is in the background
     if (state == AppLifecycleState.paused) {
       _controller?.pause();
+      WakelockPlus.disable();
     }
     // Resume the video when the app is in the foreground
     if (state == AppLifecycleState.resumed) {
       _controller?.play();
+      WakelockPlus.enable();
     }
   }
 
@@ -132,6 +138,9 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer>
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
     );
+
+    // Allow screen to sleep again
+    WakelockPlus.disable();
 
     super.dispose();
   }
@@ -782,8 +791,10 @@ class _UniversalVideoPlayerState extends State<UniversalVideoPlayer>
                               onPressed: () {
                                 if (value.isPlaying) {
                                   _controller!.pause();
+                                  WakelockPlus.disable();
                                 } else {
                                   _controller!.play();
+                                  WakelockPlus.enable();
                                 }
                               },
                             ),
