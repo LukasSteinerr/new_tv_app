@@ -170,50 +170,65 @@ class _NetflixStyleTvSeriesDetailScreenState
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with backdrop image
-            _buildHeader(size),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header with backdrop image
+                _buildHeader(size),
 
-            // Title and metadata section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title row with Netflix-style logo
-                  _buildTitleRow(),
+                // Title and metadata section
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title row with Netflix-style logo
+                      _buildTitleRow(),
 
-                  // Metadata row (year, language, HD)
-                  _buildMetadataRow(),
-                ],
+                      // Metadata row (year, language, HD)
+                      _buildMetadataRow(),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Overview/Synopsis
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: _buildOverview(),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Season selector
+                _buildSeasonSelector(),
+
+                const SizedBox(height: 16),
+
+                // Episodes list
+                _buildEpisodesList(),
+
+                const SizedBox(height: 24),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 50,
+            right: 15,
+            child: GestureDetector(
+              onTap: () => context.pop(),
+              child: const CircleAvatar(
+                backgroundColor: Colors.black54,
+                child: Icon(Icons.close, color: Colors.white),
               ),
             ),
-
-            const SizedBox(height: 16),
-
-            // Overview/Synopsis
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _buildOverview(),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Season selector
-            _buildSeasonSelector(),
-
-            const SizedBox(height: 16),
-
-            // Episodes list
-            _buildEpisodesList(),
-
-            const SizedBox(height: 24),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -313,23 +328,6 @@ class _NetflixStyleTvSeriesDetailScreenState
               size: 50,
               color: Colors.white,
             ),
-          ),
-        ),
-
-        // Cross and Cast buttons - exactly like Netflix clone
-        Positioned(
-          right: 15,
-          top: 50,
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: context.pop,
-                child: CircleAvatar(
-                  backgroundColor: Colors.black54,
-                  child: const Icon(Icons.close, color: Colors.white),
-                ),
-              ),
-            ],
           ),
         ),
       ],

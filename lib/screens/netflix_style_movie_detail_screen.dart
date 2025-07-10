@@ -208,331 +208,356 @@ class _NetflixStyleMovieDetailScreenState
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with backdrop image
-            _buildHeader(size),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header with backdrop image
+                _buildHeader(size),
 
-            // Title and metadata section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title
-                  Text(
-                    widget.movie.name.toUpperCase(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.5,
-                      shadows: [
-                        // Mimicking the orange glow from the image
-                        Shadow(
-                          blurRadius: 10.0,
-                          color: Colors.orangeAccent.withOpacity(0.7),
-                          offset: Offset(0, 0),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  // Genres
-                  if (_genres.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Wrap(
-                        spacing: 8.0,
-                        runSpacing: 4.0,
-                        children:
-                            _genres
-                                .map(
-                                  (genre) => Chip(
-                                    label: Text(genre),
-                                    backgroundColor: Colors.grey[800],
-                                    labelStyle: const TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                      ),
-                    ),
-                  // Metadata row (match percentage, year, duration, rating, HD)
-                  Row(
+                // Title and metadata section
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Assuming you have a match percentage in your Movie model
-                      // Text(
-                      //   '${movie.matchPercentage} Match',
-                      //   style: TextStyle(
-                      //     color: Colors.greenAccent,
-                      //     fontWeight: FontWeight.bold,
-                      //   ),
-                      // ),
-                      // SizedBox(width: 8),
-                      if (widget.movie.year != null &&
-                          widget.movie.year!.isNotEmpty)
-                        Text(
-                          widget.movie.year!,
-                          style: TextStyle(color: Colors.grey[400]),
-                        ),
-                      if (widget.movie.year != null &&
-                          widget.movie.year!.isNotEmpty)
-                        SizedBox(width: 8),
-                      if (widget.movie.duration != null &&
-                          widget.movie.duration!.isNotEmpty)
-                        Text(
-                          widget.movie.duration!,
-                          style: TextStyle(color: Colors.grey[400]),
-                        ),
-                      if (widget.movie.duration != null &&
-                          widget.movie.duration!.isNotEmpty)
-                        SizedBox(width: 8),
-                      // Star Rating
-                      if (widget.movie.rating != null &&
-                          widget.movie.rating!.isNotEmpty)
-                        Row(
-                          children: [
-                            StarRating(
-                              rating:
-                                  (double.tryParse(widget.movie.rating!) ??
-                                      0.0) /
-                                  2,
-                              starCount: 5,
-                              size: 20.0,
-                              color: Colors.orange,
-                              borderColor: Colors.grey,
-                              allowHalfRating: true,
+                      // Title
+                      Text(
+                        widget.movie.name.toUpperCase(),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          shadows: [
+                            // Mimicking the orange glow from the image
+                            Shadow(
+                              blurRadius: 10.0,
+                              color: Colors.orangeAccent.withOpacity(0.7),
+                              offset: Offset(0, 0),
                             ),
                           ],
                         ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 4,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey[600]!),
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                        child: Text(
-                          'HD',
-                          style: TextStyle(
-                            color: Colors.grey[400],
-                            fontSize: 12,
+                      ),
+                      SizedBox(height: 8),
+                      // Genres
+                      if (_genres.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Wrap(
+                            spacing: 8.0,
+                            runSpacing: 4.0,
+                            children:
+                                _genres
+                                    .map(
+                                      (genre) => Chip(
+                                        label: Text(genre),
+                                        backgroundColor: Colors.grey[800],
+                                        labelStyle: const TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
                           ),
                         ),
+                      // Metadata row (match percentage, year, duration, rating, HD)
+                      Row(
+                        children: [
+                          // Assuming you have a match percentage in your Movie model
+                          // Text(
+                          //   '${movie.matchPercentage} Match',
+                          //   style: TextStyle(
+                          //     color: Colors.greenAccent,
+                          //     fontWeight: FontWeight.bold,
+                          //   ),
+                          // ),
+                          // SizedBox(width: 8),
+                          if (widget.movie.year != null &&
+                              widget.movie.year!.isNotEmpty)
+                            Text(
+                              widget.movie.year!,
+                              style: TextStyle(color: Colors.grey[400]),
+                            ),
+                          if (widget.movie.year != null &&
+                              widget.movie.year!.isNotEmpty)
+                            SizedBox(width: 8),
+                          if (widget.movie.duration != null &&
+                              widget.movie.duration!.isNotEmpty)
+                            Text(
+                              widget.movie.duration!,
+                              style: TextStyle(color: Colors.grey[400]),
+                            ),
+                          if (widget.movie.duration != null &&
+                              widget.movie.duration!.isNotEmpty)
+                            SizedBox(width: 8),
+                          // Star Rating
+                          if (widget.movie.rating != null &&
+                              widget.movie.rating!.isNotEmpty)
+                            Row(
+                              children: [
+                                StarRating(
+                                  rating:
+                                      (double.tryParse(widget.movie.rating!) ??
+                                          0.0) /
+                                      2,
+                                  starCount: 5,
+                                  size: 20.0,
+                                  color: Colors.orange,
+                                  borderColor: Colors.grey,
+                                  allowHalfRating: true,
+                                ),
+                              ],
+                            ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey[600]!),
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                            child: Text(
+                              'HD',
+                              style: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          Spacer(),
+                          GestureDetector(
+                            onTap: _toggleMyList,
+                            child: Icon(
+                              widget.movie.myList == 1
+                                  ? Icons.check
+                                  : Icons.add,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          GestureDetector(
+                            onTap: _downloadMovie,
+                            child: const Icon(
+                              Icons.cloud_download_outlined,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
-                      Spacer(),
-                      GestureDetector(
-                        onTap: _toggleMyList,
-                        child: Icon(
-                          widget.movie.myList == 1 ? Icons.check : Icons.add,
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Play button
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey[700],
+                      foregroundColor: Colors.white,
+                      minimumSize: Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                    icon: Icon(Icons.play_arrow),
+                    label: Text('Play'),
+                    onPressed: _playMovie,
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Overview/Synopsis
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Overview',
+                        style: TextStyle(
                           color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(width: 16),
-                      GestureDetector(
-                        onTap: _downloadMovie,
-                        child: const Icon(
-                          Icons.cloud_download_outlined,
+                      SizedBox(height: 8),
+                      if (_overview != null &&
+                          _overview!.isNotEmpty) // Use _overview
+                        ReadMoreText(
+                          _overview!,
+                          trimLines: 3,
+                          colorClickableText: Colors.pink,
+                          trimMode: TrimMode.Line,
+                          trimCollapsedText: 'Show more',
+                          trimExpandedText: 'Show less',
+                          moreStyle: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          style: TextStyle(
+                            color: Colors.grey[400],
+                            fontSize: 14,
+                            height: 1.5,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Top Cast section
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Top Cast',
+                        style: TextStyle(
                           color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 12),
+                      SizedBox(
+                        height: 160,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount:
+                              (widget.movie.cast?.length ?? 0) > 10
+                                  ? 11
+                                  : (widget.movie.cast?.length ?? 0),
+                          itemBuilder: (context, index) {
+                            if (index == 10) {
+                              return GestureDetector(
+                                onTap: () {
+                                  context.push(
+                                    '/all-actors',
+                                    extra: widget.movie,
+                                  );
+                                },
+                                child: Container(
+                                  width: 80,
+                                  margin: const EdgeInsets.only(right: 16.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 40,
+                                        backgroundColor: Colors.grey[800],
+                                        child: const Icon(
+                                          Icons.arrow_forward_ios,
+                                          color: Colors.white,
+                                          size: 30,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      const Text(
+                                        'See All',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+
+                            final actor = widget.movie.cast![index];
+                            final profileUrl =
+                                actor.profilePath != null
+                                    ? TMDBService.getPosterUrl(
+                                      actor.profilePath!,
+                                    )
+                                    : null;
+
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 16.0),
+                              child: SizedBox(
+                                width: 80,
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 40,
+                                      backgroundImage:
+                                          profileUrl != null
+                                              ? CachedNetworkImageProvider(
+                                                profileUrl,
+                                              )
+                                              : null,
+                                      backgroundColor: Colors.grey[800],
+                                      child:
+                                          profileUrl == null
+                                              ? const Icon(
+                                                Icons.person,
+                                                size: 40,
+                                              )
+                                              : null,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      actor.name,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      actor.character,
+                                      style: TextStyle(
+                                        color: Colors.grey[500],
+                                        fontSize: 10,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Play button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[700],
-                  foregroundColor: Colors.white,
-                  minimumSize: Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
                 ),
-                icon: Icon(Icons.play_arrow),
-                label: Text('Play'),
-                onPressed: _playMovie,
+
+                const SizedBox(height: 24),
+                _buildSimilarMovies(),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 50,
+            right: 15,
+            child: GestureDetector(
+              onTap: () => context.pop(),
+              child: const CircleAvatar(
+                backgroundColor: Colors.black54,
+                child: Icon(Icons.close, color: Colors.white),
               ),
             ),
-
-            const SizedBox(height: 24),
-
-            // Overview/Synopsis
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Overview',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  if (_overview != null &&
-                      _overview!.isNotEmpty) // Use _overview
-                    ReadMoreText(
-                      _overview!,
-                      trimLines: 3,
-                      colorClickableText: Colors.pink,
-                      trimMode: TrimMode.Line,
-                      trimCollapsedText: 'Show more',
-                      trimExpandedText: 'Show less',
-                      moreStyle: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                      style: TextStyle(
-                        color: Colors.grey[400],
-                        fontSize: 14,
-                        height: 1.5,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Top Cast section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Top Cast',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  SizedBox(
-                    height: 160,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount:
-                          (widget.movie.cast?.length ?? 0) > 10
-                              ? 11
-                              : (widget.movie.cast?.length ?? 0),
-                      itemBuilder: (context, index) {
-                        if (index == 10) {
-                          return GestureDetector(
-                            onTap: () {
-                              context.push('/all-actors', extra: widget.movie);
-                            },
-                            child: Container(
-                              width: 80,
-                              margin: const EdgeInsets.only(right: 16.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 40,
-                                    backgroundColor: Colors.grey[800],
-                                    child: const Icon(
-                                      Icons.arrow_forward_ios,
-                                      color: Colors.white,
-                                      size: 30,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  const Text(
-                                    'See All',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }
-
-                        final actor = widget.movie.cast![index];
-                        final profileUrl =
-                            actor.profilePath != null
-                                ? TMDBService.getPosterUrl(actor.profilePath!)
-                                : null;
-
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 16.0),
-                          child: SizedBox(
-                            width: 80,
-                            child: Column(
-                              children: [
-                                CircleAvatar(
-                                  radius: 40,
-                                  backgroundImage:
-                                      profileUrl != null
-                                          ? CachedNetworkImageProvider(
-                                            profileUrl,
-                                          )
-                                          : null,
-                                  backgroundColor: Colors.grey[800],
-                                  child:
-                                      profileUrl == null
-                                          ? const Icon(Icons.person, size: 40)
-                                          : null,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  actor.name,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text(
-                                  actor.character,
-                                  style: TextStyle(
-                                    color: Colors.grey[500],
-                                    fontSize: 10,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-            _buildSimilarMovies(),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -692,23 +717,6 @@ class _NetflixStyleMovieDetailScreenState
               size: 50,
               color: Colors.white,
             ),
-          ),
-        ),
-
-        // Cross and Cast buttons - exactly like Netflix clone
-        Positioned(
-          right: 15,
-          top: 50,
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: context.pop,
-                child: CircleAvatar(
-                  backgroundColor: Colors.black54,
-                  child: const Icon(Icons.close, color: Colors.white),
-                ),
-              ),
-            ],
           ),
         ),
       ],
