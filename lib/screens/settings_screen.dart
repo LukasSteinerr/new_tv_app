@@ -170,73 +170,201 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      // Remove the standard app bar
-      extendBodyBehindAppBar: true, // Allow content to go behind app bar
-      // AppBar is removed from here and will be in the parent XtreamPlaylistScreen
+      extendBodyBehindAppBar: true,
       body: ListView(
-        // Keep ListView for content
-        controller: _scrollController, // Add the ScrollController
-        padding: const EdgeInsets.only(
-          top: kToolbarHeight + 24, // Add back top padding
-        ),
+        controller: _scrollController,
+        padding: const EdgeInsets.only(top: kToolbarHeight + 24),
         children: [
-          ListTile(
-            title: const Text('Playlist Information'),
-            subtitle: Text(widget.playlist.name),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.edit),
-            title: const Text('Edit Playlist'),
+          _buildSectionHeader('Account'),
+          _buildSettingsItem(
+            icon: Icons.edit,
+            title: 'Edit Playlist',
             onTap: _editPlaylist,
           ),
-          ListTile(
-            leading: const Icon(Icons.refresh),
-            title: const Text('Refresh Playlist'),
-            subtitle: Text(
-              'Last updated: ${_formatDate(widget.playlist.lastUpdated)}',
-            ),
+          _buildSettingsItem(
+            icon: Icons.refresh,
+            title: 'Refresh Playlist',
+            subtitle:
+                'Last updated: ${_formatDate(widget.playlist.lastUpdated)}',
             onTap: _refreshPlaylist,
           ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.delete_forever, color: Colors.red),
-            title: const Text('Delete Download History'),
-            subtitle: const Text('Remove all download records'),
+          _buildSettingsItem(
+            icon: Icons.info_outline,
+            title: 'Playlist Details',
+            subtitle: '${widget.playlist.name} - ${widget.playlist.typeName}',
+            onTap: () => _showPlaylistDetails(context),
+          ),
+          const SizedBox(height: 20),
+          _buildSectionHeader('Settings'),
+          _buildSettingsItem(
+            icon: Icons.delete_sweep,
+            title: 'Delete Download History',
+            subtitle: 'Remove all download records',
             onTap: _deleteAllDownloads,
           ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.info),
-            title: const Text('Playlist Details'),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Type: ${widget.playlist.typeName}'),
-                Text('URL: ${widget.playlist.url}'),
-                if (widget.playlist.username != null)
-                  Text('Username: ${widget.playlist.username}'),
-              ],
-            ),
+          _buildSettingsItem(
+            icon: Icons.help_outline,
+            title: 'Refresh Tips',
+            onTap: () => _showRefreshTips(context),
           ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.help_outline),
-            title: const Text('Refresh Tips'),
-            subtitle: const Text(
-              'If refresh takes too long:\n'
-              '• Make sure your internet connection is stable\n'
-              '• Large playlists may take 5-10 minutes\n'
-              '• The app may appear frozen but is working',
-            ),
-          ),
-          const Divider(),
-          const ListTile(
-            title: Text('About'),
-            subtitle: Text('IPTV Player App\nVersion 1.0.0'),
+          _buildSettingsItem(
+            icon: Icons.info,
+            title: 'About',
+            subtitle: 'IPTV Player App - Version 1.0.0',
+            onTap: () => _showAboutDialog(context),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: 16.0,
+        right: 16.0,
+        top: 20.0,
+        bottom: 10.0,
+      ),
+      child: Text(
+        title,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSettingsItem({
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.white70),
+      title: Text(
+        title,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      subtitle:
+          subtitle != null
+              ? Text(subtitle, style: const TextStyle(color: Colors.white60))
+              : null,
+      trailing: const Icon(
+        Icons.arrow_forward_ios,
+        color: Colors.white38,
+        size: 16,
+      ),
+      onTap: onTap,
+    );
+  }
+
+  void _showPlaylistDetails(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: Colors.grey[900],
+            title: const Text(
+              'Playlist Details',
+              style: TextStyle(color: Colors.white),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Name: ${widget.playlist.name}',
+                  style: const TextStyle(color: Colors.white70),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Type: ${widget.playlist.typeName}',
+                  style: const TextStyle(color: Colors.white70),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'URL: ${widget.playlist.url}',
+                  style: const TextStyle(color: Colors.white70),
+                ),
+                if (widget.playlist.username != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    'Username: ${widget.playlist.username}',
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+                ],
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => context.pop(),
+                child: const Text(
+                  'Close',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showRefreshTips(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: Colors.grey[900],
+            title: const Text(
+              'Refresh Tips',
+              style: TextStyle(color: Colors.white),
+            ),
+            content: const Text(
+              '• Make sure your internet connection is stable.\n'
+              '• Large playlists may take 5-10 minutes.\n'
+              '• The app may appear frozen but is working.',
+              style: TextStyle(color: Colors.white70),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => context.pop(),
+                child: const Text(
+                  'Got it',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showAboutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: Colors.grey[900],
+            title: const Text('About', style: TextStyle(color: Colors.white)),
+            content: const Text(
+              'IPTV Player App\nVersion 1.0.0',
+              style: TextStyle(color: Colors.white70),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => context.pop(),
+                child: const Text(
+                  'Close',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
     );
   }
 

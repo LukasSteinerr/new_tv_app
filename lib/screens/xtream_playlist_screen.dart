@@ -116,12 +116,20 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
     return Scaffold(
       backgroundColor: Colors.black, // Set background color
       extendBodyBehindAppBar: true, // Allow body to extend behind AppBar
-      appBar: XtreamAppBar(
-        appBarOpacity: _appBarOpacity,
-        playlistService: widget.playlistService,
-        objectBoxService: _objectBoxService,
-        playlist: widget.playlist,
-      ),
+      appBar:
+          _currentIndex == 3
+              ? AppBar(
+                backgroundColor: Colors.black.withOpacity(_appBarOpacity),
+                elevation: 0,
+                leading: const BackButton(),
+                title: const Text('Settings'),
+              )
+              : XtreamAppBar(
+                appBarOpacity: _appBarOpacity,
+                playlistService: widget.playlistService,
+                objectBoxService: _objectBoxService,
+                playlist: widget.playlist,
+              ),
       body:
           _isLoading
               ? Center(
