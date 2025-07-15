@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:656694233391:android:208d6e480e91e1a67c39da",
         "android_client_info": {
-          "package_name": "com.example.tv"
+          "package_name": "com.lukas.iptvsonic"
         }
       },
       "oauth_client": [
@@ -34,7 +34,7 @@
               "client_id": "656694233391-3h0pp8ccmr1kci6smnoe1jr3tusaecd7.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.tv"
+                "bundle_id": "com.lukas.iptvsonic"
               }
             }
           ]
