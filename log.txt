@@ -1,0 +1,57 @@
+2025-07-15 18:46:50.827  2238-2238  ndroid.systemu          com.android.systemui                 E  Invalid ID 0x00000000.
+2025-07-15 18:46:50.827 31142-32680 ReflectedParamUpdater   app_process                          D  extent() != 1 for single value type: algo.buffers.max-count.values
+2025-07-15 18:46:50.828 31142-32680 ReflectedParamUpdater   app_process                          D  extent() != 1 for single value type: output.subscribed-indices.values
+2025-07-15 18:46:50.828 31142-32680 ReflectedParamUpdater   app_process                          D  extent() != 1 for single value type: input.buffers.allocator-ids.values
+2025-07-15 18:46:50.828 31142-32680 ReflectedParamUpdater   app_process                          D  extent() != 1 for single value type: output.buffers.allocator-ids.values
+2025-07-15 18:46:50.828 31142-32680 ReflectedParamUpdater   app_process                          D  extent() != 1 for single value type: algo.buffers.allocator-ids.values
+2025-07-15 18:46:50.829 31142-32680 ReflectedParamUpdater   app_process                          D  extent() != 1 for single value type: output.buffers.pool-ids.values
+2025-07-15 18:46:50.829 31142-32680 ReflectedParamUpdater   app_process                          D  extent() != 1 for single value type: algo.buffers.pool-ids.values
+2025-07-15 18:46:50.830  2238-2238  MouseWheelSynthesizer   com.android.systemui                 D  mMoveStepInDp: 64, mMoveStepInPixel: 192, mUpTimeDelayed: 100
+2025-07-15 18:46:50.830  2238-2238  ViewRootImpl            com.android.systemui                 D  ViewRootImpl mIsInProductivePCDisplay: false
+2025-07-15 18:46:50.830  1668-2378  HwPCUtils#...iewManager system_server                        I  check if rio enable, displayId = 0， packageName = com.android.systemui
+2025-07-15 18:46:50.832  1668-1684  WindowManager           system_server                        I  addWindowToken: displayid:0 binder:android.os.BinderProxy@f36a5fa token:WindowToken{d528e08 android.os.BinderProxy@f36a5fa}
+2025-07-15 18:46:50.833  1668-1684  WindowManager           system_server                        E  App trying to use insecure INPUT_FEATURE_NO_INPUT_CHANNEL flag. Ignoring
+2025-07-15 18:46:50.834  1668-1684  WindowManager           system_server                        I  addWindow: Window{59d19a1 u0 AssistPreviewPanel} client:android.os.BinderProxy@a3307ab currentDisplayId:0 requestDisplayId:0 token:android.os.BinderProxy@f36a5fa
+2025-07-15 18:46:50.835  2238-2238  InputEventReceiver      com.android.systemui                 D  dispatchInputInterval 1000000
+2025-07-15 18:46:50.835  2238-2238  StatusBar               com.android.systemui                 W  disable<e i a s b h r c s > disable2<q i n >
+2025-07-15 18:46:50.837  2238-2238  HwQsUtils               com.android.systemui                 I  config changed, use new width: 536872064
+2025-07-15 18:46:50.837 32446-32446 VLC/JNI/VLCObject       com.example.tv                       E  FindClass(org/videolan/libvlc/interfaces/IMedia$Track) failed
+2025-07-15 18:46:50.838 32446-32446 VLC/LibVLC              com.example.tv                       E  Can't load vlcjni library: java.lang.UnsatisfiedLinkError: JNI_ERR returned from JNI_OnLoad in "/data/app/com.example.tv-ut8BpAWUDkooGDFHSd7Hmg==/lib/arm64/libvlcjni.so"
+2025-07-15 18:46:50.839  1668-1684  InputDispatcher         system_server                        D  Window handle WindowManager has no registered input channel
+2025-07-15 18:46:50.840 31142-32680 CCodecConfig            app_process                          I  query failed after returning 12 values (BAD_INDEX)
+2025-07-15 18:46:50.840 31142-32680 CCodecConfig            app_process                          D  c2 config is Dict {
+                                                                                                      c2::u32 algo.bitrate-mode.value = 3
+                                                                                                      c2::u32 coded.bitrate.value = 64000
+                                                                                                      c2::float coded.frame-rate.value = 30
+                                                                                                      c2::u32 coded.pl.level = 28679
+                                                                                                      c2::u32 coded.pl.profile = 28672
+                                                                                                      c2::u32 coding.intra-refresh.mode = 0
+                                                                                                      c2::float coding.intra-refresh.period = 0
+                                                                                                      c2::u32 coding.request-sync-frame.value = 0
+                                                                                                      c2::i64 coding.sync-frame-interval.value = 1000000
+                                                                                                      Buffer coding.temporal-layering = {
+                                                                                                        00000000:  10 00 00 00 07 20 01 52  00 00 00 00 00 00 00 00  ..... .R........
+                                                                                                      }
+                                                                                                      c2::u32 input.delay.value = 0
+                                                                                                      string input.media-type.value = "video/raw"
+                                                                                                      string output.media-type.value = "video/x-vnd.on2.vp8"
+                                                                                                      c2::u32 raw.color.matrix = 0
+                                                                                                      c2::u32 raw.color.primaries = 0
+                                                                                                      c2::u32 raw.color.range = 0
+                                                                                                      c2::u32 raw.color.transfer = 0
+                                                                                                      c2::u32 raw.size.height = 240
+                                                                                                      c2::u32 raw.size.width = 320
+                                                                                                    }
+2025-07-15 18:46:50.840 31142-32680 ColorUtils              app_process                          W  expected specified color aspects (0:0:0:0)
+2025-07-15 18:46:50.842  1668-1668  BehaviorCo...torService system_server                        D  into landscape
+2025-07-15 18:46:50.842  2924-5337  HwLauncher              com.huawei.android.launcher          W  Launcher.Utilities recycleBm() Drawable = null
+2025-07-15 18:46:50.843 32446-32446 com.example.tv          com.example.tv                       I  System.exit called, status: 1
+2025-07-15 18:46:50.843 32446-32446 AndroidRuntime          com.example.tv                       I  VM exiting with result code 1, cleanup skipped.
+2025-07-15 18:46:50.845  2924-5337  HwPicAverageNoises      com.huawei.android.launcher          D  sDeviceSize = 6.11
+2025-07-15 18:46:50.846 17011-31098 C2Store                 media.swcodec                        V  in ~ComponentModule
+2025-07-15 18:46:50.846 17011-31098 C2Store                 media.swcodec                        V  unloading dll
+2025-07-15 18:46:50.847 31809-31809 HiSuggesti...pplication com.huawei.intelligent               I  onConfigurationChanged
+2025-07-15 18:46:50.847 31809-31809 HiBoard_22...eenUiUtils com.huawei.intelligent               I  setConfig enter
+2025-07-15 18:46:50.847 31809-31809 HiSuggesti...pplication com.huawei.intelligent               I  onConfigurationChanged OldConfiguration{FontScale=1.0, UiMode=33, DensityDpi=480, DarkSaveMode=false, Locale=sv_SE}
+2025-07-15 18:46:50.847 31809-31809 HiSuggesti...pplication com.huawei.intelligent               I  onConfigurationChanged NewConfiguration{FontScale=1.0, UiMode=33, DensityDpi=480, DarkSaveMode=false, Locale=sv_SE, Locale.getDefault()=sv_SE}
+2025-07-15 18:46:50.847  1668-1668  BehaviorCo...torService system_server                        E  repeatedly unregister the point listener
