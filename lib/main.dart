@@ -3,8 +3,11 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:io';
+
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logging/logging.dart'; // Import logging
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'router/app_router.dart';
 import 'services/objectbox_service.dart';
 import 'services/playlist_service.dart';
@@ -15,8 +18,24 @@ import 'firebase_options.dart';
 
 final _log = Logger('MainApp'); // Add logger
 
+Future<void> _configureSDK() async {
+  await Purchases.setLogLevel(LogLevel.debug);
+  PurchasesConfiguration? configuration;
+
+  if (Platform.isAndroid) {
+    configuration = PurchasesConfiguration("goog_NclmcljeFjGNTzmWMnzoweYTthP");
+  } else if (Platform.isIOS) {
+    configuration = PurchasesConfiguration("API_KEY");
+  }
+
+  if (configuration != null) {
+    await Purchases.configure(configuration);
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await _configureSDK();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);

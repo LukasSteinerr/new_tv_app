@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer';
+
+import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import 'package:readmore/readmore.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
 import 'package:flutter_rating/flutter_rating.dart';
@@ -246,32 +250,54 @@ class _NetflixStyleTvSeriesDetailScreenState
     });
   }
 
-  void _playFirstEpisode() async {
-    // Made async
+  void _playFirstEpisode() {
     if (_selectedSeason != null &&
         _seasonEpisodes.containsKey(_selectedSeason)) {
       final episodes = _seasonEpisodes[_selectedSeason]!;
       if (episodes.isNotEmpty) {
-        final episode = episodes.first;
-        final appDir = await getApplicationDocumentsDirectory();
-        final localPath = '${appDir.path}/episodes/${episode.title}.mp4';
-        final localFile = File(localPath);
-
-        if (localFile.existsSync()) {
-          await context.push(
-            '/video-player',
-            extra: {'episode': episode, 'localPath': localPath},
-          );
-        } else {
-          await context.push('/video-player', extra: episode);
-        }
-        _setPortraitMode(); // Restore portrait mode
-        SystemChrome.setEnabledSystemUIMode(
-          SystemUiMode.manual,
-          overlays: SystemUiOverlay.values,
-        ); // Restore UI
+        _checkSubscriptionAndPlay(episodes.first);
       }
     }
+  }
+
+  void _checkSubscriptionAndPlay(TvEpisode episode) async {
+    try {
+      CustomerInfo customerInfo = await Purchases.getCustomerInfo();
+      if (customerInfo.entitlements.all["Pro"] != null &&
+          customerInfo.entitlements.all["Pro"]!.isActive) {
+        // User is subscribed, play the episode
+        _startPlayback(episode);
+      } else {
+        // User is not subscribed, show the paywall
+        final paywallResult = await RevenueCatUI.presentPaywallIfNeeded("Pro");
+        log("Paywall result: $paywallResult");
+        if (paywallResult == PaywallResult.purchased) {
+          _startPlayback(episode);
+        }
+      }
+    } on PlatformException catch (e) {
+      log("Paywall error: ${e.message}");
+    }
+  }
+
+  void _startPlayback(TvEpisode episode) async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final localPath = '${appDir.path}/episodes/${episode.title}.mp4';
+    final localFile = File(localPath);
+
+    if (localFile.existsSync()) {
+      await context.push(
+        '/video-player',
+        extra: {'episode': episode, 'localPath': localPath},
+      );
+    } else {
+      await context.push('/video-player', extra: episode);
+    }
+    _setPortraitMode(); // Restore portrait mode
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    ); // Restore UI
   }
 
   Widget _buildHeader(Size size) {
@@ -532,26 +558,8 @@ class _NetflixStyleTvSeriesDetailScreenState
           return Padding(
             padding: const EdgeInsets.only(bottom: 24.0),
             child: InkWell(
-              onTap: () async {
-                final appDir = await getApplicationDocumentsDirectory();
-                final localPath =
-                    '${appDir.path}/episodes/${episode.title}.mp4';
-                final localFile = File(localPath);
-
-                if (localFile.existsSync()) {
-                  await context.push(
-                    '/video-player',
-                    extra: {'episode': episode, 'localPath': localPath},
-                  );
-                } else {
-                  await context.push('/video-player', extra: episode);
-                }
-
-                _setPortraitMode();
-                SystemChrome.setEnabledSystemUIMode(
-                  SystemUiMode.manual,
-                  overlays: SystemUiOverlay.values,
-                );
+              onTap: () {
+                _checkSubscriptionAndPlay(episode);
               },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

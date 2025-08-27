@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer';
+
+import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import 'package:readmore/readmore.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
 import 'package:flutter_rating/flutter_rating.dart';
@@ -124,6 +128,26 @@ class _NetflixStyleMovieDetailScreenState
   }
 
   void _playMovie() async {
+    try {
+      CustomerInfo customerInfo = await Purchases.getCustomerInfo();
+      if (customerInfo.entitlements.all["Pro"] != null &&
+          customerInfo.entitlements.all["Pro"]!.isActive) {
+        // User is subscribed, play the movie
+        _startPlayback();
+      } else {
+        // User is not subscribed, show the paywall
+        final paywallResult = await RevenueCatUI.presentPaywallIfNeeded("Pro");
+        log("Paywall result: $paywallResult");
+        if (paywallResult == PaywallResult.purchased) {
+          _startPlayback();
+        }
+      }
+    } on PlatformException catch (e) {
+      log("Paywall error: ${e.message}");
+    }
+  }
+
+  void _startPlayback() async {
     final appDir = await getApplicationDocumentsDirectory();
     final localPath = '${appDir.path}/movies/${widget.movie.name}.mp4';
     final localFile = File(localPath);
