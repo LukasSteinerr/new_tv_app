@@ -646,13 +646,7 @@ class _NetflixStyleTvSeriesDetailScreenState
                           color: Colors.white,
                         ),
                         onPressed: () {
-                          DownloadService().startDownload(episode);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Starting download...'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
+                          _checkSubscriptionAndDownload(context, episode);
                         },
                       ),
                     ],
@@ -680,5 +674,40 @@ class _NetflixStyleTvSeriesDetailScreenState
         },
       ),
     );
+  }
+}
+
+void _checkSubscriptionAndDownload(
+  BuildContext context,
+  TvEpisode episode,
+) async {
+  try {
+    CustomerInfo customerInfo = await Purchases.getCustomerInfo();
+    if (customerInfo.entitlements.all["Pro"] != null &&
+        customerInfo.entitlements.all["Pro"]!.isActive) {
+      // User is subscribed, start the download
+      DownloadService().startDownload(episode);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Starting download...'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      // User is not subscribed, show the paywall
+      final paywallResult = await RevenueCatUI.presentPaywallIfNeeded("Pro");
+      log("Paywall result: $paywallResult");
+      if (paywallResult == PaywallResult.purchased) {
+        DownloadService().startDownload(episode);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Starting download...'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    }
+  } on PlatformException catch (e) {
+    log("Paywall error: ${e.message}");
   }
 }
