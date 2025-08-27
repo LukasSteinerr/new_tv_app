@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'dart:developer';
+
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import '../models/playlist.dart';
 import '../models/tv_series.dart';
 import '../models/category.dart';
@@ -139,6 +144,26 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
   }
 
   void _playFirstEpisode(TvSeries series) async {
+    try {
+      CustomerInfo customerInfo = await Purchases.getCustomerInfo();
+      if (customerInfo.entitlements.all["Pro"] != null &&
+          customerInfo.entitlements.all["Pro"]!.isActive) {
+        // User is subscribed, play the first episode
+        _startPlayback(series);
+      } else {
+        // User is not subscribed, show the paywall
+        final paywallResult = await RevenueCatUI.presentPaywallIfNeeded("Pro");
+        log("Paywall result: $paywallResult");
+        if (paywallResult == PaywallResult.purchased) {
+          _startPlayback(series);
+        }
+      }
+    } on PlatformException catch (e) {
+      log("Paywall error: ${e.message}");
+    }
+  }
+
+  void _startPlayback(TvSeries series) async {
     try {
       final episodes = await widget.playlistService.getTvSeriesEpisodes(series);
       if (episodes.isNotEmpty && episodes.first.streamUrl.isNotEmpty) {

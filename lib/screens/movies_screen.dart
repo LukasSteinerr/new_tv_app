@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 // Will be used for BackdropFilter if we keep parts of old FeaturedContent
+import 'dart:developer';
+
+import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import '../models/playlist.dart';
 import '../models/movie.dart';
 import '../models/category.dart';
@@ -131,7 +136,27 @@ class _MoviesScreenState extends State<MoviesScreen> {
     context.push('/movie-detail', extra: movie);
   }
 
-  void _playMovie(Movie movie) {
+  void _playMovie(Movie movie) async {
+    try {
+      CustomerInfo customerInfo = await Purchases.getCustomerInfo();
+      if (customerInfo.entitlements.all["Pro"] != null &&
+          customerInfo.entitlements.all["Pro"]!.isActive) {
+        // User is subscribed, play the movie
+        _startPlayback(movie);
+      } else {
+        // User is not subscribed, show the paywall
+        final paywallResult = await RevenueCatUI.presentPaywallIfNeeded("Pro");
+        log("Paywall result: $paywallResult");
+        if (paywallResult == PaywallResult.purchased) {
+          _startPlayback(movie);
+        }
+      }
+    } on PlatformException catch (e) {
+      log("Paywall error: ${e.message}");
+    }
+  }
+
+  void _startPlayback(Movie movie) {
     if (movie.streamUrl.isNotEmpty) {
       context.push('/video-player', extra: movie);
     } else {
