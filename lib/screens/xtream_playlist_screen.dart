@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:developer';
+import 'package:flutter/services.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import '../models/playlist.dart';
 import '../services/playlist_service.dart';
 import 'live_tv_screen.dart';
@@ -29,6 +33,7 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
   late List<Widget> _screens;
   bool _isLoading = true;
   ObjectBoxService? _objectBoxService;
+  bool _isSubscribed = false;
 
   // For AppBar opacity based on scroll
   double _appBarOpacity = 0.0; // Keep opacity state
@@ -41,7 +46,23 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
 
   Future<void> _initializeServices() async {
     _objectBoxService = await ObjectBoxService.create();
+    await _checkSubscription();
     _initScreens();
+  }
+
+  Future<void> _checkSubscription() async {
+    try {
+      CustomerInfo customerInfo = await Purchases.getCustomerInfo();
+      if (mounted) {
+        setState(() {
+          _isSubscribed =
+              customerInfo.entitlements.all["Pro"] != null &&
+              customerInfo.entitlements.all["Pro"]!.isActive;
+        });
+      }
+    } on PlatformException catch (e) {
+      log("Error checking subscription: ${e.message}");
+    }
   }
 
   @override
@@ -122,7 +143,15 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
                 backgroundColor: Colors.black.withOpacity(_appBarOpacity),
                 elevation: 0,
                 leading: const BackButton(),
-                title: const Text('Settings'),
+                title: Row(
+                  children: [
+                    const Text('Settings'),
+                    if (_isSubscribed) ...[
+                      const SizedBox(width: 8),
+                      const Icon(Icons.star, color: Colors.amber, size: 20),
+                    ],
+                  ],
+                ),
               )
               : XtreamAppBar(
                 appBarOpacity: _appBarOpacity,
@@ -139,6 +168,25 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
                 ),
               )
               : IndexedStack(index: _currentIndex, children: _screens),
+      floatingActionButton:
+          _isLoading || _isSubscribed
+              ? null
+              : FloatingActionButton.extended(
+                onPressed: () async {
+                  try {
+                    final paywallResult =
+                        await RevenueCatUI.presentPaywallIfNeeded("Pro");
+                    log("Paywall result: $paywallResult");
+                    if (paywallResult == PaywallResult.purchased) {
+                      _checkSubscription();
+                    }
+                  } on PlatformException catch (e) {
+                    log("Paywall error: ${e.message}");
+                  }
+                },
+                label: const Text('Unlock Pro'),
+                icon: const Icon(Icons.lock),
+              ),
       bottomNavigationBar: XtreamBottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
