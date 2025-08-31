@@ -143,15 +143,14 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
                 backgroundColor: Colors.black.withOpacity(_appBarOpacity),
                 elevation: 0,
                 leading: const BackButton(),
-                title: Row(
-                  children: [
-                    const Text('Settings'),
-                    if (_isSubscribed) ...[
-                      const SizedBox(width: 8),
-                      const Icon(Icons.star, color: Colors.amber, size: 20),
-                    ],
-                  ],
-                ),
+                title: const Text('Settings'),
+                actions: [
+                  if (_isSubscribed)
+                    const Padding(
+                      padding: EdgeInsets.only(right: 16.0),
+                      child: Icon(Icons.star, color: Colors.amber, size: 24),
+                    ),
+                ],
               )
               : XtreamAppBar(
                 appBarOpacity: _appBarOpacity,
