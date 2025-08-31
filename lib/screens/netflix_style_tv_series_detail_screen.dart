@@ -18,6 +18,7 @@ import '../services/tmdb_image_provider.dart';
 import 'universal_video_player.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:background_downloader/background_downloader.dart';
 
 class NetflixStyleTvSeriesDetailScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -681,6 +682,27 @@ void _checkSubscriptionAndDownload(
   BuildContext context,
   TvEpisode episode,
 ) async {
+  // Request notification permissions
+  final permission = await FileDownloader().permissions.status(
+    PermissionType.notifications,
+  );
+  if (permission != PermissionStatus.granted) {
+    final newPermission = await FileDownloader().permissions.request(
+      PermissionType.notifications,
+    );
+    if (newPermission != PermissionStatus.granted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Notification permission is required to see download progress.',
+          ),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return; // Don't proceed without permission
+    }
+  }
+
   try {
     CustomerInfo customerInfo = await Purchases.getCustomerInfo();
     if (customerInfo.entitlements.all["Pro"] != null &&

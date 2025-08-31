@@ -19,6 +19,7 @@ import '../services/download_service.dart';
 import 'all_actors_screen.dart'; // Import the new screen
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:background_downloader/background_downloader.dart';
 
 class NetflixStyleMovieDetailScreen extends StatefulWidget {
   final Movie movie;
@@ -185,6 +186,27 @@ class _NetflixStyleMovieDetailScreenState
   }
 
   void _downloadMovie() async {
+    // Request notification permissions
+    final permission = await FileDownloader().permissions.status(
+      PermissionType.notifications,
+    );
+    if (permission != PermissionStatus.granted) {
+      final newPermission = await FileDownloader().permissions.request(
+        PermissionType.notifications,
+      );
+      if (newPermission != PermissionStatus.granted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Notification permission is required to see download progress.',
+            ),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return; // Don't proceed without permission
+      }
+    }
+
     try {
       CustomerInfo customerInfo = await Purchases.getCustomerInfo();
       if (customerInfo.entitlements.all["Pro"] != null &&
