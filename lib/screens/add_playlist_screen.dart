@@ -80,10 +80,7 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
           playlist.id = widget.playlist!.id;
         }
 
-        await widget.playlistService.addPlaylist(playlist);
-
-        // Refresh the playlist data
-        await widget.playlistService.refreshPlaylist(playlist);
+        await widget.playlistService.fetchAndSavePlaylistData(playlist);
 
         if (mounted) {
           // Show success message with green checkmark

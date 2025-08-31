@@ -83,6 +83,9 @@ class MockPlaylistService implements PlaylistService {
 
   @override
   Future<void> refreshEpgData(Playlist playlist) async {}
+
+  @override
+  Future<void> fetchAndSavePlaylistData(Playlist playlist) async {}
 }
 
 void main() {
