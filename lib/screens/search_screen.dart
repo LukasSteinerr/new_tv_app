@@ -80,7 +80,7 @@ class SearchScreen extends SearchDelegate {
           crossAxisCount: 3,
           crossAxisSpacing: 8.0,
           mainAxisSpacing: 8.0,
-          childAspectRatio: 2 / 3,
+          childAspectRatio: 2 / 3.5,
         ),
         itemCount: results.length,
         itemBuilder: (context, index) {
@@ -184,7 +184,7 @@ class SearchScreen extends SearchDelegate {
           crossAxisCount: 3,
           crossAxisSpacing: 8.0,
           mainAxisSpacing: 8.0,
-          childAspectRatio: 2 / 3,
+          childAspectRatio: 2 / 3.5,
         ),
         itemCount: results.length,
         itemBuilder: (context, index) {
