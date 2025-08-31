@@ -1,6 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Added for SystemChrome
+import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
+import 'dart:developer';
 import 'package:go_router/go_router.dart';
 import '../models/playlist.dart';
 import '../models/category.dart';
@@ -136,6 +139,26 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   }
 
   Future<void> _refreshEpg() async {
+    try {
+      CustomerInfo customerInfo = await Purchases.getCustomerInfo();
+      if (customerInfo.entitlements.all["Pro"] != null &&
+          customerInfo.entitlements.all["Pro"]!.isActive) {
+        // User is subscribed, proceed with refresh
+        _proceedWithEpgRefresh();
+      } else {
+        // User is not subscribed, show the paywall
+        final paywallResult = await RevenueCatUI.presentPaywallIfNeeded("Pro");
+        log("Paywall result: $paywallResult");
+        if (paywallResult == PaywallResult.purchased) {
+          _proceedWithEpgRefresh();
+        }
+      }
+    } on PlatformException catch (e) {
+      log("Paywall error: ${e.message}");
+    }
+  }
+
+  Future<void> _proceedWithEpgRefresh() async {
     if (!mounted) return;
 
     final bool? shouldRefresh = await showDialog<bool>(
@@ -223,6 +246,26 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   }
 
   void _playChannel(Channel channel) async {
+    try {
+      CustomerInfo customerInfo = await Purchases.getCustomerInfo();
+      if (customerInfo.entitlements.all["Pro"] != null &&
+          customerInfo.entitlements.all["Pro"]!.isActive) {
+        // User is subscribed, play the channel
+        _startChannelPlayback(channel);
+      } else {
+        // User is not subscribed, show the paywall
+        final paywallResult = await RevenueCatUI.presentPaywallIfNeeded("Pro");
+        log("Paywall result: $paywallResult");
+        if (paywallResult == PaywallResult.purchased) {
+          _startChannelPlayback(channel);
+        }
+      }
+    } on PlatformException catch (e) {
+      log("Paywall error: ${e.message}");
+    }
+  }
+
+  void _startChannelPlayback(Channel channel) async {
     final hasEpg =
         channel.epgId != null &&
         channel.epgId!.isNotEmpty &&
