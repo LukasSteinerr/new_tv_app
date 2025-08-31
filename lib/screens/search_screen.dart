@@ -90,13 +90,29 @@ class SearchScreen extends SearchDelegate {
               onTap: () {
                 context.push('/movie-detail', extra: item);
               },
-              child: TMDBImage(
-                tmdbId: item.tmdbId,
-                fallbackUrl: item.coverUrl,
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.cover,
-                isMovie: true,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: TMDBImage(
+                      tmdbId: item.tmdbId,
+                      fallbackUrl: item.coverUrl,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                      isMovie: true,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    child: Text(
+                      item.name,
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
             );
           } else if (item is TvSeries) {
@@ -107,13 +123,29 @@ class SearchScreen extends SearchDelegate {
                   extra: {'series': item, 'playlistService': playlistService},
                 );
               },
-              child: TMDBImage(
-                tmdbId: item.tmdbId,
-                fallbackUrl: item.coverUrl,
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.cover,
-                isMovie: false,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: TMDBImage(
+                      tmdbId: item.tmdbId,
+                      fallbackUrl: item.coverUrl,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                      isMovie: false,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    child: Text(
+                      item.name,
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
             );
           }
@@ -162,13 +194,29 @@ class SearchScreen extends SearchDelegate {
               onTap: () {
                 context.push('/movie-detail', extra: item);
               },
-              child: TMDBImage(
-                tmdbId: item.tmdbId,
-                fallbackUrl: item.coverUrl,
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.cover,
-                isMovie: true,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: TMDBImage(
+                      tmdbId: item.tmdbId,
+                      fallbackUrl: item.coverUrl,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                      isMovie: true,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    child: Text(
+                      item.name,
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
             );
           } else if (item is TvSeries) {
@@ -179,13 +227,29 @@ class SearchScreen extends SearchDelegate {
                   extra: {'series': item, 'playlistService': playlistService},
                 );
               },
-              child: TMDBImage(
-                tmdbId: item.tmdbId,
-                fallbackUrl: item.coverUrl,
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.cover,
-                isMovie: false,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: TMDBImage(
+                      tmdbId: item.tmdbId,
+                      fallbackUrl: item.coverUrl,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                      isMovie: false,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    child: Text(
+                      item.name,
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
             );
           }
