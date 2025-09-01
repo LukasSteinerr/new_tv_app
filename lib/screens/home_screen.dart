@@ -269,16 +269,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(fontSize: 18),
                     ),
                     const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final result = await context.push('/add-playlist');
-
-                        if (result == true) {
-                          await _loadPlaylists();
-                        }
-                      },
-                      child: const Text('Add Playlist'),
-                    ),
                   ],
                 ),
               )
