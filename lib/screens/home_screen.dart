@@ -248,7 +248,15 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('IPTV Playlists'),
         backgroundColor: Colors.black, // Set AppBar color to black
         actions: [
-          // The download button has been removed from here.
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () async {
+              final result = await context.push('/add-playlist');
+              if (result == true) {
+                await _loadPlaylists();
+              }
+            },
+          ),
         ],
       ),
       body:
@@ -276,42 +284,52 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemCount: _playlists.length,
                 itemBuilder: (context, index) {
                   final playlist = _playlists[index];
-                  return ListTile(
-                    title: Text(playlist.name),
-                    subtitle: Text(
-                      'Type: ${playlist.typeName} • Last updated: ${_formatDate(playlist.lastUpdated)}',
-                    ),
-                    leading: Icon(
-                      playlist.isM3u ? Icons.playlist_play : Icons.cloud,
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.refresh),
-                          onPressed: () => _refreshPlaylist(playlist),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () => _deletePlaylist(playlist),
-                        ),
-                      ],
-                    ),
-                    onTap: () {
-                      context.push('/playlist-detail', extra: playlist);
+                  return FocusableActionDetector(
+                    onFocusChange: (hasFocus) {
+                      // Optional: You can add more visual feedback on focus change
                     },
+                    child: Builder(
+                      builder: (context) {
+                        final isFocused = Focus.of(context).hasFocus;
+                        return Container(
+                          color:
+                              isFocused
+                                  ? Colors.grey.withOpacity(0.3)
+                                  : Colors.transparent,
+                          child: ListTile(
+                            title: Text(playlist.name),
+                            subtitle: Text(
+                              'Type: ${playlist.typeName} • Last updated: ${_formatDate(playlist.lastUpdated)}',
+                            ),
+                            leading: Icon(
+                              playlist.isM3u
+                                  ? Icons.playlist_play
+                                  : Icons.cloud,
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.refresh),
+                                  onPressed: () => _refreshPlaylist(playlist),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete),
+                                  onPressed: () => _deletePlaylist(playlist),
+                                ),
+                              ],
+                            ),
+                            onTap: () {
+                              context.push('/playlist-detail', extra: playlist);
+                            },
+                          ),
+                        );
+                      },
+                    ),
                   );
                 },
               ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await context.push('/add-playlist');
-          if (result == true) {
-            await _loadPlaylists();
-          }
-        },
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: null,
     );
   }
 

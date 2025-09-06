@@ -1,56 +1,52 @@
 import 'package:flutter/material.dart';
 import '../models/tv_series.dart';
-import 'tmdb_image.dart'; // Assuming TMDBImage can handle loading/error similar to reference
+import '../widgets/tmdb_image.dart';
 
-class TvSeriesCard extends StatelessWidget {
+class TvSeriesCard extends StatefulWidget {
   final TvSeries series;
   final VoidCallback onTap;
 
   const TvSeriesCard({super.key, required this.series, required this.onTap});
 
   @override
+  _TvSeriesCardState createState() => _TvSeriesCardState();
+}
+
+class _TvSeriesCardState extends State<TvSeriesCard> {
+  bool _isFocused = false;
+
+  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: SizedBox(
-        // Constrain the width of the card
-        width: 130,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12.0), // From reference UI
-              child: TMDBImage(
-                tmdbId: series.tmdbId,
-                fallbackUrl: series.coverUrl,
-                width: 130,
-                height: 190, // Fixed height from reference UI
-                fit: BoxFit.cover,
-                isMovie: false, // Important: set to false for TV Series
-                // TODO: If TMDBImage doesn't have identical loading/error builders
-                // from reference UI, might need to use Image.network directly.
-              ),
+    return FocusableActionDetector(
+      onFocusChange: (hasFocus) {
+        setState(() {
+          _isFocused = hasFocus;
+        });
+      },
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          transform:
+              _isFocused
+                  ? (Matrix4.identity()..scale(1.1))
+                  : Matrix4.identity(),
+          margin: const EdgeInsets.symmetric(horizontal: 8.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8.0),
+            border:
+                _isFocused ? Border.all(color: Colors.white, width: 2.0) : null,
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: TMDBImage(
+              tmdbId: widget.series.tmdbId,
+              fallbackUrl: widget.series.coverUrl,
+              width: 150,
+              height: 225,
+              isMovie: false,
             ),
-            const SizedBox(height: 6.0), // Reduced spacing
-            // Wrap the SizedBox containing the Text with Expanded
-            Expanded(
-              child: SizedBox(
-                // To constrain text width and allow ellipsis
-                width:
-                    130, // Still useful to constrain width for horizontal layout
-                child: Text(
-                  series.name,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14, // From reference UI
-                    fontWeight: FontWeight.w500, // From reference UI
-                  ),
-                  maxLines: 1, // Changed to 1 line
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

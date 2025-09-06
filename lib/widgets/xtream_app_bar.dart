@@ -11,6 +11,8 @@ class XtreamAppBar extends StatelessWidget implements PreferredSizeWidget {
   final PlaylistService playlistService;
   final ObjectBoxService? objectBoxService;
   final Playlist playlist;
+  final PreferredSizeWidget? bottom;
+  final VoidCallback? onOpenDrawer;
 
   const XtreamAppBar({
     super.key,
@@ -18,6 +20,8 @@ class XtreamAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.playlistService,
     required this.objectBoxService,
     required this.playlist,
+    this.bottom,
+    this.onOpenDrawer,
   });
 
   @override
@@ -28,7 +32,13 @@ class XtreamAppBar extends StatelessWidget implements PreferredSizeWidget {
       surfaceTintColor: Colors.transparent,
       leading: const BackButton(color: Colors.white),
       titleSpacing: 0,
-      title: const SizedBox.shrink(),
+      title: Row(
+        children: [
+          if (onOpenDrawer != null)
+            IconButton(icon: const Icon(Icons.menu), onPressed: onOpenDrawer),
+          Image.asset('assets/Splash.png', height: 40),
+        ],
+      ),
       actions: [
         IconButton(
           icon: const Icon(Icons.list, color: Colors.white, size: 28),
@@ -74,9 +84,11 @@ class XtreamAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         const SizedBox(width: 8),
       ],
+      bottom: bottom,
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize =>
+      Size.fromHeight(kToolbarHeight + (bottom?.preferredSize.height ?? 0.0));
 }

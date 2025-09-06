@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'focusable_button.dart';
 // Assuming Movie model might be needed if we pass full details later,
 // but for now, callbacks are index-based.
 // import '../models/movie.dart';
@@ -155,66 +156,22 @@ class _FeaturedContentState extends State<FeaturedContent> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      width: 120.0, // As per reference UI
-                      child: ElevatedButton.icon(
+                      width: 120.0,
+                      child: FocusableButton(
                         onPressed: () {
                           widget.onPlayTapped(_currentPage);
                         },
                         icon: const Icon(Icons.play_arrow, size: 20),
-                        label: const Text('Play'),
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.white.withOpacity(0.25),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20, // Adjusted to match reference
-                            vertical: 8, // Adjusted to match reference
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              20,
-                            ), // As per reference
-                            side: BorderSide(
-                              color: Colors.white.withOpacity(0.3),
-                              width: 1,
-                            ),
-                          ),
-                          elevation: 0,
-                          textStyle: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        ),
+                        child: const Text('Play'),
                       ),
                     ),
-                    const SizedBox(width: 15), // As per reference UI
+                    const SizedBox(width: 15),
                     SizedBox(
-                      width: 120.0, // As per reference UI
-                      child: ElevatedButton(
+                      width: 120.0,
+                      child: FocusableButton(
                         onPressed: () {
                           widget.onDetailsTapped(_currentPage);
                         },
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.black.withOpacity(0.7),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20, // Adjusted to match reference
-                            vertical: 8, // Adjusted to match reference
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              20,
-                            ), // As per reference
-                            side: BorderSide(
-                              color: Colors.white.withOpacity(0.4),
-                              width: 1,
-                            ),
-                          ),
-                          elevation: 2, // As per reference
-                          textStyle: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        ),
                         child: const Text('Details'),
                       ),
                     ),

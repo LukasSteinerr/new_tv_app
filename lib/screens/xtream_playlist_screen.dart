@@ -12,7 +12,7 @@ import 'tv_series_screen.dart';
 import 'settings_screen.dart';
 import '../services/objectbox_service.dart';
 import '../widgets/xtream_app_bar.dart';
-import '../widgets/xtream_bottom_nav_bar.dart';
+import '../widgets/netflix_tab_bar.dart';
 
 class XtreamPlaylistScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -28,20 +28,27 @@ class XtreamPlaylistScreen extends StatefulWidget {
   State<XtreamPlaylistScreen> createState() => _XtreamPlaylistScreenState();
 }
 
-class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
-  int _currentIndex = 0;
+class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   late List<Widget> _screens;
   bool _isLoading = true;
   ObjectBoxService? _objectBoxService;
   bool _isSubscribed = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // For AppBar opacity based on scroll
-  double _appBarOpacity = 0.0; // Keep opacity state
+  double _appBarOpacity = 0.0;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 4, vsync: this);
     _initializeServices();
+    _tabController.addListener(() {
+      setState(() {
+        _appBarOpacity = 0.0;
+      });
+    });
   }
 
   Future<void> _initializeServices() async {
@@ -67,12 +74,12 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
 
   @override
   void dispose() {
+    _tabController.dispose();
     super.dispose();
   }
 
   void _updateAppBarOpacity(double scrollOffset) {
-    double quickThreshold =
-        10.0; // Transition to full target opacity over these many pixels
+    double quickThreshold = 10.0;
     double targetOpacity = 0.7;
     double newOpacity;
 
@@ -97,22 +104,23 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
         MoviesScreen(
           playlistService: widget.playlistService,
           playlist: widget.playlist,
-          onScrollUpdate: _updateAppBarOpacity, // Pass the callback
+          onScrollUpdate: _updateAppBarOpacity,
         ),
         TvSeriesScreen(
           playlistService: widget.playlistService,
           playlist: widget.playlist,
-          onScrollUpdate: _updateAppBarOpacity, // Pass the callback
+          onScrollUpdate: _updateAppBarOpacity,
         ),
         LiveTvScreen(
+          scaffoldKey: _scaffoldKey,
           playlistService: widget.playlistService,
           playlist: widget.playlist,
-          onScrollUpdate: _updateAppBarOpacity, // Pass the callback
+          onScrollUpdate: _updateAppBarOpacity,
         ),
         SettingsScreen(
           playlistService: widget.playlistService,
           playlist: widget.playlist,
-          onScrollUpdate: _updateAppBarOpacity, // Pass the callback
+          onScrollUpdate: _updateAppBarOpacity,
         ),
       ];
       if (mounted) {
@@ -135,29 +143,30 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Set background color
-      extendBodyBehindAppBar: true, // Allow body to extend behind AppBar
-      appBar:
-          _currentIndex == 3
-              ? AppBar(
-                backgroundColor: Colors.black.withOpacity(_appBarOpacity),
-                elevation: 0,
-                leading: const BackButton(),
-                title: const Text('Settings'),
-                actions: [
-                  if (_isSubscribed)
-                    const Padding(
-                      padding: EdgeInsets.only(right: 16.0),
-                      child: Icon(Icons.star, color: Colors.amber, size: 24),
-                    ),
-                ],
-              )
-              : XtreamAppBar(
-                appBarOpacity: _appBarOpacity,
-                playlistService: widget.playlistService,
-                objectBoxService: _objectBoxService,
-                playlist: widget.playlist,
-              ),
+      key: _scaffoldKey,
+      backgroundColor: Colors.black,
+      extendBodyBehindAppBar: true,
+      appBar: XtreamAppBar(
+        appBarOpacity: _appBarOpacity,
+        playlistService: widget.playlistService,
+        objectBoxService: _objectBoxService,
+        playlist: widget.playlist,
+        bottom: NetflixTabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Movies'),
+            Tab(text: 'TV Shows'),
+            Tab(text: 'Live TV'),
+            Tab(text: 'Settings'),
+          ],
+        ),
+        onOpenDrawer:
+            _tabController.index == 2
+                ? () {
+                  _scaffoldKey.currentState?.openDrawer();
+                }
+                : null,
+      ),
       body:
           _isLoading
               ? Center(
@@ -166,35 +175,7 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
                   size: 50,
                 ),
               )
-              : IndexedStack(index: _currentIndex, children: _screens),
-      floatingActionButton:
-          _isLoading || _isSubscribed
-              ? null
-              : FloatingActionButton.extended(
-                onPressed: () async {
-                  try {
-                    final paywallResult =
-                        await RevenueCatUI.presentPaywallIfNeeded("Pro");
-                    log("Paywall result: $paywallResult");
-                    if (paywallResult == PaywallResult.purchased) {
-                      _checkSubscription();
-                    }
-                  } on PlatformException catch (e) {
-                    log("Paywall error: ${e.message}");
-                  }
-                },
-                label: const Text('Unlock Pro'),
-                icon: const Icon(Icons.lock),
-              ),
-      bottomNavigationBar: XtreamBottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-            _appBarOpacity = 0.0; // Reset AppBar opacity to fully transparent
-          });
-        },
-      ),
+              : TabBarView(controller: _tabController, children: _screens),
     );
   }
 }

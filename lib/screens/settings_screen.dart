@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../models/playlist.dart';
 import '../services/playlist_service.dart';
 import '../services/download_service.dart';
+import '../widgets/focusable_settings_item.dart';
 
 class SettingsScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -176,19 +177,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
         padding: const EdgeInsets.only(top: kToolbarHeight + 24),
         children: [
           _buildSectionHeader('Account'),
-          _buildSettingsItem(
+          FocusableSettingsItem(
             icon: Icons.edit,
             title: 'Edit Playlist',
             onTap: _editPlaylist,
           ),
-          _buildSettingsItem(
+          FocusableSettingsItem(
             icon: Icons.refresh,
             title: 'Refresh Playlist',
             subtitle:
                 'Last updated: ${_formatDate(widget.playlist.lastUpdated)}',
             onTap: _refreshPlaylist,
           ),
-          _buildSettingsItem(
+          FocusableSettingsItem(
             icon: Icons.info_outline,
             title: 'Playlist Details',
             subtitle: '${widget.playlist.name} - ${widget.playlist.typeName}',
@@ -196,18 +197,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: 20),
           _buildSectionHeader('Settings'),
-          _buildSettingsItem(
+          FocusableSettingsItem(
             icon: Icons.delete_sweep,
             title: 'Delete Download History',
             subtitle: 'Remove all download records',
             onTap: _deleteAllDownloads,
           ),
-          _buildSettingsItem(
+          FocusableSettingsItem(
             icon: Icons.help_outline,
             title: 'Refresh Tips',
             onTap: () => _showRefreshTips(context),
           ),
-          _buildSettingsItem(
+          FocusableSettingsItem(
             icon: Icons.info,
             title: 'About',
             subtitle: 'IPTV Player App - Version 1.0.0',
@@ -234,34 +235,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           fontWeight: FontWeight.bold,
         ),
       ),
-    );
-  }
-
-  Widget _buildSettingsItem({
-    required IconData icon,
-    required String title,
-    String? subtitle,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.white70),
-      title: Text(
-        title,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      subtitle:
-          subtitle != null
-              ? Text(subtitle, style: const TextStyle(color: Colors.white60))
-              : null,
-      trailing: const Icon(
-        Icons.arrow_forward_ios,
-        color: Colors.white38,
-        size: 16,
-      ),
-      onTap: onTap,
     );
   }
 

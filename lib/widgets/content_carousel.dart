@@ -19,7 +19,7 @@ class ContentCarousel<T> extends StatelessWidget {
     // The Column is removed as the header is now external.
     // This widget is now just the horizontal list.
     return SizedBox(
-      height: 230, // Height from reference UI's _buildMovieList
+      height: 250.0, // Increased height for better TV viewing
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.only(
