@@ -12,7 +12,6 @@ import 'tv_series_screen.dart';
 import 'settings_screen.dart';
 import '../services/objectbox_service.dart';
 import '../widgets/xtream_app_bar.dart';
-import '../widgets/netflix_tab_bar.dart';
 
 class XtreamPlaylistScreen extends StatefulWidget {
   final PlaylistService playlistService;
@@ -151,15 +150,13 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen>
         playlistService: widget.playlistService,
         objectBoxService: _objectBoxService,
         playlist: widget.playlist,
-        bottom: NetflixTabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Movies'),
-            Tab(text: 'TV Shows'),
-            Tab(text: 'Live TV'),
-            Tab(text: 'Settings'),
-          ],
-        ),
+        tabController: _tabController,
+        tabs: const [
+          Tab(text: 'Movies'),
+          Tab(text: 'TV Shows'),
+          Tab(text: 'Live TV'),
+          Tab(text: 'Settings'),
+        ],
         onOpenDrawer:
             _tabController.index == 2
                 ? () {

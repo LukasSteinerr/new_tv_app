@@ -11,8 +11,9 @@ class XtreamAppBar extends StatelessWidget implements PreferredSizeWidget {
   final PlaylistService playlistService;
   final ObjectBoxService? objectBoxService;
   final Playlist playlist;
-  final PreferredSizeWidget? bottom;
   final VoidCallback? onOpenDrawer;
+  final TabController tabController;
+  final List<Widget> tabs;
 
   const XtreamAppBar({
     super.key,
@@ -20,8 +21,9 @@ class XtreamAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.playlistService,
     required this.objectBoxService,
     required this.playlist,
-    this.bottom,
     this.onOpenDrawer,
+    required this.tabController,
+    required this.tabs,
   });
 
   @override
@@ -37,6 +39,25 @@ class XtreamAppBar extends StatelessWidget implements PreferredSizeWidget {
           if (onOpenDrawer != null)
             IconButton(icon: const Icon(Icons.menu), onPressed: onOpenDrawer),
           Image.asset('assets/Splash.png', height: 40),
+          Expanded(
+            child: TabBar(
+              controller: tabController,
+              tabs: tabs,
+              isScrollable: true,
+              indicator: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: Colors.red, width: 3.0),
+                ),
+              ),
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.grey[400],
+              labelStyle: const TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              ),
+              unselectedLabelStyle: const TextStyle(fontSize: 16.0),
+            ),
+          ),
         ],
       ),
       actions: [
@@ -84,11 +105,9 @@ class XtreamAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         const SizedBox(width: 8),
       ],
-      bottom: bottom,
     );
   }
 
   @override
-  Size get preferredSize =>
-      Size.fromHeight(kToolbarHeight + (bottom?.preferredSize.height ?? 0.0));
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
