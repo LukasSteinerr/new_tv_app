@@ -30,13 +30,16 @@ class MockAnalyticsService implements AnalyticsService {
   Future<void> logHitPaywall() async {}
 
   @override
-  Future<void> logPlaylistAddAttempt() async {}
+  Future<void> logPlaylistAddAttempt({required String playlistType}) async {}
 
   @override
-  Future<void> logPlaylistAddFailed({String? reason}) async {}
+  Future<void> logPlaylistAddFailed({
+    required String playlistType,
+    String? reason,
+  }) async {}
 
   @override
-  Future<void> logPlaylistAddSuccess() async {}
+  Future<void> logPlaylistAddSuccess({required String playlistType}) async {}
 
   @override
   Future<void> logSubscriptionStarted() async {}

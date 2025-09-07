@@ -9,20 +9,32 @@ class AnalyticsService {
   }
 
   // Event for when a user attempts to add a playlist
-  Future<void> logPlaylistAddAttempt() async {
-    await logEvent('playlist_add_attempt');
+  Future<void> logPlaylistAddAttempt({required String playlistType}) async {
+    await logEvent(
+      'playlist_add_attempt',
+      parameters: {'playlist_type': playlistType},
+    );
   }
 
   // Event for when a user successfully adds a playlist
-  Future<void> logPlaylistAddSuccess() async {
-    await logEvent('playlist_add_success');
+  Future<void> logPlaylistAddSuccess({required String playlistType}) async {
+    await logEvent(
+      'playlist_add_success',
+      parameters: {'playlist_type': playlistType},
+    );
   }
 
   // Event for when a user fails to add a playlist
-  Future<void> logPlaylistAddFailed({String? reason}) async {
+  Future<void> logPlaylistAddFailed({
+    required String playlistType,
+    String? reason,
+  }) async {
     await logEvent(
       'playlist_add_failed',
-      parameters: {'reason': reason ?? 'unknown'},
+      parameters: {
+        'playlist_type': playlistType,
+        'reason': reason ?? 'unknown',
+      },
     );
   }
 

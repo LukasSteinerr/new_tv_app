@@ -61,7 +61,9 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
         _isLoading = true;
       });
 
-      widget.analyticsService.logPlaylistAddAttempt();
+      final playlistType =
+          _playlistTypeInt == PlaylistTypeConstants.m3u ? 'm3u' : 'xtream';
+      widget.analyticsService.logPlaylistAddAttempt(playlistType: playlistType);
 
       try {
         Playlist playlist;
@@ -86,7 +88,9 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
         }
 
         await widget.playlistService.fetchAndSavePlaylistData(playlist);
-        widget.analyticsService.logPlaylistAddSuccess();
+        widget.analyticsService.logPlaylistAddSuccess(
+          playlistType: playlistType,
+        );
         if (mounted) {
           // Show success message with green checkmark
           ScaffoldMessenger.of(context).showSnackBar(
@@ -111,7 +115,10 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
           context.pop(true);
         }
       } catch (e) {
-        widget.analyticsService.logPlaylistAddFailed(reason: e.toString());
+        widget.analyticsService.logPlaylistAddFailed(
+          playlistType: playlistType,
+          reason: e.toString(),
+        );
         setState(() {
           _isLoading = false;
         });
