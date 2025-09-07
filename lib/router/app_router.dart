@@ -24,12 +24,14 @@ import '../screens/settings_screen.dart';
 import '../screens/tv_series_screen.dart';
 import '../screens/universal_video_player.dart';
 import '../screens/xtream_playlist_screen.dart';
+import '../services/analytics_service.dart';
 import '../services/playlist_service.dart';
 
 class AppRouter {
   final PlaylistService playlistService;
+  final AnalyticsService analyticsService;
 
-  AppRouter({required this.playlistService});
+  AppRouter({required this.playlistService, required this.analyticsService});
 
   late final GoRouter router = GoRouter(
     routes: [
@@ -44,6 +46,7 @@ class AppRouter {
           final playlist = state.extra as Playlist?;
           return AddPlaylistScreen(
             playlistService: playlistService,
+            analyticsService: analyticsService,
             playlist: playlist,
           );
         },
@@ -54,6 +57,7 @@ class AppRouter {
           final playlist = state.extra as Playlist;
           return PlaylistDetailScreen(
             playlistService: playlistService,
+            analyticsService: analyticsService,
             playlist: playlist,
           );
         },
@@ -64,6 +68,7 @@ class AppRouter {
           final playlist = state.extra as Playlist;
           return XtreamPlaylistScreen(
             playlistService: playlistService,
+            analyticsService: analyticsService,
             playlist: playlist,
           );
         },

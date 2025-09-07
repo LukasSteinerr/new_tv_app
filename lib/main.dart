@@ -9,6 +9,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logging/logging.dart'; // Import logging
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'router/app_router.dart';
+import 'services/analytics_service.dart';
 import 'services/objectbox_service.dart';
 import 'services/playlist_service.dart';
 import 'screens/home_screen.dart';
@@ -104,7 +105,11 @@ void main() async {
   await FileDownloader().start();
   _log.info('FileDownloader started in main'); // Log FileDownloader start
 
-  final appRouter = AppRouter(playlistService: playlistService);
+  final analyticsService = AnalyticsService();
+  final appRouter = AppRouter(
+    playlistService: playlistService,
+    analyticsService: analyticsService,
+  );
 
   runApp(MyApp(appRouter: appRouter));
 }

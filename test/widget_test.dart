@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tv/main.dart';
 import 'package:tv/router/app_router.dart';
+import 'package:tv/services/analytics_service.dart';
 import 'package:tv/services/playlist_service.dart';
 
 // Import models
@@ -21,6 +22,26 @@ import 'package:tv/models/tv_episode.dart';
 import 'package:tv/models/tv_program.dart'; // Import TvProgram
 
 // Create a simple mock class for PlaylistService
+class MockAnalyticsService implements AnalyticsService {
+  @override
+  Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {}
+
+  @override
+  Future<void> logHitPaywall() async {}
+
+  @override
+  Future<void> logPlaylistAddAttempt() async {}
+
+  @override
+  Future<void> logPlaylistAddFailed({String? reason}) async {}
+
+  @override
+  Future<void> logPlaylistAddSuccess() async {}
+
+  @override
+  Future<void> logSubscriptionStarted() async {}
+}
+
 class MockPlaylistService implements PlaylistService {
   @override
   Future<List<Playlist>> getAllPlaylists() async => [];
@@ -92,7 +113,11 @@ void main() {
   testWidgets('App initializes correctly', (WidgetTester tester) async {
     // Create a mock playlist service
     final mockPlaylistService = MockPlaylistService();
-    final appRouter = AppRouter(playlistService: mockPlaylistService);
+    final mockAnalyticsService = MockAnalyticsService();
+    final appRouter = AppRouter(
+      playlistService: mockPlaylistService,
+      analyticsService: mockAnalyticsService,
+    );
 
     // Build our app and trigger a frame.
     await tester.pumpWidget(MyApp(appRouter: appRouter));

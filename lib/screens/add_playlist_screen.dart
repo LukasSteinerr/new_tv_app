@@ -3,15 +3,18 @@ import 'package:go_router/go_router.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'dart:ui'; // For ImageFilter
 import '../models/playlist.dart';
+import '../services/analytics_service.dart';
 import '../services/playlist_service.dart';
 
 class AddPlaylistScreen extends StatefulWidget {
   final PlaylistService playlistService;
+  final AnalyticsService analyticsService;
   final Playlist? playlist; // For editing existing playlist
 
   const AddPlaylistScreen({
     super.key,
     required this.playlistService,
+    required this.analyticsService,
     this.playlist,
   });
 
@@ -58,6 +61,8 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
         _isLoading = true;
       });
 
+      widget.analyticsService.logPlaylistAddAttempt();
+
       try {
         Playlist playlist;
 
@@ -81,7 +86,7 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
         }
 
         await widget.playlistService.fetchAndSavePlaylistData(playlist);
-
+        widget.analyticsService.logPlaylistAddSuccess();
         if (mounted) {
           // Show success message with green checkmark
           ScaffoldMessenger.of(context).showSnackBar(
@@ -106,6 +111,7 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
           context.pop(true);
         }
       } catch (e) {
+        widget.analyticsService.logPlaylistAddFailed(reason: e.toString());
         setState(() {
           _isLoading = false;
         });

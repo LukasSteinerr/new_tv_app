@@ -5,6 +5,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import '../models/playlist.dart';
+import '../services/analytics_service.dart';
 import '../services/playlist_service.dart';
 import 'live_tv_screen.dart';
 import 'movies_screen.dart';
@@ -16,11 +17,13 @@ import '../widgets/xtream_bottom_nav_bar.dart';
 
 class XtreamPlaylistScreen extends StatefulWidget {
   final PlaylistService playlistService;
+  final AnalyticsService analyticsService;
   final Playlist playlist;
 
   const XtreamPlaylistScreen({
     super.key,
     required this.playlistService,
+    required this.analyticsService,
     required this.playlist,
   });
 
@@ -173,10 +176,12 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
               : FloatingActionButton.extended(
                 onPressed: () async {
                   try {
+                    widget.analyticsService.logHitPaywall();
                     final paywallResult =
                         await RevenueCatUI.presentPaywallIfNeeded("Pro");
                     log("Paywall result: $paywallResult");
                     if (paywallResult == PaywallResult.purchased) {
+                      widget.analyticsService.logSubscriptionStarted();
                       _checkSubscription();
                     }
                   } on PlatformException catch (e) {
