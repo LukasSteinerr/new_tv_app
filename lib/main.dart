@@ -8,6 +8,10 @@ import 'dart:io';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logging/logging.dart'; // Import logging
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:force_update_helper/force_update_helper.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'dart:developer';
+import 'package:url_launcher/url_launcher.dart';
 import 'router/app_router.dart';
 import 'services/analytics_service.dart';
 import 'services/objectbox_service.dart';
@@ -138,6 +142,55 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.black,
       ),
       routerConfig: appRouter.router,
+      builder: (context, child) {
+        return ForceUpdateWidget(
+          navigatorKey: appRouter.router.routerDelegate.navigatorKey,
+          forceUpdateClient: ForceUpdateClient(
+            fetchRequiredVersion: () async {
+              final remoteConfig = FirebaseRemoteConfig.instance;
+              await remoteConfig.fetchAndActivate();
+              return remoteConfig.getString('required_version');
+            },
+            // TODO: Replace with your actual iOS App Store ID. This is required for the force update to work on iOS.
+            iosAppStoreId: '',
+          ),
+          allowCancel: false,
+          showForceUpdateAlert:
+              (context, allowCancel) => showDialog(
+                context: context,
+                barrierDismissible: allowCancel,
+                builder:
+                    (context) => AlertDialog(
+                      title: const Text('Update Required'),
+                      content: const Text('Please update the app to continue.'),
+                      actions: [
+                        if (allowCancel)
+                          TextButton(
+                            child: const Text('Later'),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        TextButton(
+                          child: const Text('Update Now'),
+                          onPressed: () {
+                            // The package will handle opening the store.
+                          },
+                        ),
+                      ],
+                    ),
+              ),
+          showStoreListing: (storeUrl) async {
+            if (await canLaunchUrl(storeUrl)) {
+              await launchUrl(storeUrl, mode: LaunchMode.externalApplication);
+            } else {
+              log('Cannot launch URL: $storeUrl');
+            }
+          },
+          onException: (e, st) {
+            log('ForceUpdateWidget error: $e', stackTrace: st);
+          },
+          child: child!,
+        );
+      },
     );
   }
 }
