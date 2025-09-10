@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
+import 'package:http/http.dart';
 
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logging/logging.dart'; // Import logging
@@ -35,6 +36,8 @@ Future<void> _configureSDK() async {
 
   if (configuration != null) {
     await Purchases.configure(configuration);
+  } else {
+    _log.warning('Purchases configuration is null. SDK not configured.');
   }
 }
 
@@ -47,11 +50,30 @@ void main() async {
 
   // Pass all uncaught "fatal" errors from the framework to Crashlytics
   FlutterError.onError = (errorDetails) {
-    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    // Check if the exception is a SocketException or ClientException
+    if (errorDetails.exception is SocketException ||
+        errorDetails.exception is ClientException) {
+      // Log as a non-fatal error
+      FirebaseCrashlytics.instance.recordError(
+        errorDetails.exception,
+        errorDetails.stack,
+        fatal: false,
+      );
+    } else {
+      // Log as a fatal error
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    }
   };
   // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
   PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    // Check if the error is a SocketException or ClientException
+    if (error is SocketException || error is ClientException) {
+      // Log as a non-fatal error
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: false);
+    } else {
+      // Log as a fatal error
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    }
     return true;
   };
 

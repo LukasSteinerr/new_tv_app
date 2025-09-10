@@ -130,6 +130,9 @@ class _TMDBImageState extends State<TMDBImage> {
 
           // Case 3: The future completed successfully with an image URL
           final imageUrl = snapshot.data!;
+          if (imageUrl.isEmpty || !Uri.parse(imageUrl).isAbsolute) {
+            return _buildPlaceholder();
+          }
           return CachedNetworkImage(
             imageUrl: imageUrl,
             // Use imageBuilder for custom display logic
@@ -152,7 +155,10 @@ class _TMDBImageState extends State<TMDBImage> {
                   height: double.infinity,
                 ),
             // Error widget for when the URL fails to load
-            errorWidget: (context, url, error) => _buildPlaceholder(),
+            errorWidget: (context, url, error) {
+              print('Error loading image: $url, error: $error');
+              return _buildPlaceholder();
+            },
           );
         },
       ),

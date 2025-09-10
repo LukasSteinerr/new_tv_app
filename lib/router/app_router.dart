@@ -54,12 +54,19 @@ class AppRouter {
       GoRoute(
         path: '/playlist-detail',
         builder: (context, state) {
-          final playlist = state.extra as Playlist;
-          return PlaylistDetailScreen(
-            playlistService: playlistService,
-            analyticsService: analyticsService,
-            playlist: playlist,
-          );
+          if (state.extra is Playlist) {
+            final playlist = state.extra as Playlist;
+            return PlaylistDetailScreen(
+              playlistService: playlistService,
+              analyticsService: analyticsService,
+              playlist: playlist,
+            );
+          } else {
+            // Handle the case where the extra is not a Playlist
+            return const Scaffold(
+              body: Center(child: Text('Error: Playlist not found.')),
+            );
+          }
         },
       ),
       GoRoute(
