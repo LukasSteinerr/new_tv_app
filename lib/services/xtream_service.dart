@@ -119,7 +119,9 @@ class XtreamService {
           name: channelData['name'],
           streamUrl: streamUrl,
           logoUrl: safeToString(channelData['stream_icon']),
-          epgId: safeToString(channelData['epg_channel_id']),
+          epgId: safeToString(
+            _getValueFromKeys(channelData, ['epg_channel_id', 'epg_id']),
+          ),
         );
 
         channel.playlist.target = playlist;
@@ -197,19 +199,41 @@ class XtreamService {
         final streamUrl =
             '$baseUrl/movie/${playlist.username}/${playlist.password}/${movieData['stream_id']}.$containerExtension';
 
+        final movieInfo = movieData['info'] as Map<String, dynamic>? ?? {};
         final movie = Movie(
           name: movieData['name'],
           streamUrl: streamUrl,
-          coverUrl: safeToString(movieData['stream_icon']),
-          description: safeToString(movieData['plot']) ?? '',
-          year: safeToString(movieData['year']) ?? '',
-          duration: safeToString(movieData['duration']) ?? '',
-          rating: safeToString(movieData['rating']) ?? '',
-          streamId: safeToString(movieData['stream_id'])!,
+          coverUrl: safeToString(
+            _getValueFromKeys(movieData, ['stream_icon', 'cover_big']),
+          ),
+          description:
+              safeToString(
+                _getValueFromKeys(movieInfo, ['plot', 'description']),
+              ) ??
+              '',
+          year:
+              safeToString(
+                _getValueFromKeys(movieInfo, ['releaseDate', 'year']),
+              ) ??
+              '',
+          duration:
+              safeToString(
+                _getValueFromKeys(movieInfo, ['duration', 'duration_secs']),
+              ) ??
+              '',
+          rating: safeToString(_getValueFromKeys(movieInfo, ['rating'])),
+          streamId:
+              safeToString(
+                _getValueFromKeys(movieData, ['stream_id', 'vod_id']),
+              )!,
           tmdbId: safeToString(movieData['tmdb']),
-          trailer: safeToString(movieData['trailer']),
+          trailer: safeToString(
+            _getValueFromKeys(movieInfo, ['youtube_trailer']),
+          ),
           added: safeToString(movieData['added']),
-          rating_5based: _parseRating5Based(movieData['rating_5based']),
+          rating_5based: _parseRating5Based(
+            _getValueFromKeys(movieInfo, ['rating_5based', 'rating']),
+          ),
         );
 
         movie.playlist.target = playlist;
@@ -283,12 +307,23 @@ class XtreamService {
 
     for (final seriesData in seriesListJson) {
       try {
+        final seriesInfo = seriesData['info'] as Map<String, dynamic>? ?? {};
         final series = TvSeries(
           name: seriesData['name'],
-          coverUrl: safeToString(seriesData['cover']),
-          description: safeToString(seriesData['plot']) ?? '',
-          year: safeToString(seriesData['year']) ?? '',
-          rating: safeToString(seriesData['rating']) ?? '',
+          coverUrl: safeToString(
+            _getValueFromKeys(seriesData, ['cover', 'stream_icon']),
+          ),
+          description:
+              safeToString(
+                _getValueFromKeys(seriesInfo, ['plot', 'description']),
+              ) ??
+              '',
+          year:
+              safeToString(
+                _getValueFromKeys(seriesInfo, ['releaseDate', 'year']),
+              ) ??
+              '',
+          rating: safeToString(_getValueFromKeys(seriesInfo, ['rating'])),
           seriesId: safeToString(seriesData['series_id'])!,
           tmdbId: safeToString(seriesData['tmdb']),
         );
@@ -356,7 +391,15 @@ class XtreamService {
               if (episodeData is! Map) continue;
 
               final episodeNumber =
-                  int.tryParse(episodeData['episode_num']?.toString() ?? '0') ??
+                  int.tryParse(
+                    safeToString(
+                          _getValueFromKeys(
+                            episodeData as Map<String, dynamic>,
+                            ['episode_num', 'episode'],
+                          ),
+                        ) ??
+                        '0',
+                  ) ??
                   0;
 
               // Make sure id exists and can be converted to string
@@ -392,7 +435,13 @@ class XtreamService {
                 coverUrl: coverUrl ?? series.coverUrl,
                 description: description ?? '',
                 duration: duration ?? '',
-                streamId: safeToString(episodeData['id'])!,
+                streamId:
+                    safeToString(
+                      _getValueFromKeys(episodeData as Map<String, dynamic>, [
+                        'id',
+                        'stream_id',
+                      ]),
+                    )!,
               );
 
               episode.series.target = series;
@@ -481,5 +530,16 @@ class XtreamService {
       return value.toString();
     }
     return null; // For any other unexpected type
+  }
+
+  /// Gets a value from a map by trying a list of possible keys.
+  /// Returns the value of the first key found, otherwise null.
+  dynamic _getValueFromKeys(Map<String, dynamic> data, List<String> keys) {
+    for (String key in keys) {
+      if (data.containsKey(key) && data[key] != null) {
+        return data[key];
+      }
+    }
+    return null;
   }
 }
