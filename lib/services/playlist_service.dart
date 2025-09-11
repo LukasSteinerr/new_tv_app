@@ -1,3 +1,4 @@
+import '../exceptions/playlist_exception.dart';
 import '../models/playlist.dart';
 import '../models/channel.dart';
 import '../models/category.dart';
@@ -86,71 +87,80 @@ class PlaylistService {
   }
 
   Future<void> fetchAndSavePlaylistData(Playlist playlist) async {
-    Map<String, dynamic> result;
+    try {
+      Map<String, dynamic> result;
 
-    // Fetch new data based on playlist type
-    if (playlist.isM3u) {
-      result = await _m3uService.parseM3uPlaylist(playlist);
-    } else {
-      result = await _xtreamService.fetchXtreamData(playlist);
+      // Fetch new data based on playlist type
+      if (playlist.isM3u) {
+        result = await _m3uService.parseM3uPlaylist(playlist);
+      } else {
+        result = await _xtreamService.fetchXtreamData(playlist);
+      }
+
+      // Save the playlist first to get an ID
+      final playlistId = _objectBoxService.addPlaylist(playlist);
+      playlist.id = playlistId;
+
+      // Save categories and channels
+      if (result.containsKey('categories')) {
+        final categories = result['categories'] as List<Category>;
+        for (var category in categories) {
+          category.playlist.target = playlist;
+        }
+        await _saveCategoriesWithYielding(categories);
+      }
+      if (result.containsKey('channels')) {
+        final channels = result['channels'] as List<Channel>;
+        for (var channel in channels) {
+          channel.playlist.target = playlist;
+        }
+        await _saveChannelsWithYielding(channels);
+      }
+
+      // Save movies
+      if (result.containsKey('movieCategories') &&
+          result.containsKey('movies')) {
+        final movieCategories = result['movieCategories'] as List<Category>;
+        for (var category in movieCategories) {
+          category.playlist.target = playlist;
+        }
+        await _saveCategoriesWithYielding(movieCategories);
+
+        final movies = result['movies'] as List<Movie>;
+        for (var movie in movies) {
+          movie.playlist.target = playlist;
+        }
+        await _saveMoviesWithYielding(movies);
+        await _matchTmdbPopularMovies(playlist.id);
+      }
+
+      // Save TV series
+      if (result.containsKey('seriesCategories') &&
+          result.containsKey('series')) {
+        final seriesCategories = result['seriesCategories'] as List<Category>;
+        for (var category in seriesCategories) {
+          category.playlist.target = playlist;
+        }
+        await _saveCategoriesWithYielding(seriesCategories);
+
+        final series = result['series'] as List<TvSeries>;
+        for (var s in series) {
+          s.playlist.target = playlist;
+        }
+        await _saveTvSeriesWithYielding(series);
+        await _matchTmdbPopularTvSeries(playlist.id);
+      }
+
+      // Update last updated timestamp
+      playlist.lastUpdated = DateTime.now();
+      _objectBoxService.addPlaylist(playlist);
+    } catch (e) {
+      // Re-throw as a more specific exception
+      throw PlaylistException(
+        'Failed to fetch or save playlist data.',
+        e.toString(),
+      );
     }
-
-    // Save the playlist first to get an ID
-    final playlistId = _objectBoxService.addPlaylist(playlist);
-    playlist.id = playlistId;
-
-    // Save categories and channels
-    if (result.containsKey('categories')) {
-      final categories = result['categories'] as List<Category>;
-      for (var category in categories) {
-        category.playlist.target = playlist;
-      }
-      await _saveCategoriesWithYielding(categories);
-    }
-    if (result.containsKey('channels')) {
-      final channels = result['channels'] as List<Channel>;
-      for (var channel in channels) {
-        channel.playlist.target = playlist;
-      }
-      await _saveChannelsWithYielding(channels);
-    }
-
-    // Save movies
-    if (result.containsKey('movieCategories') && result.containsKey('movies')) {
-      final movieCategories = result['movieCategories'] as List<Category>;
-      for (var category in movieCategories) {
-        category.playlist.target = playlist;
-      }
-      await _saveCategoriesWithYielding(movieCategories);
-
-      final movies = result['movies'] as List<Movie>;
-      for (var movie in movies) {
-        movie.playlist.target = playlist;
-      }
-      await _saveMoviesWithYielding(movies);
-      await _matchTmdbPopularMovies(playlist.id);
-    }
-
-    // Save TV series
-    if (result.containsKey('seriesCategories') &&
-        result.containsKey('series')) {
-      final seriesCategories = result['seriesCategories'] as List<Category>;
-      for (var category in seriesCategories) {
-        category.playlist.target = playlist;
-      }
-      await _saveCategoriesWithYielding(seriesCategories);
-
-      final series = result['series'] as List<TvSeries>;
-      for (var s in series) {
-        s.playlist.target = playlist;
-      }
-      await _saveTvSeriesWithYielding(series);
-      await _matchTmdbPopularTvSeries(playlist.id);
-    }
-
-    // Update last updated timestamp
-    playlist.lastUpdated = DateTime.now();
-    _objectBoxService.addPlaylist(playlist);
   }
 
   Future<void> _deleteExistingDataWithYielding(Playlist playlist) async {

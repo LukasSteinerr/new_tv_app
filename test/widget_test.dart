@@ -36,6 +36,7 @@ class MockAnalyticsService implements AnalyticsService {
   Future<void> logPlaylistAddFailed({
     required String playlistType,
     String? reason,
+    String? code,
   }) async {}
 
   @override

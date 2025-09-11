@@ -28,12 +28,14 @@ class AnalyticsService {
   Future<void> logPlaylistAddFailed({
     required String playlistType,
     String? reason,
+    String? code,
   }) async {
     await logEvent(
       'playlist_add_failed',
       parameters: {
         'playlist_type': playlistType,
         'reason': reason ?? 'unknown',
+        'code': code ?? 'unknown',
       },
     );
   }

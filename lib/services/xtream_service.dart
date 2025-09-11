@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:http/http.dart' as http;
 // Aliased to avoid conflict
 import 'package:flutter/foundation.dart' hide Category; // Added for compute
@@ -110,24 +111,34 @@ class XtreamService {
     final channels = <Channel>[];
 
     for (final channelData in channelsJson) {
-      final streamUrl =
-          '$baseUrl/live/${playlist.username}/${playlist.password}/${channelData['stream_id']}.ts';
+      try {
+        final streamUrl =
+            '$baseUrl/live/${playlist.username}/${playlist.password}/${channelData['stream_id']}.ts';
 
-      final channel = Channel(
-        name: channelData['name'],
-        streamUrl: streamUrl,
-        logoUrl: channelData['stream_icon'],
-        epgId: channelData['epg_channel_id'],
-      );
+        final channel = Channel(
+          name: channelData['name'],
+          streamUrl: streamUrl,
+          logoUrl: safeToString(channelData['stream_icon']),
+          epgId: safeToString(channelData['epg_channel_id']),
+        );
 
-      channel.playlist.target = playlist;
+        channel.playlist.target = playlist;
 
-      final categoryId = channelData['category_id'].toString();
-      if (categoryMap.containsKey(categoryId)) {
-        channel.category.target = categoryMap[categoryId];
+        final categoryId = safeToString(channelData['category_id']);
+        if (categoryId != null && categoryMap.containsKey(categoryId)) {
+          channel.category.target = categoryMap[categoryId];
+        }
+
+        channels.add(channel);
+      } catch (e, s) {
+        FirebaseCrashlytics.instance.recordError(
+          e,
+          s,
+          reason: 'Failed to parse channel data',
+          information: ['Problematic channelData: ${channelData.toString()}'],
+        );
+        continue;
       }
-
-      channels.add(channel);
     }
 
     return {'channels': channels, 'categories': categories};
@@ -179,35 +190,45 @@ class XtreamService {
     final movies = <Movie>[];
 
     for (final movieData in moviesJson) {
-      // Extract container extension from the API response or default to mp4
-      final containerExtension = movieData['container_extension'] ?? 'mp4';
+      try {
+        // Extract container extension from the API response or default to mp4
+        final containerExtension = movieData['container_extension'] ?? 'mp4';
 
-      final streamUrl =
-          '$baseUrl/movie/${playlist.username}/${playlist.password}/${movieData['stream_id']}.$containerExtension';
+        final streamUrl =
+            '$baseUrl/movie/${playlist.username}/${playlist.password}/${movieData['stream_id']}.$containerExtension';
 
-      final movie = Movie(
-        name: movieData['name'],
-        streamUrl: streamUrl,
-        coverUrl: movieData['stream_icon'],
-        description: movieData['plot'] ?? '',
-        year: movieData['year'] ?? '',
-        duration: movieData['duration'] ?? '',
-        rating: movieData['rating'] ?? '',
-        streamId: movieData['stream_id'].toString(),
-        tmdbId: movieData['tmdb']?.toString(),
-        trailer: movieData['trailer']?.toString(),
-        added: movieData['added']?.toString(),
-        rating_5based: _parseRating5Based(movieData['rating_5based']),
-      );
+        final movie = Movie(
+          name: movieData['name'],
+          streamUrl: streamUrl,
+          coverUrl: safeToString(movieData['stream_icon']),
+          description: safeToString(movieData['plot']) ?? '',
+          year: safeToString(movieData['year']) ?? '',
+          duration: safeToString(movieData['duration']) ?? '',
+          rating: safeToString(movieData['rating']) ?? '',
+          streamId: safeToString(movieData['stream_id'])!,
+          tmdbId: safeToString(movieData['tmdb']),
+          trailer: safeToString(movieData['trailer']),
+          added: safeToString(movieData['added']),
+          rating_5based: _parseRating5Based(movieData['rating_5based']),
+        );
 
-      movie.playlist.target = playlist;
+        movie.playlist.target = playlist;
 
-      final categoryId = movieData['category_id'].toString();
-      if (categoryMap.containsKey(categoryId)) {
-        movie.category.target = categoryMap[categoryId];
+        final categoryId = safeToString(movieData['category_id']);
+        if (categoryId != null && categoryMap.containsKey(categoryId)) {
+          movie.category.target = categoryMap[categoryId];
+        }
+
+        movies.add(movie);
+      } catch (e, s) {
+        FirebaseCrashlytics.instance.recordError(
+          e,
+          s,
+          reason: 'Failed to parse movie data',
+          information: ['Problematic movieData: ${movieData.toString()}'],
+        );
+        continue;
       }
-
-      movies.add(movie);
     }
 
     return {'movies': movies, 'categories': categories};
@@ -261,25 +282,35 @@ class XtreamService {
     final seriesList = <TvSeries>[];
 
     for (final seriesData in seriesListJson) {
-      final series = TvSeries(
-        name: seriesData['name'],
-        coverUrl: seriesData['cover'],
-        description: seriesData['plot'] ?? '',
-        year: seriesData['year'] ?? '',
-        rating: seriesData['rating'] ?? '',
-        seriesId: seriesData['series_id'].toString(),
-        tmdbId: seriesData['tmdb']?.toString(),
-      );
+      try {
+        final series = TvSeries(
+          name: seriesData['name'],
+          coverUrl: safeToString(seriesData['cover']),
+          description: safeToString(seriesData['plot']) ?? '',
+          year: safeToString(seriesData['year']) ?? '',
+          rating: safeToString(seriesData['rating']) ?? '',
+          seriesId: safeToString(seriesData['series_id'])!,
+          tmdbId: safeToString(seriesData['tmdb']),
+        );
 
-      series.playlist.target = playlist;
+        series.playlist.target = playlist;
 
-      final categoryId = seriesData['category_id'].toString();
-      if (categoryMap.containsKey(categoryId)) {
-        series.category.target = categoryMap[categoryId];
+        final categoryId = safeToString(seriesData['category_id']);
+        if (categoryId != null && categoryMap.containsKey(categoryId)) {
+          series.category.target = categoryMap[categoryId];
+        }
+
+        // We'll fetch episodes for each series when needed to avoid too many API calls at once
+        seriesList.add(series);
+      } catch (e, s) {
+        FirebaseCrashlytics.instance.recordError(
+          e,
+          s,
+          reason: 'Failed to parse series data',
+          information: ['Problematic seriesData: ${seriesData.toString()}'],
+        );
+        continue;
       }
-
-      // We'll fetch episodes for each series when needed to avoid too many API calls at once
-      seriesList.add(series);
     }
 
     return {'series': seriesList, 'categories': categories};
@@ -346,14 +377,14 @@ class XtreamService {
               if (episodeData.containsKey('info') &&
                   episodeData['info'] is Map) {
                 final info = episodeData['info'] as Map;
-                coverUrl = info['movie_image']?.toString();
-                description = info['plot']?.toString() ?? '';
-                duration = info['duration']?.toString() ?? '';
+                coverUrl = safeToString(info['movie_image']);
+                description = safeToString(info['plot']) ?? '';
+                duration = safeToString(info['duration']) ?? '';
               }
 
               final episode = TvEpisode(
                 title:
-                    episodeData['title']?.toString() ??
+                    safeToString(episodeData['title']) ??
                     'Episode $episodeNumber',
                 streamUrl: streamUrl,
                 seasonNumber: seasonNumber,
@@ -361,7 +392,7 @@ class XtreamService {
                 coverUrl: coverUrl ?? series.coverUrl,
                 description: description ?? '',
                 duration: duration ?? '',
-                streamId: episodeData['id'].toString(),
+                streamId: safeToString(episodeData['id'])!,
               );
 
               episode.series.target = series;
@@ -435,5 +466,20 @@ class XtreamService {
       return double.tryParse(value);
     }
     return null;
+  }
+
+  /// Safely converts a dynamic value to a String?.
+  /// Handles cases where the value might be a num (int or double) or null.
+  String? safeToString(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+    if (value is String) {
+      return value;
+    }
+    if (value is num) {
+      return value.toString();
+    }
+    return null; // For any other unexpected type
   }
 }

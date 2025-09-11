@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'dart:ui'; // For ImageFilter
+import '../exceptions/playlist_exception.dart';
 import '../models/playlist.dart';
 import '../services/analytics_service.dart';
 import '../services/playlist_service.dart';
@@ -114,10 +115,11 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
 
           context.pop(true);
         }
-      } catch (e) {
+      } on PlaylistException catch (e) {
         widget.analyticsService.logPlaylistAddFailed(
           playlistType: playlistType,
-          reason: e.toString(),
+          reason: e.message,
+          code: e.code,
         );
         setState(() {
           _isLoading = false;
@@ -127,18 +129,18 @@ class _AddPlaylistScreenState extends State<AddPlaylistScreen> {
             SnackBar(
               content: Row(
                 children: [
-                  Icon(Icons.error, color: Colors.red),
-                  SizedBox(width: 10),
+                  const Icon(Icons.error, color: Colors.red),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Error saving playlist: $e',
-                      style: TextStyle(color: Colors.white),
+                      'Error saving playlist: ${e.message}',
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
               ),
               backgroundColor: Colors.black87,
-              duration: Duration(seconds: 4),
+              duration: const Duration(seconds: 4),
             ),
           );
         }
