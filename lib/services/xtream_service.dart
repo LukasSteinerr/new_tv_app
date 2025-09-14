@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:http/http.dart' as http;
 // Aliased to avoid conflict
 import 'package:flutter/foundation.dart' hide Category; // Added for compute
+import '../exceptions/playlist_exception.dart';
 import '../models/epg_channel_info.dart';
 import '../models/tv_program.dart'; // Added TvProgram model
 import '../services/objectbox_service.dart';
@@ -58,8 +61,26 @@ class XtreamService {
         'series': seriesData['series'],
         'seriesCategories': seriesData['categories'],
       };
+    } on SocketException catch (e) {
+      throw PlaylistException(
+        'Network error: Could not connect to the server.',
+        e.toString(),
+      );
+    } on TimeoutException catch (e) {
+      throw PlaylistException(
+        'Network timeout: The server took too long to respond.',
+        e.toString(),
+      );
+    } on http.ClientException catch (e) {
+      throw PlaylistException(
+        'Network error: A client error occurred.',
+        e.toString(),
+      );
     } catch (e) {
-      throw Exception('Error fetching Xtream data: $e');
+      throw PlaylistException(
+        'An unexpected error occurred while fetching Xtream data.',
+        e.toString(),
+      );
     }
   }
 
@@ -80,7 +101,18 @@ class XtreamService {
       );
     }
 
-    final categoriesJson = json.decode(categoriesResponse.body);
+    List<dynamic> categoriesJson;
+    try {
+      categoriesJson = json.decode(categoriesResponse.body);
+    } on FormatException catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        s,
+        reason: 'Failed to parse live categories JSON',
+        information: ['Response body: ${categoriesResponse.body}'],
+      );
+      throw PlaylistException('Failed to parse live categories.', e.toString());
+    }
     final categories = <Category>[];
     final categoryMap = <String, Category>{};
 
@@ -107,7 +139,18 @@ class XtreamService {
       );
     }
 
-    final channelsJson = json.decode(channelsResponse.body);
+    List<dynamic> channelsJson;
+    try {
+      channelsJson = json.decode(channelsResponse.body);
+    } on FormatException catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        s,
+        reason: 'Failed to parse live channels JSON',
+        information: ['Response body: ${channelsResponse.body}'],
+      );
+      throw PlaylistException('Failed to parse live channels.', e.toString());
+    }
     final channels = <Channel>[];
 
     for (final channelData in channelsJson) {
@@ -163,7 +206,21 @@ class XtreamService {
       );
     }
 
-    final categoriesJson = json.decode(categoriesResponse.body);
+    List<dynamic> categoriesJson;
+    try {
+      categoriesJson = json.decode(categoriesResponse.body);
+    } on FormatException catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        s,
+        reason: 'Failed to parse movie categories JSON',
+        information: ['Response body: ${categoriesResponse.body}'],
+      );
+      throw PlaylistException(
+        'Failed to parse movie categories.',
+        e.toString(),
+      );
+    }
     final categories = <Category>[];
     final categoryMap = <String, Category>{};
 
@@ -188,7 +245,18 @@ class XtreamService {
       throw Exception('Failed to load movies: ${moviesResponse.statusCode}');
     }
 
-    final moviesJson = json.decode(moviesResponse.body);
+    List<dynamic> moviesJson;
+    try {
+      moviesJson = json.decode(moviesResponse.body);
+    } on FormatException catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        s,
+        reason: 'Failed to parse movies JSON',
+        information: ['Response body: ${moviesResponse.body}'],
+      );
+      throw PlaylistException('Failed to parse movies.', e.toString());
+    }
     final movies = <Movie>[];
 
     for (final movieData in moviesJson) {
@@ -275,7 +343,21 @@ class XtreamService {
       );
     }
 
-    final categoriesJson = json.decode(categoriesResponse.body);
+    List<dynamic> categoriesJson;
+    try {
+      categoriesJson = json.decode(categoriesResponse.body);
+    } on FormatException catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        s,
+        reason: 'Failed to parse series categories JSON',
+        information: ['Response body: ${categoriesResponse.body}'],
+      );
+      throw PlaylistException(
+        'Failed to parse series categories.',
+        e.toString(),
+      );
+    }
     final categories = <Category>[];
     final categoryMap = <String, Category>{};
 
@@ -302,7 +384,18 @@ class XtreamService {
       );
     }
 
-    final seriesListJson = json.decode(seriesListResponse.body);
+    List<dynamic> seriesListJson;
+    try {
+      seriesListJson = json.decode(seriesListResponse.body);
+    } on FormatException catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        s,
+        reason: 'Failed to parse series list JSON',
+        information: ['Response body: ${seriesListResponse.body}'],
+      );
+      throw PlaylistException('Failed to parse series list.', e.toString());
+    }
     final seriesList = <TvSeries>[];
 
     for (final seriesData in seriesListJson) {

@@ -154,10 +154,12 @@ class PlaylistService {
       // Update last updated timestamp
       playlist.lastUpdated = DateTime.now();
       _objectBoxService.addPlaylist(playlist);
+    } on PlaylistException {
+      rethrow; // Re-throw PlaylistExceptions directly to preserve specific error messages
     } catch (e) {
-      // Re-throw as a more specific exception
+      // For any other unexpected errors, wrap them in a generic PlaylistException
       throw PlaylistException(
-        'Failed to fetch or save playlist data.',
+        'An unexpected error occurred while processing the playlist.',
         e.toString(),
       );
     }
