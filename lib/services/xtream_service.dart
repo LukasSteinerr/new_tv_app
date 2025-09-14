@@ -73,7 +73,7 @@ class XtreamService {
       );
     } on http.ClientException catch (e) {
       throw PlaylistException(
-        'Network error: A client error occurred.',
+        'Invalid credentials or server error. Please check URL, username, and password.',
         e.toString(),
       );
     } catch (e) {
@@ -96,14 +96,24 @@ class XtreamService {
     );
 
     if (categoriesResponse.statusCode != 200) {
-      throw Exception(
-        'Failed to load live categories: ${categoriesResponse.statusCode}',
+      throw PlaylistException(
+        'Failed to load live categories',
+        'HTTP Status Code: ${categoriesResponse.statusCode}',
       );
     }
 
     List<dynamic> categoriesJson;
     try {
-      categoriesJson = json.decode(categoriesResponse.body);
+      final decodedBody = json.decode(categoriesResponse.body);
+      if (decodedBody is Map &&
+          decodedBody.containsKey('user_info') &&
+          decodedBody['user_info']['auth'] == 0) {
+        throw PlaylistException(
+          'Authentication failed. Please check your credentials.',
+          'Auth Failed',
+        );
+      }
+      categoriesJson = decodedBody as List<dynamic>;
     } on FormatException catch (e, s) {
       FirebaseCrashlytics.instance.recordError(
         e,
@@ -134,8 +144,9 @@ class XtreamService {
     );
 
     if (channelsResponse.statusCode != 200) {
-      throw Exception(
-        'Failed to load channels: ${channelsResponse.statusCode}',
+      throw PlaylistException(
+        'Failed to load channels',
+        'HTTP Status Code: ${channelsResponse.statusCode}',
       );
     }
 
@@ -201,8 +212,9 @@ class XtreamService {
     );
 
     if (categoriesResponse.statusCode != 200) {
-      throw Exception(
-        'Failed to load movie categories: ${categoriesResponse.statusCode}',
+      throw PlaylistException(
+        'Failed to load movie categories',
+        'HTTP Status Code: ${categoriesResponse.statusCode}',
       );
     }
 
@@ -242,7 +254,10 @@ class XtreamService {
     );
 
     if (moviesResponse.statusCode != 200) {
-      throw Exception('Failed to load movies: ${moviesResponse.statusCode}');
+      throw PlaylistException(
+        'Failed to load movies',
+        'HTTP Status Code: ${moviesResponse.statusCode}',
+      );
     }
 
     List<dynamic> moviesJson;
@@ -338,8 +353,9 @@ class XtreamService {
     );
 
     if (categoriesResponse.statusCode != 200) {
-      throw Exception(
-        'Failed to load series categories: ${categoriesResponse.statusCode}',
+      throw PlaylistException(
+        'Failed to load series categories',
+        'HTTP Status Code: ${categoriesResponse.statusCode}',
       );
     }
 
@@ -379,8 +395,9 @@ class XtreamService {
     );
 
     if (seriesListResponse.statusCode != 200) {
-      throw Exception(
-        'Failed to load series list: ${seriesListResponse.statusCode}',
+      throw PlaylistException(
+        'Failed to load series list',
+        'HTTP Status Code: ${seriesListResponse.statusCode}',
       );
     }
 
