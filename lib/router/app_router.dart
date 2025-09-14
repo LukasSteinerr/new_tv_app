@@ -130,11 +130,9 @@ class AppRouter {
         builder: (context, state) {
           final args = state.extra as Map<String, dynamic>;
           final category = args['category'] as Category;
-          final items = args['items'] as List;
           final playlistService = args['playlistService'] as PlaylistService;
           return CategoryContentScreen(
             category: category,
-            items: items,
             playlistService: playlistService,
           );
         },

@@ -10,9 +10,8 @@ import '../models/playlist.dart';
 import '../models/movie.dart';
 import '../models/category.dart';
 import '../services/playlist_service.dart';
-import '../widgets/content_carousel.dart';
-import '../widgets/movie_card.dart';
 import '../widgets/featured_content.dart';
+import '../widgets/lazy_load_carousel.dart';
 import 'netflix_style_movie_detail_screen.dart';
 import 'category_content_screen.dart';
 import 'universal_video_player.dart';
@@ -35,9 +34,7 @@ class MoviesScreen extends StatefulWidget {
 
 class _MoviesScreenState extends State<MoviesScreen> {
   List<Category> _categories = [];
-  Map<int, List<Movie>> _categoryMovies = {};
-  List<Movie> _featuredMovies =
-      []; // Changed from _popularTmdbMovies to _featuredMovies
+  List<Movie> _featuredMovies = [];
   bool _isLoading = true;
   Movie? _featuredMovie;
   late ScrollController _scrollController;
@@ -75,47 +72,37 @@ class _MoviesScreenState extends State<MoviesScreen> {
 
     try {
       // Get only movie categories from the playlist
-      final allCategories = await widget.playlistService.getPlaylistCategories(
+      // Step 1: Fetch only featured movies and the list of categories.
+      final featuredMoviesFuture = widget.playlistService.getFeaturedMovies(
         widget.playlist.id,
       );
+      final categoriesFuture = widget.playlistService.getPlaylistCategories(
+        widget.playlist.id,
+      );
+
+      final results = await Future.wait([
+        featuredMoviesFuture,
+        categoriesFuture,
+      ]);
+
+      final featuredMovies = results[0] as List<Movie>;
+      final allCategories = results[1] as List<Category>;
+
       final movieCategories =
           allCategories.where((category) => category.isMovie).toList();
 
-      // Get all movies from the local playlist
-      final categoryMoviesMap = <int, List<Movie>>{};
-      for (final category in movieCategories) {
-        final movies = await widget.playlistService.getCategoryMovies(
-          category.id,
-        );
-        categoryMoviesMap[category.id] = movies;
-      }
-
-      // Get featured movies from the database
-      final featuredMovies = await widget.playlistService.getFeaturedMovies(
-        widget.playlist.id,
-      );
-
-      // Determine the primary featured movie (e.g., the first from the featured list)
+      // Step 2: Determine the single featured movie to display prominently.
       Movie? featuredMovieToShow;
       if (featuredMovies.isNotEmpty) {
         featuredMovieToShow = featuredMovies.first;
       } else {
-        // Fallback to any local movie if no featured movies are found
-        final allLocalMovies =
-            categoryMoviesMap.values.expand((movies) => movies).toList();
-        if (allLocalMovies.isNotEmpty) {
-          featuredMovieToShow = allLocalMovies.firstWhere(
-            (movie) => movie.tmdbId != null && movie.tmdbId!.isNotEmpty,
-            orElse: () => allLocalMovies.first,
-          );
-        }
+        // Fallback logic can be simpler or removed if not essential for first paint
       }
 
       if (mounted) {
         setState(() {
           _featuredMovies = featuredMovies;
           _categories = movieCategories;
-          _categoryMovies = categoryMoviesMap;
           _featuredMovie = featuredMovieToShow;
           _isLoading = false;
         });
@@ -166,61 +153,11 @@ class _MoviesScreenState extends State<MoviesScreen> {
     }
   }
 
-  void _navigateToSeeAll(Category category, List<Movie> movies) {
+  void _navigateToSeeAll(Category category) {
+    // The movies are now fetched within the CategoryContentScreen, so we don't pass them.
     context.push(
       '/category-content',
-      extra: {
-        'category': category,
-        'items': movies,
-        'playlistService': widget.playlistService,
-      },
-    );
-  }
-
-  // Copied and adapted from UI/lib/home_screen.dart
-  Widget _buildSectionHeader(
-    BuildContext context,
-    String title,
-    VoidCallback onSeeAllTapped,
-  ) {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.only(
-          top: 24.0,
-          left: 16.0,
-          right: 16.0,
-          bottom: 12.0,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            TextButton(
-              onPressed: onSeeAllTapped,
-              child: const Text(
-                'See all',
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.white70,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      extra: {'category': category, 'playlistService': widget.playlistService},
     );
   }
 
@@ -316,37 +253,21 @@ class _MoviesScreenState extends State<MoviesScreen> {
           // else if (_isLoading) // Avoid showing "No movies" during initial load if featured is also loading
           //   SliverToBoxAdapter(child: Center(child: CircularProgressIndicator())),
 
-          // Category Carousels (from playlist)
-          ..._categories.expand((category) {
-            final movies = _categoryMovies[category.id] ?? [];
-            if (movies.isEmpty) {
-              return [const SliverToBoxAdapter(child: SizedBox.shrink())];
-            }
-
-            return [
-              _buildSectionHeader(
-                context,
-                category.name,
-                () => _navigateToSeeAll(category, movies),
-              ),
-              SliverToBoxAdapter(
-                child: ContentCarousel<Movie>(
-                  // This will be the modified ContentCarousel
-                  items: movies,
-                  itemBuilder:
-                      (movie) => MovieCard(
-                        // This will be the modified MovieCard
-                        movie: movie,
-                        onTap: () => _navigateToMovie(movie),
-                      ),
-                ),
-              ),
-            ];
-          }),
-
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 20),
-          ), // Bottom padding
+          // Lazy-loaded Category Carousels
+          SliverList(
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final category = _categories[index];
+              return LazyLoadCarousel(
+                key: ValueKey(category.id),
+                categoryName: category.name,
+                movieFetcher:
+                    () => widget.playlistService.getCategoryMovies(category.id),
+                onMovieTap: _navigateToMovie,
+                onSeeAllTap: () => _navigateToSeeAll(category),
+              );
+            }, childCount: _categories.length),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 20)),
         ],
       ),
     );

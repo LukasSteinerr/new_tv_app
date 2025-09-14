@@ -194,7 +194,6 @@ class _TvSeriesScreenState extends State<TvSeriesScreen> {
         builder:
             (context) => CategoryContentScreen(
               category: category,
-              items: seriesList,
               playlistService: widget.playlistService,
             ),
       ),

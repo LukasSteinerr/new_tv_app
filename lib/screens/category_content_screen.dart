@@ -10,13 +10,11 @@ import '../widgets/tmdb_image.dart';
 
 class CategoryContentScreen extends StatefulWidget {
   final Category category;
-  final List<dynamic> items;
   final PlaylistService playlistService;
 
   const CategoryContentScreen({
     super.key,
     required this.category,
-    required this.items,
     required this.playlistService,
   });
 
@@ -25,6 +23,48 @@ class CategoryContentScreen extends StatefulWidget {
 }
 
 class _CategoryContentScreenState extends State<CategoryContentScreen> {
+  bool _isLoading = true;
+  List<dynamic> _items = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadContent();
+  }
+
+  Future<void> _loadContent() async {
+    try {
+      List<dynamic> fetchedItems;
+      if (widget.category.isMovie) {
+        fetchedItems = await widget.playlistService.getCategoryMovies(
+          widget.category.id,
+        );
+      } else if (widget.category.isSeries) {
+        fetchedItems = await widget.playlistService.getCategoryTvSeries(
+          widget.category.id,
+        );
+      } else {
+        fetchedItems = [];
+      }
+
+      if (mounted) {
+        setState(() {
+          _items = fetchedItems;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading content: $e')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +74,9 @@ class _CategoryContentScreenState extends State<CategoryContentScreen> {
         backgroundColor: Colors.black,
       ),
       body:
-          widget.items.isEmpty
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _items.isEmpty
               ? const Center(
                 child: Text(
                   'No content in this category',
@@ -49,9 +91,9 @@ class _CategoryContentScreenState extends State<CategoryContentScreen> {
                   mainAxisSpacing: 8.0,
                   childAspectRatio: 2 / 3,
                 ),
-                itemCount: widget.items.length,
+                itemCount: _items.length,
                 itemBuilder: (context, index) {
-                  final item = widget.items[index];
+                  final item = _items[index];
 
                   return GestureDetector(
                     onTap: () {
