@@ -1,0 +1,13 @@
+I've implemented a final set of changes to deliver the smooth, Netflix-style loading experience you're looking for. The combination of fixing the transition animation and implementing a skeleton loader should now resolve the lag you were seeing.
+
+Here is a summary of the final solution:
+
+Smooth Screen Transition: I've refactored the XtreamPlaylistScreen. It now builds its main layout (including the app bar and bottom navigation) instantly, without waiting for any data or services. This allows the screen transition animation to complete without stutter.
+
+Netflix-Style Skeleton Loading: The MoviesScreen now handles its own loading state. When you navigate to it, it immediately displays a "skeleton" of the final UI:
+
+A placeholder where the large featured movie poster will appear.
+Several grayed-out placeholder carousels below it. This gives you the immediate visual feedback that content is on its way, exactly like when you click on a Netflix profile.
+Progressive Content Display: While the skeleton is visible, the MoviesScreen fetches the initial data (featured content and the list of categories) in the background. Once this is ready, the skeleton is replaced by the actual featured content and the lazy-loading carousels, which then proceed to load their own content as you scroll.
+
+This multi-layered approach ensures that from the moment you tap the playlist, the experience is fluid. The app prioritizes the screen animation first, then the UI structure, and finally the content itself, eliminating both the transition jank and the content loading delays.

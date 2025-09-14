@@ -34,7 +34,6 @@ class XtreamPlaylistScreen extends StatefulWidget {
 class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
   int _currentIndex = 0;
   late List<Widget> _screens;
-  bool _isLoading = true;
   ObjectBoxService? _objectBoxService;
   bool _isSubscribed = false;
 
@@ -44,13 +43,31 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeServices();
-  }
-
-  Future<void> _initializeServices() async {
-    _objectBoxService = await ObjectBoxService.create();
-    await _checkSubscription();
-    _initScreens();
+    _checkSubscription(); // Check subscription status
+    // Initialize screens immediately with the required services.
+    // The screens themselves will handle their own loading state.
+    _screens = [
+      MoviesScreen(
+        playlistService: widget.playlistService,
+        playlist: widget.playlist,
+        onScrollUpdate: _updateAppBarOpacity,
+      ),
+      TvSeriesScreen(
+        playlistService: widget.playlistService,
+        playlist: widget.playlist,
+        onScrollUpdate: _updateAppBarOpacity,
+      ),
+      LiveTvScreen(
+        playlistService: widget.playlistService,
+        playlist: widget.playlist,
+        onScrollUpdate: _updateAppBarOpacity,
+      ),
+      SettingsScreen(
+        playlistService: widget.playlistService,
+        playlist: widget.playlist,
+        onScrollUpdate: _updateAppBarOpacity,
+      ),
+    ];
   }
 
   Future<void> _checkSubscription() async {
@@ -94,52 +111,11 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
     }
   }
 
-  Future<void> _initScreens() async {
-    try {
-      _screens = [
-        MoviesScreen(
-          playlistService: widget.playlistService,
-          playlist: widget.playlist,
-          onScrollUpdate: _updateAppBarOpacity, // Pass the callback
-        ),
-        TvSeriesScreen(
-          playlistService: widget.playlistService,
-          playlist: widget.playlist,
-          onScrollUpdate: _updateAppBarOpacity, // Pass the callback
-        ),
-        LiveTvScreen(
-          playlistService: widget.playlistService,
-          playlist: widget.playlist,
-          onScrollUpdate: _updateAppBarOpacity, // Pass the callback
-        ),
-        SettingsScreen(
-          playlistService: widget.playlistService,
-          playlist: widget.playlist,
-          onScrollUpdate: _updateAppBarOpacity, // Pass the callback
-        ),
-      ];
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error loading content: $e')));
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Set background color
-      extendBodyBehindAppBar: true, // Allow body to extend behind AppBar
+      backgroundColor: Colors.black,
+      extendBodyBehindAppBar: true,
       appBar:
           _currentIndex == 3
               ? AppBar(
@@ -161,17 +137,9 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
                 objectBoxService: _objectBoxService,
                 playlist: widget.playlist,
               ),
-      body:
-          _isLoading
-              ? Center(
-                child: LoadingAnimationWidget.dotsTriangle(
-                  color: Colors.white,
-                  size: 50,
-                ),
-              )
-              : IndexedStack(index: _currentIndex, children: _screens),
+      body: IndexedStack(index: _currentIndex, children: _screens),
       floatingActionButton:
-          _isLoading || _isSubscribed
+          _isSubscribed
               ? null
               : FloatingActionButton.extended(
                 onPressed: () async {
@@ -196,7 +164,7 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
         onTap: (index) {
           setState(() {
             _currentIndex = index;
-            _appBarOpacity = 0.0; // Reset AppBar opacity to fully transparent
+            _appBarOpacity = 0.0;
           });
         },
       ),

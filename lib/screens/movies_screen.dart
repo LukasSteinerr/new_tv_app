@@ -161,12 +161,60 @@ class _MoviesScreenState extends State<MoviesScreen> {
     );
   }
 
+  Widget _buildSkeletonLoader() {
+    return CustomScrollView(
+      slivers: [
+        // Skeleton for FeaturedContent
+        SliverToBoxAdapter(
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.65,
+            color: Colors.grey[900],
+            child: const Center(child: CircularProgressIndicator()),
+          ),
+        ),
+        // Skeleton for a few carousels
+        ...List.generate(3, (index) {
+          return SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(
+                    top: 24.0,
+                    left: 16.0,
+                    bottom: 12.0,
+                  ),
+                  height: 25,
+                  width: 150,
+                  color: Colors.grey[800],
+                ),
+                SizedBox(
+                  height: 230,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 5,
+                    itemBuilder:
+                        (context, index) => Container(
+                          margin: const EdgeInsets.only(left: 16.0),
+                          width: 130,
+                          color: Colors.grey[800],
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
         backgroundColor: Colors.black,
-        body: const Center(child: CircularProgressIndicator()),
+        body: _buildSkeletonLoader(),
       );
     }
 
