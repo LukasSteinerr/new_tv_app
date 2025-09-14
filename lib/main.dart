@@ -170,6 +170,12 @@ class MyApp extends StatelessWidget {
           forceUpdateClient: ForceUpdateClient(
             fetchRequiredVersion: () async {
               final remoteConfig = FirebaseRemoteConfig.instance;
+              await remoteConfig.setConfigSettings(
+                RemoteConfigSettings(
+                  fetchTimeout: const Duration(minutes: 1),
+                  minimumFetchInterval: const Duration(seconds: 0),
+                ),
+              );
               await remoteConfig.fetchAndActivate();
               return remoteConfig.getString('required_version');
             },
