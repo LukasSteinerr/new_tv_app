@@ -130,36 +130,40 @@ class _TMDBImageState extends State<TMDBImage> {
 
           // Case 3: The future completed successfully with an image URL
           final imageUrl = snapshot.data!;
-          if (imageUrl.isEmpty || !Uri.parse(imageUrl).isAbsolute) {
-            return _buildPlaceholder();
-          }
-          return CachedNetworkImage(
-            imageUrl: imageUrl,
-            // Use imageBuilder for custom display logic
-            imageBuilder:
-                (context, imageProvider) => Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(
-                      8.0,
-                    ), // Your custom decoration
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: widget.fit,
+          try {
+            if (imageUrl.isEmpty || !Uri.parse(imageUrl).isAbsolute) {
+              return _buildPlaceholder();
+            }
+            return CachedNetworkImage(
+              imageUrl: imageUrl,
+              imageBuilder:
+                  (context, imageProvider) => Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      image: DecorationImage(
+                        image: imageProvider,
+                        fit: widget.fit,
+                      ),
                     ),
                   ),
-                ),
-            // Placeholder for when CachedNetworkImage is downloading
-            placeholder:
-                (context, url) => const NetflixStyleLoading(
-                  width: double.infinity,
-                  height: double.infinity,
-                ),
-            // Error widget for when the URL fails to load
-            errorWidget: (context, url, error) {
-              print('Error loading image: $url, error: $error');
-              return _buildPlaceholder();
-            },
-          );
+              placeholder:
+                  (context, url) => const NetflixStyleLoading(
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
+              errorWidget: (context, url, error) {
+                // Log more detailed error information
+                print('Error loading image from URL: $url');
+                print('Error details: $error');
+                // Optionally, log to a crash reporting service
+                // FirebaseCrashlytics.instance.recordError(error, stackTrace);
+                return _buildPlaceholder();
+              },
+            );
+          } catch (e) {
+            print('Error parsing image URL: $imageUrl, error: $e');
+            return _buildPlaceholder();
+          }
         },
       ),
     );
