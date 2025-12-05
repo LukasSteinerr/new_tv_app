@@ -84,6 +84,8 @@ dependencies {
     // Add the Android library with ObjectBox Admin only for debug builds.
     // Using the same version as the objectbox Dart package (4.2.0)
     "debugImplementation"("io.objectbox:objectbox-android-objectbrowser:4.2.0")
+    // Facebook SDK
+    implementation("com.facebook.android:facebook-android-sdk:latest.release")
 }
 
 flutter {

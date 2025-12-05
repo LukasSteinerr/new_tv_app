@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:http/http.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logging/logging.dart'; // Import logging
@@ -45,6 +47,17 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _configureSDK();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Initialize Facebook SDK
+  final facebookAppEvents = FacebookAppEvents();
+  await facebookAppEvents.setAutoLogAppEventsEnabled(true);
+
+  // Request App Tracking Transparency permission for iOS 14+
+  if (Platform.isIOS) {
+    final TrackingStatus status =
+        await AppTrackingTransparency.requestTrackingAuthorization();
+    // Set AdvertiserTrackingEnabled based on user's consent
+    await facebookAppEvents.setAdvertiserTracking(enabled: status == TrackingStatus.authorized);
+  }
 
   await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
 
