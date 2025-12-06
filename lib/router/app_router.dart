@@ -25,13 +25,19 @@ import '../screens/tv_series_screen.dart';
 import '../screens/universal_video_player.dart';
 import '../screens/xtream_playlist_screen.dart';
 import '../services/analytics_service.dart';
+import '../services/objectbox_service.dart';
 import '../services/playlist_service.dart';
 
 class AppRouter {
   final PlaylistService playlistService;
   final AnalyticsService analyticsService;
+  final ObjectBoxService objectBoxService;
 
-  AppRouter({required this.playlistService, required this.analyticsService});
+  AppRouter({
+    required this.playlistService,
+    required this.analyticsService,
+    required this.objectBoxService,
+  });
 
   late final GoRouter router = GoRouter(
     routes: [
@@ -59,6 +65,7 @@ class AppRouter {
             return PlaylistDetailScreen(
               playlistService: playlistService,
               analyticsService: analyticsService,
+              objectBoxService: objectBoxService,
               playlist: playlist,
             );
           } else {
@@ -76,6 +83,7 @@ class AppRouter {
           return XtreamPlaylistScreen(
             playlistService: playlistService,
             analyticsService: analyticsService,
+            objectBoxService: objectBoxService,
             playlist: playlist,
           );
         },

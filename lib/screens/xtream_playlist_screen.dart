@@ -18,12 +18,14 @@ import '../widgets/xtream_bottom_nav_bar.dart';
 class XtreamPlaylistScreen extends StatefulWidget {
   final PlaylistService playlistService;
   final AnalyticsService analyticsService;
+  final ObjectBoxService objectBoxService;
   final Playlist playlist;
 
   const XtreamPlaylistScreen({
     super.key,
     required this.playlistService,
     required this.analyticsService,
+    required this.objectBoxService,
     required this.playlist,
   });
 
@@ -43,6 +45,7 @@ class _XtreamPlaylistScreenState extends State<XtreamPlaylistScreen> {
   @override
   void initState() {
     super.initState();
+    _objectBoxService = widget.objectBoxService; // Initialize here
     _checkSubscription(); // Check subscription status
     // Initialize screens immediately with the required services.
     // The screens themselves will handle their own loading state.

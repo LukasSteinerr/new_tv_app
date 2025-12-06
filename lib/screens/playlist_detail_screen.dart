@@ -5,6 +5,7 @@ import '../models/playlist.dart';
 import '../models/channel.dart';
 import '../models/category.dart';
 import '../services/analytics_service.dart';
+import '../services/objectbox_service.dart';
 import '../services/playlist_service.dart';
 import 'xtream_playlist_screen.dart';
 import 'category_channels_screen.dart';
@@ -12,12 +13,14 @@ import 'category_channels_screen.dart';
 class PlaylistDetailScreen extends StatelessWidget {
   final PlaylistService playlistService;
   final AnalyticsService analyticsService;
+  final ObjectBoxService objectBoxService;
   final Playlist playlist;
 
   const PlaylistDetailScreen({
     super.key,
     required this.playlistService,
     required this.analyticsService,
+    required this.objectBoxService,
     required this.playlist,
   });
 
@@ -28,6 +31,7 @@ class PlaylistDetailScreen extends StatelessWidget {
       return XtreamPlaylistScreen(
         playlistService: playlistService,
         analyticsService: analyticsService,
+        objectBoxService: objectBoxService,
         playlist: playlist,
       );
     }

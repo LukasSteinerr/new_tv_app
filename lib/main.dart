@@ -148,6 +148,7 @@ void main() async {
   final appRouter = AppRouter(
     playlistService: playlistService,
     analyticsService: analyticsService,
+    objectBoxService: objectBoxService,
   );
 
   runApp(MyApp(appRouter: appRouter));
